@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "566160348884",
+    "firebase_url": "https://accountloginregistrationapp.firebaseio.com",
+    "project_id": "accountloginregistrationapp",
+    "storage_bucket": "accountloginregistrationapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:566160348884:android:7c138b46f4821b75",
+        "android_client_info": {
+          "package_name": "accountlogin.registrationapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "566160348884-ru4u9obgmcl3qdb69tahh3u0bt5sqoej.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "accountlogin.registrationapp",
+            "certificate_hash": "b514521c69d23a16884469be35bdd4237835b67e"
+          }
+        },
+        {
+          "client_id": "566160348884-nlqmiue55g09tsaoo1tmporh6la120i7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC4LNWwfwrdxgU51iev1sUGXmNWxnx86pE"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "566160348884-nlqmiue55g09tsaoo1tmporh6la120i7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
