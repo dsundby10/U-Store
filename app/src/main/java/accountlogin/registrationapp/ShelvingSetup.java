@@ -6,6 +6,8 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -23,80 +25,144 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
-
 public class ShelvingSetup extends AppCompatActivity {
     private static final String TAG = "ShelvingSetup: ";
     Spinner aisle_num_spinner, bay_num_spinner;
     EditText num_shelves;
     Button assign_shelves_btn;
     ListView mListView;
+    Button viewLayout;
 
     //add firebase variables
     private FirebaseDatabase mFirebaseDatabase;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private DatabaseReference myRef;
+    private DatabaseReference AisleBayRef;
+    private DatabaseReference AisleBayShelfRef;
     private String userID;
 
-    //List<String> aisleSpinnerValues = new ArrayList<>();
-    //List<String> baySpinnerValues = new ArrayList<>();
+    String regexStr  = "^[0-9]*$";
+    String alphabet = "abcdefghijklmnopqrstuvwxyz";
 
-    static List<String>array = new ArrayList<>();
-
-    List<String> allDataArr = new ArrayList<>();
-
-    int aisleSpinInt=0;
-    int baySpinInt=0;
-    static int z=0;
-    static int x=0;
-    int count = 0;
-    int maxEntries=0;
-    int aisle =0;
-    int bay=0;
-    String tvSV_List="";
-    //String[] aisle_id_arr;
-    //String[] aisle_num_arr;
-    //String[] bay_num_arr;
-
-    ArrayList<String> aisle_id_arr;
-    ArrayList<String> aisle_num_arr;
-    ArrayList<String> bay_num_arr;
-    ArrayList<String> num_of_shelves;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_shelving_setup);
         Intent intent = getIntent();
-        //tvSV_shelf = (TextView)findViewById(R.id.tvSV_shelf);
+        //Prevents keyboard from auto popping up
+        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
         aisle_num_spinner = (Spinner)findViewById(R.id.aisle_num_spinner);
         bay_num_spinner = (Spinner)findViewById(R.id.bay_num_spinner);
         num_shelves = (EditText)findViewById(R.id.num_shelves);
         assign_shelves_btn = (Button)findViewById(R.id.assign_shelves_btn);
-
+        viewLayout = (Button)findViewById(R.id.layout_btn);
         mListView = (ListView)findViewById(R.id.listviewX);
 
         //Firebase initialization
         mAuth = FirebaseAuth.getInstance();
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         myRef = mFirebaseDatabase.getReference();
-        final FirebaseUser user = mAuth.getCurrentUser();
+        FirebaseUser user = mAuth.getCurrentUser();
         userID = user.getUid();
 
+        AisleBayShelfRef = mFirebaseDatabase.getReference().child(userID).child("ShelfSetup");
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user == null) {
-
                 }
             }
         };
 
-        myRef.addValueEventListener(new ValueEventListener() {
+        /*========== Aisle Bay DB Reference to Generate Spinner Values ====== */
+        AisleBayRef = mFirebaseDatabase.getReference().child(userID).child("BaySetup");
+        AisleBayRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            ArrayList<String>advAarr = new ArrayList<>();
+            ArrayList<String>advBarr = new ArrayList<>();
+
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                showData(dataSnapshot);
+                for (DataSnapshot childSnapShot : dataSnapshot.getChildren()){
+                    String advAisle = (String) childSnapShot.child("aisle").getValue();
+                    String advBay = (String)childSnapShot.child("bays").getValue();
+
+                    advAarr.add(advAisle);
+                    advBarr.add(advBay);
+
+                }
+                    ArrayAdapter advAadp = new ArrayAdapter(ShelvingSetup.this,android.R.layout.simple_spinner_dropdown_item, advAarr);
+                        aisle_num_spinner.setAdapter(advAadp);
+                        aisle_num_spinner.setSelection(0);
+                        bay_num_spinner.setSelection(0);
+
+                    //Set Bay Spinner according to the specific Aisle Num Spinner Selected
+                    aisle_num_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        int currentAisleSelected = position;
+                        currentAisleSelected = aisle_num_spinner.getSelectedItemPosition();
+                        int bayHolder = 0;
+                        ArrayList<String> currentNumBays = new ArrayList<String>();
+                        for (int i=0; i < advAarr.size(); i++) {
+                            if (i == currentAisleSelected) {
+                                bayHolder = Integer.parseInt(advBarr.get(i));
+                            }
+                        }
+                            for (int j = 0; j < bayHolder; j++) {
+                                currentNumBays.add(String.valueOf(j));
+                            }
+
+                        ArrayAdapter advBadp = new ArrayAdapter(ShelvingSetup.this,android.R.layout.simple_spinner_dropdown_item, currentNumBays);
+                        bay_num_spinner.setAdapter(advBadp);
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {
+
+                    }
+                });
+
+                assign_shelves_btn.setOnClickListener(new View.OnClickListener() {
+                    String a = "";
+                    int bayHolder=0;
+
+                    @Override
+                    public void onClick(View v) {
+                        aisle_num_spinner = (Spinner)findViewById(R.id.aisle_num_spinner);
+                        String aisleSpinTxt = aisle_num_spinner.getSelectedItem().toString();
+
+                        bay_num_spinner = (Spinner)findViewById(R.id.bay_num_spinner);
+                        String baySpinTxt = bay_num_spinner.getSelectedItem().toString();
+
+
+                        String strNumShelves = num_shelves.getText().toString();
+
+                        /* == Check users input is valid first == */
+                        if (strNumShelves.trim().matches(regexStr) && !strNumShelves.trim().isEmpty()) {
+                            /*== Loop through to find the current aisle & bay thats selected ==*/
+                            for (int i = 0; i < advAarr.size(); i++) {
+                                String[] alphabetSplitter = alphabet.split("");
+                                a = alphabetSplitter[i+1].toString();
+                                bayHolder = Integer.parseInt(advBarr.get(i));
+                                for (int j = 0; j < bayHolder; j++) {
+                                    /*===== Add Shelf to current aisle & bay selected ==== */
+                                    if (advAarr.get(i).equals(aisleSpinTxt) && String.valueOf(j).equals(baySpinTxt)) {
+                                        myRef.child(userID).child("ShelfSetup").child(a+"AisleID" + j).setValue(String.valueOf(j));
+                                        myRef.child(userID).child("ShelfSetup").child(a+"AisleID" + j).child("aisle_num").setValue(String.valueOf(i));
+                                        myRef.child(userID).child("ShelfSetup").child(a+"AisleID" + j).child("bay_num").setValue(String.valueOf(j));
+                                        myRef.child(userID).child("ShelfSetup").child(a+ "AisleID" + j).child("num_of_shelves").setValue(strNumShelves);
+                                    }
+                                }
+                            }
+                        } else {
+                            toastMessage("Your entry must be a valid integer..");
+                        }
+                    }
+                });
             }
 
             @Override
@@ -104,119 +170,44 @@ public class ShelvingSetup extends AppCompatActivity {
 
             }
         });
-        assign_shelves_btn.setOnClickListener(new View.OnClickListener() {
+
+        /*====================Display & Update Listview=================*/
+          AisleBayShelfRef = mFirebaseDatabase.getReference().child(userID).child("ShelfSetup");
+          AisleBayShelfRef.addValueEventListener(new ValueEventListener() {
+
+            ArrayList<String> my_arr_list = new ArrayList<>();
             @Override
-            public void onClick(View view) {
-                String tv = "";
-                Log.i("MaxEntries: ", String.valueOf(maxEntries));
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                my_arr_list=new ArrayList<String>();
+                ArrayList<String> shelfHold = new ArrayList<String>();
+                for (DataSnapshot childSnapShot : dataSnapshot.getChildren()) {
+                    String aisleNum = (String) childSnapShot.child("aisle_num").getValue();
+                    String bayNum = (String) childSnapShot.child("bay_num").getValue();
+                    String shelfNum = (String) childSnapShot.child("num_of_shelves").getValue();
+                    String strHold = "Aisle: " + aisleNum + " Bay: " + bayNum + " Shelves: " + shelfNum;
 
-                int dbCount = 0;
-                //AutoGenerate Database
-                if (count==0){
-                    aisle_id_arr = new ArrayList<String>();
-                    aisle_num_arr = new ArrayList<String>();
-                    bay_num_arr = new ArrayList<String>();
-                    num_of_shelves = new ArrayList<String>();
-                    for (int i = 0; i < aisle; i++){
-                        for (int j = 0; j < bay; j++){
-                            //Database Structure Attempt
-                            myRef.child(userID).child("ShelfSetup").child("AisleID:" + dbCount).setValue(String.valueOf(dbCount));
-                            myRef.child(userID).child("ShelfSetup").child("AisleID:" + dbCount).child("aisle_num").setValue(i);
-                            myRef.child(userID).child("ShelfSetup").child("AisleID:" + dbCount).child("bay_num").setValue(j);
-                            myRef.child(userID).child("ShelfSetup").child("AisleID:" + dbCount).child("num_of_shelves").setValue(String.valueOf(0));
+                    my_arr_list.add(strHold);
 
-                            String aisle_id = myRef.child(userID).child("ShelfSetup").child("AisleID:" + dbCount).child(String.valueOf(dbCount)).getKey();
-                            String aisle_num_id = myRef.child(userID).child("ShelfSetup").child("AisleID:" + dbCount).child("aisle_num").child(String.valueOf(i)).getKey();
-                            String bay_num_id = myRef.child(userID).child("ShelfSetup").child("AisleID:" + dbCount).child("bay_num").child(String.valueOf(j)).getKey();
-                            String shelf_num_id = myRef.child(userID).child("ShelfSetup").child("AisleID:" + dbCount).child("num_of_shelves").child(String.valueOf(0)).getKey();
-
-                            aisle_id_arr.add(aisle_id);
-                            aisle_num_arr.add(aisle_num_id);
-                            bay_num_arr.add(bay_num_id);
-
-                            num_of_shelves.add(shelf_num_id);
-                            Log.i("max Current DB count ", String.valueOf(aisle_id) + " " + String.valueOf(aisle_num_id) + " " + String.valueOf(bay_num_id) + " " +  String.valueOf(shelf_num_id));
-                            dbCount++;
-
-                        }
-                    }
                 }
-                aisle_num_spinner = (Spinner)findViewById(R.id.aisle_num_spinner);
-                String aisleSpinTxt = aisle_num_spinner.getSelectedItem().toString();
-                aisleSpinInt = Integer.parseInt(aisleSpinTxt);
-
-                bay_num_spinner = (Spinner)findViewById(R.id.bay_num_spinner);
-                String baySpinTxt = bay_num_spinner.getSelectedItem().toString();
-                baySpinInt = Integer.parseInt(baySpinTxt);
-
-                String strNumShelves = num_shelves.getText().toString();
-
-                //Users selections Spinner Slections & Num of Shelves
-                String strArr = aisleSpinTxt + ", " + baySpinTxt + ", " + strNumShelves + ", ";
-
-                //Loop through for however many AisleID: keys were initially added
-                for (int i=0; i<aisle_id_arr.size(); i++) {
-                    if (aisle_num_arr.get(i).toString().equals(aisleSpinTxt) && bay_num_arr.get(i).equals(baySpinTxt)){
-                        Log.i("maxLogging", "It WORKS: AisleID:" + i + " " + aisleSpinTxt + " " + baySpinTxt);
-                        myRef.child(userID).child("ShelfSetup").child("AisleID:"+i).child("num_of_shelves").setValue(strNumShelves);
-                    }
-                }
-
-                allDataArr.add(count,strArr);
-
-                //display data onto the textview
-                tv = "Assignment #" + count + " | Aisle: " + aisleSpinTxt + " Bay#: " +baySpinTxt+ " Shelves:  " + strNumShelves + "\n";
-                String temp = tv;
-                tvSV_List+=temp;
-                ArrayAdapter arrayAdapter = new ArrayAdapter(ShelvingSetup.this,android.R.layout.simple_expandable_list_item_1,allDataArr);
+                ArrayAdapter arrayAdapter = new ArrayAdapter(ShelvingSetup.this,android.R.layout.simple_list_item_1,my_arr_list);
                 mListView.setAdapter(arrayAdapter);
-                count++;
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
             }
         });
 
+        viewLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ShelvingSetup.this, StoreLayoutActivity.class);
+                startActivity(intent);
+            }
+        });
 
     }
-
-    private void showData(DataSnapshot dataSnapshot) {
-        String str = "";
-        String str1="";
-
-        zAllUserData zInfo = new zAllUserData();
-        for(DataSnapshot ds : dataSnapshot.getChildren()) {
-            zInfo.setNumAisles(ds.child("aisles").getValue(String.class));
-            zInfo.setNumBays(ds.child("genBays").getValue(String.class));
-            //zInfo.setDeptNames(ds.child(userID).child("aisles").getValue(String.class));
-            //zInfo.setNumDepartments(ds.child(userID).child("genBays").getValue(String.class));
-
-            array = new ArrayList<>();
-            array.add(zInfo.getNumAisles());
-            array.add(zInfo.getNumBays());
-            aisle = Integer.parseInt(zInfo.getNumAisles());
-            bay  = Integer.parseInt(zInfo.getNumBays());
-
-            ArrayList<String> arrAisle = new ArrayList<>();
-            z = Integer.parseInt(array.get(0));
-            for (int i=0; i<z; i++) {
-                str = str.valueOf(i);
-                arrAisle.add(i,str);
-            }
-           ArrayList<String>arrBay = new ArrayList<>();
-            x= Integer.parseInt(array.get(1));
-            for (int i=0; i<x; i++) {
-                str1 = str1.valueOf(i);
-                arrBay.add(i,str1);
-            }
-            maxEntries = z*x;
-
-            ArrayAdapter arrayAdapter = new ArrayAdapter(ShelvingSetup.this,android.R.layout.simple_spinner_dropdown_item, arrAisle);
-            aisle_num_spinner.setAdapter(arrayAdapter);
-            ArrayAdapter arrayAdapter1 = new ArrayAdapter(ShelvingSetup.this,android.R.layout.simple_spinner_dropdown_item, arrBay);
-            bay_num_spinner.setAdapter(arrayAdapter1);
-        }
-
-    }
-
-
 
     @Override
     public void onStart() {
@@ -235,39 +226,3 @@ public class ShelvingSetup extends AppCompatActivity {
         Toast.makeText(this,message, Toast.LENGTH_SHORT).show();
     }
 }
- /*ListIterator<String> itr = allDataArr.listIterator();
-                String strElement = "";
-                //int itrCount = 0;
-                int xCount = 1;
-                while (itr.hasNext()) {
-                    strElement = itr.next();
-                    String[] xx = strElement.split("\\s*,\\s*");
-                    String p1 = xx[0];
-                    String p2 = xx[1];
-                    String p3 = xx[2];
-                    if (aisleSpinTxt.equals(p1) && baySpinTxt.equals(p2) && itrCount!= 0 && itrCount!=count) {
-                        stopper = itrCount;
-                        toastMessage("Current Aisle: " + aisleSpinTxt + " Current Bay " + baySpinTxt +
-                                "\nIs equal to Aisle " + p1 + " and Current Bay " + p2 +
-                                "\nAt Iteration Number: " + itrCount);
-                    }
-
-                    itrCount++;
-                }
-                if(stopper!=0) {
-                    myRef.child(userID).child("aisle_id:"+ stopper).setValue(String.valueOf(count));
-                    myRef.child(userID).child("aisle_id:"+ stopper).child("aisle_num").setValue(aisleSpinTxt);
-                    myRef.child(userID).child("aisle_id:"+ stopper).child("at_bay_num").setValue(baySpinTxt);
-                    myRef.child(userID).child("aisle_id:"+ stopper).child("assign_num_shelves").setValue(strNumShelves);
-                    //count--;
-                    toastMessage("Stopper! " + stopper + " Count is now " + count);
-                } else {
-
-                    //Store data into database
-                    myRef.child(userID).child("aisle_id:"+ count).setValue(String.valueOf(count));
-                    myRef.child(userID).child("aisle_id:"+ count).child("aisle_num").setValue(aisleSpinTxt);
-                    myRef.child(userID).child("aisle_id:"+ count).child("at_bay_num").setValue(baySpinTxt);
-                    myRef.child(userID).child("aisle_id:"+ count).child("assign_num_shelves").setValue(strNumShelves);
-                    toastMessage("No problems here: stopper is : " + stopper + " and count is at " + count );
-                    count++;
-                }*/

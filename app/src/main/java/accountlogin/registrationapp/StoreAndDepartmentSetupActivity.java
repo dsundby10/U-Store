@@ -2,10 +2,12 @@ package accountlogin.registrationapp;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -26,52 +28,72 @@ import java.util.List;
 
 public class StoreAndDepartmentSetupActivity extends AppCompatActivity {
 
+    Button submit;
+    EditText storeName, listDept;
 
-    Button submit, aislebay;
-    EditText storeName, numDept, listDept;
     //Firebase Variables
     private FirebaseDatabase mFirebaseDatabase;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private DatabaseReference myRef;
+    private DatabaseReference myStoreRef;
     private String userID;
+
+    String currentStoreName = "";
+    String currentDeptNames = "";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_store_and_department_setup);
+        setTitle("Part 1: Store & Department Setup");
 
         Intent intent = getIntent();
 
-        aislebay = (Button)findViewById(R.id.btnbtn);
         submit = (Button)findViewById(R.id.Submit_Info);
         storeName = (EditText)findViewById(R.id.Storename);
-        numDept = (EditText)findViewById(R.id.NumDept);
         listDept = (EditText)findViewById(R.id.ListDept);
 
         //Firebase Initialization
         mAuth = FirebaseAuth.getInstance();
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         myRef = mFirebaseDatabase.getReference();
+        myStoreRef = mFirebaseDatabase.getReference();
         final FirebaseUser user = mAuth.getCurrentUser();
         userID = user.getUid();
+
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user == null) {
-                    // user auth state is changed - user is null
-                    // launch login activity
-                    //startActivity(new Intent(MainActivity.this, LoginActivity.class));
 
                 }
             }
         };
 
-        myRef.addValueEventListener(new ValueEventListener() {
+        /*====== Value Event Listener To Check if store & dept names exists & display them if they already do ====*/
+        myStoreRef = mFirebaseDatabase.getReference().child(userID);
+        myStoreRef.orderByChild("storeName").addValueEventListener(new ValueEventListener() { //(This works for ALL the values within the user ID)
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                storeName = (EditText)findViewById(R.id.Storename);
+                for(DataSnapshot data: dataSnapshot.getChildren()) {
+                    String store_name_string = data.toString();
+                    //Log.i("Checking Current Data: ", store_name_string);
+                    //Check if storeName key exists & the key's value doesn't equal null & display value
+                    if (data.getKey().equals("storeName") && !data.getValue().toString().trim().equals("")){
+                        currentStoreName = data.getValue().toString();
+                        storeName.setText(data.getValue().toString());
+                       // Log.i("Checking StoreName.... ",  currentStoreName);
+                    }
+                    //Check if deptName key exists & the key's value doesn't equal null & display value
+                    if (data.getKey().equals("deptNames") && !data.getValue().toString().trim().equals("")){
+                        currentDeptNames = data.getValue().toString();
+                        listDept.setText(data.getValue().toString());
+                    }
 
+                }
             }
 
             @Override
@@ -80,45 +102,32 @@ public class StoreAndDepartmentSetupActivity extends AppCompatActivity {
             }
         });
 
+
+    /*========= ON SUBMIT BUTTON LISTENER ========*/
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String StoreName = storeName.getText().toString();
-                String NumDept = numDept.getText().toString();
                 String ListDept = listDept.getText().toString();
 
-                Log.d("OnClick - S&D Setup", "\nDeptNames: " +  ListDept
-                        + "\nNumDepts: " + NumDept + "\nStoreName: " + StoreName);
+                //Add dept names to database
+                myRef.child(userID).child("deptNames").setValue(ListDept);
 
-                if (!StoreName.equals("") && !NumDept.equals("") && !ListDept.equals("")) {
-                    //UserInformation userInformation = new UserInformation();
-                    //userInformation.setDeptNames(ListDept);
-                    //userInformation.setNumDepartments(NumDept);
-                    //userInformation.setStoreName(StoreName);
+                //Verify storeName has a real string value
+                if (!StoreName.trim().equals("")) {
+                        myRef.child(userID).child("storeName").setValue(StoreName);
+                        Intent intent = new Intent(StoreAndDepartmentSetupActivity.this,AisleBaySetup.class);
 
-                    //myRef.child("users").child(userID).setValue(userInformation);
+                        //Set hint back to original color & text
+                        storeName.setHintTextColor(getResources().getColor(R.color.editTextHintColor));
+                        storeName.setHint("Store Name");
+                        startActivity(intent);
 
-                    myRef.child(userID).child("deptNames").setValue(ListDept);
-                    myRef.child(userID).child("numDepartments").setValue(NumDept);
-                    myRef.child(userID).child("storeName").setValue(StoreName);
-
-
-
-                    Intent intent1 = new Intent(StoreAndDepartmentSetupActivity.this,AisleBaySetup.class);
-                    startActivity(intent1);
-
-                }else {
-                    toastMessage("Please Fill Out All Fields!");
+                } else { //Try again
+                        storeName.setHint("* You Must Name Your Store");
+                        storeName.setHintTextColor(Color.RED);
                 }
 
-            }
-        });
-
-        aislebay.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent1 = new Intent(StoreAndDepartmentSetupActivity.this,ViewDatabase.class);
-                startActivity(intent1);
             }
         });
     }

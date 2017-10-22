@@ -4,11 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/appBackgroundColor"
     tools:context="accountlogin.registrationapp.SignupActivity">
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:background="@color/colorPrimaryDark"
         android:gravity="center"
         android:orientation="vertical"
         android:padding="@dimen/activity_horizontal_margin">
@@ -31,7 +31,7 @@
             android:hint="@string/email"
             android:inputType="textEmailAddress"
             android:maxLines="1"
-            android:textColor="@android:color/white" />
+            android:textColor="@color/editTextColor" />
 
 
 
@@ -46,7 +46,7 @@
             android:imeOptions="actionUnspecified"
             android:inputType="textPassword"
             android:maxLines="1"
-            android:textColor="@android:color/white" />
+            android:textColor="@color/editTextColor" />
 
 
         <Button
@@ -55,9 +55,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:background="@color/colorAccent"
+            android:background="@color/appButtonColor"
             android:text="@string/action_sign_in_short"
-            android:textColor="@android:color/black"
+            android:textColor="@color/editTextColor"
             android:textStyle="bold" />
 
         <Button
@@ -68,7 +68,7 @@
             android:background="@null"
             android:text="@string/btn_forgot_password"
             android:textAllCaps="false"
-            android:textColor="@color/colorAccent" />
+            android:textColor="@color/editTextHintColor" />
 
         <!-- Link to Login Screen -->
 
@@ -80,7 +80,7 @@
             android:background="@null"
             android:text="@string/btn_link_to_login"
             android:textAllCaps="false"
-            android:textColor="@color/white"
+            android:textColor="@color/editTextHintColor"
             android:textSize="15sp" />
     </LinearLayout>
 

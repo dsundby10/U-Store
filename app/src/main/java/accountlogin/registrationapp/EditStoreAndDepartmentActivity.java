@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -33,9 +34,13 @@ public class EditStoreAndDepartmentActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private DatabaseReference myRef;
+    private DatabaseReference myDeptRef;
     private String userID;
 
-    static String testString;
+    String testString;
+    String deptNamesString= "";
+    String[] deptListArray;
+    ArrayList<String> newDeptArrayList = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,17 +70,26 @@ public class EditStoreAndDepartmentActivity extends AppCompatActivity {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user == null) {
-                    // user auth state is changed - user is null
-                    // launch login activity
-                    //startActivity(new Intent(MainActivity.this, LoginActivity.class));
+
                 }
             }
         };
-
-        myRef.addValueEventListener(new ValueEventListener() {
+        /*=== Department Name Listener to keep track of current deptListString ==== */
+        myDeptRef = mFirebaseDatabase.getReference().child(userID);
+        myDeptRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                showData(dataSnapshot);
+                deptNamesString = "";
+
+                for(DataSnapshot data: dataSnapshot.getChildren()) {
+                    if (data.getKey().equals("deptNames")){
+                        deptNamesString = data.getValue().toString();
+                        //deptListArray = deptListString.split("\\s*,\\s*");
+                        Log.i("zCurrentDept Names ", data.getValue().toString());
+                    }
+                }
+                /*====Update both spinner values ===== */
+                createDeptSpinner();
             }
 
             @Override
@@ -84,37 +98,54 @@ public class EditStoreAndDepartmentActivity extends AppCompatActivity {
             }
         });
 
-        /************Add Dept Btn On Click *****************/
+        /*======== Add Dept Btn On Click =========*/
         add_dept_btn.setOnClickListener(new View.OnClickListener() {
-            String[] deptListArr;
-            String message1;
+            String[] addToDeptArr;
+            String deptHolder = "";
+            String message1="";
+            int count = 0;
             @Override
             public void onClick(View view) {
-                int count = 0; //control variable
-                String addDeptTxt = add_dept_txt.getText().toString();
-                deptListArr = testString.split("\\s*,\\s*");
-
-               //compare the addDeptTxt with each already established Department
+                deptHolder="";
+                String addDeptString = add_dept_txt.getText().toString();
+                String[] addToDeptArr = deptNamesString.split("\\s*,\\s*");
+                //addToDeptArr = deptNamesString.split("\\s*,\\s*");
+                count = 0;
+                //compare the addDeptTxt with each already established Department
                 ArrayList<String> deptArrList = new ArrayList<>();
-                for (int i = 0; i < deptListArr.length; i++) {
-                    if (deptListArr[i].equals(addDeptTxt)) {
+                for (int i = 0; i < addToDeptArr.length; i++) {
+                    if (addToDeptArr[i].equals(addDeptString)) {
                         count=1;
-                        message1=addDeptTxt + " Already exists at position '" + (i+1) + "' in your department list, no duplicates allowed!";
+                        message1=addDeptString+ " Already exists at position '" + (i+1) + "' in your department list, no duplicates allowed!";
                     } else {
-                        deptArrList.add(deptListArr[i]);
+                        deptArrList.add(addToDeptArr[i]);
                     }
                 }
 
-                //Confirms that there's no duplicates && no empty entries or entries with just spaces
-                if (count!=1 && addDeptTxt.trim().length() > 0) {
-                    myRef.child(userID).child("deptNames").setValue(testString + addDeptTxt +", ");
-                    toastMessage(addDeptTxt + " Successfully added to your Department List!");
-                }else{
-                    toastMessage(message1);
+
+
+                if (deptNamesString.trim().isEmpty()){
+                    deptHolder = addDeptString+",";
+                    myRef.child(userID).child("deptNames").setValue(deptHolder);
+                } else {
+                    if (count == 1) {
+                        toastMessage(message1);
+                    } else {
+                    /*=== Gathering current data and adding the new dept to end of deptArrList ===*/
+                        for (int i = 0; i < deptArrList.size() + 1; i++) {
+                            if (i == deptArrList.size()) {
+                                deptHolder += addDeptString + ",";
+                                Log.i("zAddtoSize equals", " Adding " + addDeptString);
+                            } else {
+                                deptHolder += deptArrList.get(i) + ",";
+                            }
+                        }
+                        myRef.child(userID).child("deptNames").setValue(deptHolder);
+                    }
                 }
             }
         });
-        /************Remove Dept Btn On Click *****************/
+        /*=======Remove Dept Btn On Click ======*/
         remove_dept_btn.setOnClickListener(new View.OnClickListener() {
             String[] deptListArr;
             String strToRemove="";
@@ -123,24 +154,24 @@ public class EditStoreAndDepartmentActivity extends AppCompatActivity {
             String message2;
             @Override
             public void onClick(View view) {
-
                 String removeSpinnerTxt = remove_dept_spinner.getSelectedItem().toString();
                 int count = 0; //control variable
-
+                testString = deptNamesString;
                 deptListArr = testString.split("\\s*,\\s*");
+
                 //determine the string to remove and load all the elements into the arrayList.
                 ArrayList<String> deptArrList = new ArrayList<>();
                 for (int i = 0; i < deptListArr.length; i++) {
                     if (deptListArr[i].equals(removeSpinnerTxt)) {
                         strToRemove = deptListArr[i];
                         message1 = " Department to Remove: " + strToRemove;
-                        //strToRemove.trim();
                     }
                     deptArrList.add(deptListArr[i]);
                 }
                 //Iterate through ArrayList and remove the strToRemove that was determined above
                 ListIterator<String> itr = deptArrList.listIterator();
                 String strElement="";
+                int itrCount=0;
                 while (itr.hasNext()) {
                     strElement = itr.next();
                     if (strToRemove.equals(strElement)){
@@ -148,7 +179,7 @@ public class EditStoreAndDepartmentActivity extends AppCompatActivity {
                         message2 = message1 + "\nHas been sucessfully removed!";
                         count=1;
                     } else {
-                        newList += strElement + ", ";
+                       newList += strElement + ",";
                     }
                 }
                 //Adding to database
@@ -164,7 +195,7 @@ public class EditStoreAndDepartmentActivity extends AppCompatActivity {
 
         /************Change Dept Btn On Click *****************/
         change_dept_btn.setOnClickListener(new View.OnClickListener() {
-            String[] deptListArr;
+            //String[] deptListArr;
             String strToChange;
             String newList="";
             String message1; //failed to add to database
@@ -174,7 +205,7 @@ public class EditStoreAndDepartmentActivity extends AppCompatActivity {
                 String editSpinnerTxt = edit_dept_spinner.getSelectedItem().toString(); //Users selection to edit
                 String changeDeptTxt = change_dept_txt.getText().toString(); //Users desired new dept name
                 int editCount = 0; //control variable
-                deptListArr = testString.split("\\s*,\\s*");
+                String[] deptListArr = deptNamesString.split("\\s*,\\s*");
 
                 ArrayList<String> deptArrList = new ArrayList<>();
                 for (int i = 0; i < deptListArr.length; i++) {
@@ -183,7 +214,6 @@ public class EditStoreAndDepartmentActivity extends AppCompatActivity {
                         editCount = 1;
                         message1 = changeDeptTxt + " " + " in row '" + (i + 1) + "' "
                                 + "\nAlready exists in your list of departments!";
-
                     }
 
                     if (editCount!= 1 && !deptListArr[i].equals(editSpinnerTxt)) {
@@ -194,6 +224,7 @@ public class EditStoreAndDepartmentActivity extends AppCompatActivity {
                     }
 
                 }
+                /*=== Change the selected dept name to the new dept Name ===*/
                 ListIterator<String> itr = deptArrList.listIterator();
                 String strElement="";
                 while (itr.hasNext()) {
@@ -204,7 +235,7 @@ public class EditStoreAndDepartmentActivity extends AppCompatActivity {
                         //add the changed dept txt in the same position as the old dept txt to the new department list
                         newList += changeDeptTxt + ", ";
                      } else { //adding all the other elements as usual
-                        newList += strElement + ", ";
+                        newList += strElement + ",";
                      }
                 }
                 //Do nothing
@@ -219,35 +250,27 @@ public class EditStoreAndDepartmentActivity extends AppCompatActivity {
         });
     }
 
-    private void showData(DataSnapshot dataSnapshot) {
-        String deptListStr = "";
-        String[] deptListArr;
-        zAllUserData zInfo = new zAllUserData();
-        for (DataSnapshot ds : dataSnapshot.getChildren()) {
+    public void createDeptSpinner(){
+        //Spinner initialization
+        edit_dept_spinner = (Spinner) findViewById(R.id.edit_dept_spinner);
+        remove_dept_spinner = (Spinner) findViewById(R.id.remove_dept_spinner);
+        String stringHolder = "";
+        stringHolder = deptNamesString;
 
-            zInfo.setDeptNames(ds.child("deptNames").getValue(String.class));
+        String[] deptlistarr = stringHolder.split("\\s*,\\s*");
+        newDeptArrayList = new ArrayList<>();
 
-            //Set the non separated department list taken from database to deptListStr
-            deptListStr = zInfo.getDeptNames();
-            testString = deptListStr;
-            //Split the string at the commas and extra spaces & place into deptListArr
-            deptListArr = deptListStr.split("\\s*,\\s*");
-
-
-            //Create a new ArrayList and get add each value from deptListArr to deptArrList
-            ArrayList<String> deptArrList = new ArrayList<>();
-            for (int i = 0; i < deptListArr.length; i++) {
-                deptArrList.add(deptListArr[i]);
-            }
-            //Load deptArrList into the dept to remove spinner
-            ArrayAdapter arrayAdapter = new ArrayAdapter(EditStoreAndDepartmentActivity.this, android.R.layout.simple_spinner_dropdown_item, deptArrList);
-            remove_dept_spinner.setAdapter(arrayAdapter);
-            //Load deptArrList into the dept to edit spinner
-            ArrayAdapter arrayAdapter1 = new ArrayAdapter(EditStoreAndDepartmentActivity.this, android.R.layout.simple_spinner_dropdown_item, deptArrList);
-            edit_dept_spinner.setAdapter(arrayAdapter1);
+        for (int i = 0; i < deptlistarr.length; i++) {
+            newDeptArrayList.add(deptlistarr[i]);
         }
-    }
+        //Load deptArrList into the dept to remove spinner
+        ArrayAdapter arrayAdapter = new ArrayAdapter(EditStoreAndDepartmentActivity.this, android.R.layout.simple_spinner_dropdown_item, newDeptArrayList);
+        remove_dept_spinner.setAdapter(arrayAdapter);
+        //Load deptArrList into the dept to edit spinner
+        ArrayAdapter arrayAdapter1 = new ArrayAdapter(EditStoreAndDepartmentActivity.this, android.R.layout.simple_spinner_dropdown_item, newDeptArrayList);
+        edit_dept_spinner.setAdapter(arrayAdapter1);
 
+    }
     @Override
     public void onStart() {
         super.onStart();

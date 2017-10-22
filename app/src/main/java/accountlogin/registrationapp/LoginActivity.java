@@ -35,7 +35,7 @@ public class LoginActivity extends AppCompatActivity {
     private DatabaseReference myRef;
     private String userID;
     private String checkStoreName;
-    String strX="";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,13 +46,13 @@ public class LoginActivity extends AppCompatActivity {
         myRef = mFirebaseDatabase.getReference();
 
         //Get Firebase auth instance
-        auth = FirebaseAuth.getInstance();
+        mAuth = FirebaseAuth.getInstance();
 
         //Uncomment this during testing phase to avoid having to login every time
-        // if (auth.getCurrentUser() != null  ) {
-        //    startActivity(new Intent(LoginActivity.this, MainActivity.class));
-        //    finish();
-       // }
+        if (mAuth.getCurrentUser() != null  ) {
+            startActivity(new Intent(LoginActivity.this, MainActivity.class));
+            finish();
+       }
 
         setContentView(R.layout.activity_login);
         inputEmail = (EditText) findViewById(R.id.email);
@@ -63,7 +63,7 @@ public class LoginActivity extends AppCompatActivity {
         btnReset = (Button) findViewById(R.id.btn_reset_password);
 
         //Get Firebase auth instance
-        auth = FirebaseAuth.getInstance();
+        mAuth = FirebaseAuth.getInstance();
 
         btnSignup.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -98,12 +98,12 @@ public class LoginActivity extends AppCompatActivity {
                 progressBar.setVisibility(View.VISIBLE);
 
                 //authenticate user
-                auth.signInWithEmailAndPassword(email, password)
+                mAuth.signInWithEmailAndPassword(email, password)
                         .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 // If sign in fails, display a message to the user. If sign in succeeds
-                                // the auth state listener will be notified and logic to handle the
+                                // the mAuth state listener will be notified and logic to handle the
                                 // signed in user can be handled in the listener.
                                 progressBar.setVisibility(View.GONE);
                                 if (!task.isSuccessful()) {
@@ -113,15 +113,10 @@ public class LoginActivity extends AppCompatActivity {
                                     } else {
                                         Toast.makeText(LoginActivity.this, getString(R.string.auth_failed), Toast.LENGTH_LONG).show();
                                     }
-                                    //} else {
-                                    // Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                                    //  startActivity(intent);
-                                    //  finish();
-                                    // }
                                 }else{
                                     //if exists determine which screen they get sent too
-                                    if (auth.getCurrentUser() != null){
-                                        FirebaseUser user = auth.getCurrentUser();
+                                    if (mAuth.getCurrentUser() != null){
+                                        FirebaseUser user = mAuth.getCurrentUser();
                                         userID = user.getUid();
                                         //just checks to see if the storeName has been created in the dataabase
                                         checkStoreName = myRef.child(userID).child("storeName").toString();

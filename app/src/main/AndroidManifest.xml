@@ -3,6 +3,8 @@
     package="accountlogin.registrationapp">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -23,17 +25,26 @@
         <activity android:name=".ResetPasswordActivity" />
         <activity android:name=".MainMenu" />
         <activity android:name=".StoreAndDepartmentSetupActivity" />
-        <activity android:name=".AisleBaySetup" />
+        <activity
+            android:name=".AisleBaySetup"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateVisible|adjustPan" />
         <activity android:name=".ViewDatabase" />
         <activity android:name=".ShelvingSetup" />
+        <activity android:name=".AddInventory" />
+        <activity android:name=".EditStoreAndDepartmentActivity" />
+        <activity android:name=".StoreLayoutActivity" />
+        <activity android:name=".SearchInventoryActivity" />
+        <activity android:name=".ShelvingAddEditActivity" />
         <activity
-            android:name=".AddInventory"
-            android:label="@string/title_activity_add_inventory"
+            android:name=".SearchInventoryTabbedActivity"
+            android:label="@string/title_activity_search_inventory_tabbed"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".EditStoreAndDepartmentActivity"
-            android:label="@string/title_activity_edit_store_and_department"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:name=".SearchInventoryByDepartmentActivity"
+            android:label="@string/title_activity_search_inventory_by_department"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".EditInventoryActivity"></activity>
     </application>
 
 </manifest>

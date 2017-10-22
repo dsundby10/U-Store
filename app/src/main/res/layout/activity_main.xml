@@ -147,4 +147,15 @@
         android:layout_below="@+id/useremail"
         android:layout_centerHorizontal="true" />
 
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/create_store_btn"
+        android:layout_alignLeft="@+id/create_store_btn"
+        android:layout_alignRight="@+id/create_store_btn"
+        android:layout_alignStart="@+id/create_store_btn"
+        android:layout_below="@+id/create_store_btn"
+        android:text="Main Menu" />
+
 </RelativeLayout>

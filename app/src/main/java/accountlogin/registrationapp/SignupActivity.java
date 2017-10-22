@@ -22,7 +22,7 @@ public class SignupActivity extends AppCompatActivity {
     private EditText inputEmail, inputPassword;     //hit option + enter if you on mac , for windows hit ctrl + enter
     private Button btnSignIn, btnSignUp, btnResetPassword;
     private ProgressBar progressBar;
-    private FirebaseAuth auth;
+    private FirebaseAuth mAuth;
 
 
     @Override
@@ -30,7 +30,7 @@ public class SignupActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
         //Get Firebase auth instance
-        auth = FirebaseAuth.getInstance();
+        mAuth = FirebaseAuth.getInstance();
 
         btnSignIn = (Button) findViewById(R.id.sign_in_button);
         btnSignUp = (Button) findViewById(R.id.sign_up_button);
@@ -77,7 +77,7 @@ public class SignupActivity extends AppCompatActivity {
 
                 progressBar.setVisibility(View.VISIBLE);
                 //create user
-                auth.createUserWithEmailAndPassword(email, password)
+                mAuth.createUserWithEmailAndPassword(email, password)
                         .addOnCompleteListener(SignupActivity.this, new OnCompleteListener<AuthResult>() {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {

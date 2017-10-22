@@ -10,11 +10,11 @@ public class zAllUserData {
     private String StoreName;
     private String NumAisles;
     private String NumBays;
-    private String ShelfSetup;
-    private String AisleID;
-    private String aisle_num;
-    private String bay_num;
-    private String num_of_shelves;
+   // private String ShelfSetup;
+  //  private String AisleID;
+   // private String aisle_num;
+  //  private String bay_num;
+   // private String num_of_shelves;
 
 
 
@@ -24,8 +24,12 @@ public class zAllUserData {
         getNumDepartments();
         getNumAisles();
         getNumBays();
-        getShelfSetup();
+        /*getShelfSetup();
         getAisleID();
+        getAisle_num();
+        getBay_num();
+        getNum_of_shelves();
+        */
         //setAisleID(this.getAisleID());
     }
     public String getDeptNames() {
@@ -67,7 +71,7 @@ public class zAllUserData {
     public void setNumBays(String numBays) {
         NumBays = numBays;
     }
-
+/*
     public String getShelfSetup() {
         return ShelfSetup;
     }
@@ -107,4 +111,5 @@ public class zAllUserData {
     public void setNum_of_shelves(String num_of_shelves) {
         this.num_of_shelves = num_of_shelves;
     }
+*/
 }

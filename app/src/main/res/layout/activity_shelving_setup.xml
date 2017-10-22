@@ -93,6 +93,16 @@
             android:layout_height="339dp" />
     </LinearLayout>
 
+    <Button
+        android:id="@+id/layout_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="view layout"
+        app:layout_constraintLeft_toRightOf="@+id/num_shelves"
+        app:layout_constraintTop_toBottomOf="@+id/num_shelves"
+        tools:layout_constraintLeft_creator="1"
+        tools:layout_constraintTop_creator="1" />
 
 
 </android.support.constraint.ConstraintLayout>

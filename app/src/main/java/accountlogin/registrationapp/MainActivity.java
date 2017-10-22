@@ -21,12 +21,12 @@ import com.google.firebase.auth.FirebaseUser;
 public class MainActivity extends AppCompatActivity {
 
     private Button btnChangePassword, btnRemoveUser,
-            changePassword, remove, signOut, createStoreBtn;
+            changePassword, remove, signOut, createStoreBtn, button2;
     private TextView email;
 
     private EditText oldEmail, password, newPassword;
     private ProgressBar progressBar;
-    private FirebaseAuth auth;
+    private FirebaseAuth mAuth;
 
 
     @Override
@@ -34,8 +34,25 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        createStoreBtn = (Button)findViewById(R.id.create_store_btn);
+        btnChangePassword = (Button) findViewById(R.id.change_password_button);
+        btnRemoveUser = (Button) findViewById(R.id.remove_user_button);
+        changePassword = (Button) findViewById(R.id.changePass);
+        remove = (Button) findViewById(R.id.remove);
+        signOut = (Button) findViewById(R.id.sign_out);
+        button2 = (Button)findViewById(R.id.button2);
+        oldEmail = (EditText) findViewById(R.id.old_email);
+        password = (EditText) findViewById(R.id.password);
+        newPassword = (EditText) findViewById(R.id.newPassword);
+
+        oldEmail.setVisibility(View.GONE);
+        password.setVisibility(View.GONE);
+        newPassword.setVisibility(View.GONE);
+        changePassword.setVisibility(View.GONE);
+        remove.setVisibility(View.GONE);
+
         //get firebase auth instance
-        auth = FirebaseAuth.getInstance();
+        mAuth = FirebaseAuth.getInstance();
         email = (TextView) findViewById(R.id.useremail);
 
         //get current user
@@ -47,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user == null) {
-                    // user auth state is changed - user is null
+                    // user mAuth state is changed - user is null
                     // launch login activity
                     startActivity(new Intent(MainActivity.this, LoginActivity.class));
                     finish();
@@ -55,37 +72,19 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        createStoreBtn = (Button)findViewById(R.id.create_store_btn);
-
-        btnChangePassword = (Button) findViewById(R.id.change_password_button);
-
-        btnRemoveUser = (Button) findViewById(R.id.remove_user_button);
-
-        changePassword = (Button) findViewById(R.id.changePass);
-
-        remove = (Button) findViewById(R.id.remove);
-        signOut = (Button) findViewById(R.id.sign_out);
-
-        oldEmail = (EditText) findViewById(R.id.old_email);
-
-        password = (EditText) findViewById(R.id.password);
-        newPassword = (EditText) findViewById(R.id.newPassword);
-
-        oldEmail.setVisibility(View.GONE);
-
-        password.setVisibility(View.GONE);
-        newPassword.setVisibility(View.GONE);
-
-        changePassword.setVisibility(View.GONE);
-
-        remove.setVisibility(View.GONE);
 
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
         if (progressBar != null) {
             progressBar.setVisibility(View.GONE);
         }
-
+        button2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, MainMenu.class);
+                startActivity(intent);
+            }
+        });
         createStoreBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -93,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        /*==========Change Password Visibility Listener===============*/
         btnChangePassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -107,6 +107,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        /*==========Change Password Listener===============*/
         changePassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -184,7 +185,7 @@ public class MainActivity extends AppCompatActivity {
         public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
             FirebaseUser user = firebaseAuth.getCurrentUser();
             if (user == null) {
-                // user auth state is changed - user is null
+                // user mAuth state is changed - user is null
                 // launch login activity
                 startActivity(new Intent(MainActivity.this, LoginActivity.class));
                 finish();
@@ -199,7 +200,7 @@ public class MainActivity extends AppCompatActivity {
 
     //sign out method
     public void signOut() {
-        auth.signOut();
+        mAuth.signOut();
 
 
         // this listener will be called when there is change in firebase user session
@@ -226,14 +227,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
-        auth.addAuthStateListener(authListener);
+        mAuth.addAuthStateListener(authListener);
     }
 
     @Override
     public void onStop() {
         super.onStop();
         if (authListener != null) {
-            auth.removeAuthStateListener(authListener);
+            mAuth.removeAuthStateListener(authListener);
         }
     }
 }
