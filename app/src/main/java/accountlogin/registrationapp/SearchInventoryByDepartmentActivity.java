@@ -35,8 +35,6 @@ public class SearchInventoryByDepartmentActivity extends AppCompatActivity {
     //Database References
     private DatabaseReference myRef;
     private DatabaseReference AisleBayShelfRef;
-    private DatabaseReference AisleBayRef;
-    private DatabaseReference ShelfRef;
     private DatabaseReference ABS;
     private String userID;
 
@@ -108,7 +106,6 @@ public class SearchInventoryByDepartmentActivity extends AppCompatActivity {
                     if (myDeptArr[0].equals(currentDept)){
                         String currentDeptProd = "Department: " + myDeptArr[0] + " Product: " + myDeptArr[1];
                         currentDeptProductInfo.add(currentDeptProd);
-                        //Log.i("tcurrentDeptProd ", currentDeptProd);
                     }
                 }
                 /*===Regenerate the Listview & create it with Products that match current Dept Selected====*/
@@ -129,16 +126,13 @@ public class SearchInventoryByDepartmentActivity extends AppCompatActivity {
         /*======= Aisle DB Reference =======*/
         AisleBayShelfRef = mFirebaseDatabase.getReference().child(userID);
         AisleBayShelfRef.addValueEventListener(new ValueEventListener() {
-
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 deptString = "";
                 dept_spinnerValues = new ArrayList<String>();
                 for(DataSnapshot data: dataSnapshot.getChildren()) {
-                    /*=== If User has an Existing Aisle Entry in the Database ===*/
                     if (data.getKey().equals("deptNames") && !data.getValue().toString().trim().equals("")) {
                         deptString = data.getValue().toString();
-                        Log.i("bCurrentdeptnames: " , data.getValue().toString());
                     }
                 }
                 createDeptSpinner();

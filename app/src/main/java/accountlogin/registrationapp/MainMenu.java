@@ -65,7 +65,7 @@ public class MainMenu extends AppCompatActivity {
 
         search_inv_btn = (Spinner)findViewById(R.id.search_inv_btn);
 
-        String searchInventoryBy = "Search Inventory, Location, Department, Keyword";
+        final String searchInventoryBy = "Search Inventory, Location, Department, Keyword";
         String[] fillSpinner = searchInventoryBy.split("\\s*,\\s*");
         ArrayList<String> inventoryValues = new ArrayList<>();
         for (int i = 0; i < fillSpinner.length; i++) {
@@ -87,6 +87,7 @@ public class MainMenu extends AppCompatActivity {
                     Intent intent = new Intent(MainMenu.this, SearchInventoryByDepartmentActivity.class);
                     startActivity(intent);
                 }
+                search_inv_btn.setSelection(0);
             }
 
             @Override
@@ -145,6 +146,13 @@ public class MainMenu extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+       acct_info_btn.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View v) {
+               Intent intent = new Intent(MainMenu.this, Main2Activity.class);
+               startActivity(intent);
+           }
+       });
 
 
     }

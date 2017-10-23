@@ -8,7 +8,7 @@
 
 
     <Button
-        android:id="@+id/add_product_btn"
+        android:id="@+id/save_changes_btn"
         android:layout_width="199dp"
         android:layout_height="50dp"
         android:layout_marginBottom="33dp"
@@ -215,8 +215,8 @@
         android:layout_height="125dp"
         tools:layout_constraintRight_creator="1"
         tools:layout_constraintBottom_creator="1"
-        app:layout_constraintBottom_toTopOf="@+id/add_product_btn"
-        app:layout_constraintRight_toRightOf="@+id/add_product_btn"
+        app:layout_constraintBottom_toTopOf="@+id/save_changes_btn"
+        app:layout_constraintRight_toRightOf="@+id/save_changes_btn"
         android:layout_marginBottom="8dp"
         android:layout_marginRight="-62dp"
         tools:layout_editor_absoluteY="351dp"

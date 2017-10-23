@@ -139,7 +139,6 @@ public class SearchInventoryActivity extends AppCompatActivity {
                         /*=== Load Product info into the appropriate Aisle Spinner thats selected ===*/
                         String currentAisleBS = "Location: " + myAisleArr[0] + " Product: " + myAisleArr[3];
                         currentAisleProductInfo.add(currentAisleBS);
-                        Log.i("tcurrentTest", myAisleArr[0] +" "+ myAisleArr[3]);
                     }
                 }
                     /*===Regenerate the Listview & create it with Products that match Aisle ====*/
@@ -270,23 +269,11 @@ public class SearchInventoryActivity extends AppCompatActivity {
                     /*=== If User has an Existing Aisle Entry in the Database ===*/
                     if (data.getKey().equals("aisles") && !data.getValue().toString().trim().equals("")) {
                         aisleChecker = data.getValue().toString();
-                       // Log.i("mylogaislesZ ", data.getValue().toString());
-
-                    }
-                    if (data.getKey().equals("BaySetup") && !data.getValue().toString().trim().equals("")) {
-                        //Log.i("mylogbaysetupZ ", data.getValue().toString());
-                    }
-                    if (data.getKey().equals("ShelfSetup")) {
-                       // Log.i("mylogshelfZ ", data.getValue().toString());
-                    }
-                    if (data.getKey().equals("Products") && !data.getValue().toString().trim().equals("")) {
-                        //Log.i("mylogProducts ", data.getValue().toString());
                     }
                 }
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
             }
         });
         /*===== ShelfSetup DB reference to generate spinner ===*/
@@ -313,7 +300,6 @@ public class SearchInventoryActivity extends AppCompatActivity {
                 bayCheckerList = new ArrayList<>();
                 for (DataSnapshot data : dataSnapshot.getChildren()) {
                     bayCheckerList.add(data.child("bays").getValue().toString());
-                    Log.i("mylogbays ", data.child("bays").getValue().toString());
                 }
             }
 
@@ -328,7 +314,7 @@ public class SearchInventoryActivity extends AppCompatActivity {
         aisle_spinner = (Spinner) findViewById(R.id.spinner0);
         aisle_spinnerValues = new ArrayList<>(); //ensures spinner values wont duplicate
         if (Integer.parseInt(aisleChecker) < 0) {
-            Log.i("Checking Aisle in DB: ", "There's no value!");
+           // Log.i("Checking Aisle in DB: ", "There's no value!");
         } else { //Generate Spinner
             for (int i = 0; i < Integer.parseInt(aisleChecker); i++) {
                 String x = String.valueOf(i);
