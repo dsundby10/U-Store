@@ -3,17 +3,14 @@ package accountlogin.registrationapp;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -27,13 +24,13 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class SearchInventoryActivity extends AppCompatActivity {
    //Layout Variables
-    Spinner aisle_spinner, bay_spinner, shelf_spinner, dept_spinner;
+    Spinner aisle_spinner, bay_spinner, shelf_spinner;
     ListView listView;
     CheckBox checkBox0, checkBox1, checkBox2;
+    Button main_menu_btn;
 
     //Firebase Variables
     private FirebaseDatabase mFirebaseDatabase;
@@ -66,11 +63,16 @@ public class SearchInventoryActivity extends AppCompatActivity {
     int currentAisleSpinner = 0;
     int currentBaySpinner = 0;
     int currentShelfSpinner = 0;
+    ArrayList<String> aisleCheckerList = new ArrayList<String>();
+    ArrayList<String> bayCheckerListz = new ArrayList<String>();
+
+    ArrayList<String> allABS = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_inventory);
+        setTitle("Search Inventory: Location");
         Intent intent = getIntent();
 
         //Firebase initialization
@@ -81,6 +83,7 @@ public class SearchInventoryActivity extends AppCompatActivity {
         userID = user.getUid();
 
         //variable initialization
+        main_menu_btn = (Button)findViewById(R.id.view_layout_btn);
         aisle_spinner = (Spinner) findViewById(R.id.spinner0);
         bay_spinner = (Spinner) findViewById(R.id.spinner1);
         shelf_spinner = (Spinner) findViewById(R.id.spinner2);
@@ -106,6 +109,10 @@ public class SearchInventoryActivity extends AppCompatActivity {
         ABS.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                if(!this.getClass().equals(SearchInventoryActivity.class)){
+                    Log.i("REMOVING ProductRef", "");
+                    ABS.removeEventListener(this);
+                }
                 productChecker = new ArrayList<String>();
                 allABSProductInfo = "";
                 for (DataSnapshot data : dataSnapshot.getChildren()) {
@@ -155,7 +162,6 @@ public class SearchInventoryActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 currentBaySpinner = position;
-                createShelfSpinner();
                 String findBay = "";
                 String[] myBayArr;
                 currentBayProductInfo = new ArrayList<String>();
@@ -165,13 +171,14 @@ public class SearchInventoryActivity extends AppCompatActivity {
                     if (Integer.parseInt(myBayArr[0])==currentAisleSpinner && Integer.parseInt(myBayArr[1]) == currentBaySpinner) {
                         String currentABayS = "Location: " + myBayArr[0] + myBayArr[1] +" Product: " + myBayArr[3];
                         currentBayProductInfo.add(currentABayS);
-                        Log.i("tcurrentBay", myBayArr[0] + myBayArr[1] + myBayArr[3]);
+                       // Log.i("tcurrentBay", myBayArr[0] + myBayArr[1] + myBayArr[3]);
                     }
                 }
                 /*===Regenerate the Listview & create it with Products that match Aisle bay ====*/
                 listView = (ListView)findViewById(R.id.listviewX);
                 ArrayAdapter arrayAdapter = new ArrayAdapter(SearchInventoryActivity.this,android.R.layout.simple_list_item_1,currentBayProductInfo);
                 listView.setAdapter(arrayAdapter);
+                createShelfSpinner();
             }
 
             @Override
@@ -195,7 +202,7 @@ public class SearchInventoryActivity extends AppCompatActivity {
                     if (Integer.parseInt(myShelfArr[0])==currentAisleSpinner && Integer.parseInt(myShelfArr[1]) == currentBaySpinner && Integer.parseInt(myShelfArr[2]) == currentShelfSpinner) {
                         String currentABShelf ="Location: "+ myShelfArr[0] + " "+ myShelfArr[1] + " "+ myShelfArr[2] + " Product: "+ myShelfArr[3];
                         currentShelfProductInfo.add(currentABShelf);
-                        Log.i("tcurrentBay", myShelfArr[0] + " "+ myShelfArr[1] + " "+ myShelfArr[2] + " "+ myShelfArr[3]);
+                       // Log.i("tcurrentBay", myShelfArr[0] + " "+ myShelfArr[1] + " "+ myShelfArr[2] + " "+ myShelfArr[3]);
                     }
                 }
                 /*===Regenerate the Listview & create it with Products that match Aisle bay shelf====*/
@@ -281,9 +288,28 @@ public class SearchInventoryActivity extends AppCompatActivity {
         ShelfRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                if(!this.getClass().equals(SearchInventoryActivity.class)){
+                    Log.i("REMOVING ABS LISTENER!", "");
+                    ABS.removeEventListener(this);
+                }
+                int count  = 0;
+                aisleCheckerList = new ArrayList<String>();
+                bayCheckerListz = new ArrayList<String>();
                 shelfCheckerList = new ArrayList<String>();
+                allABS = new ArrayList<String>();
                 for (DataSnapshot data : dataSnapshot.getChildren()) {
+                    String a = data.child("aisle_num").getValue().toString();
+                    String b = data.child("bay_num").getValue().toString();
+                    String s = data.child("num_of_shelves").getValue().toString();
+
+                    aisleCheckerList.add(data.child("aisle_num").getValue().toString());
+                    bayCheckerListz.add(data.child("bay_num").getValue().toString());
                     shelfCheckerList.add(data.child("num_of_shelves").getValue().toString());
+
+                    allABS.add(a + "¿" + b + "¿" + s);
+
+                    Log.i("zxo: shelfCheck: ", allABS.get(count));
+                    count++;
                 }
             }
 
@@ -305,6 +331,15 @@ public class SearchInventoryActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+        main_menu_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(SearchInventoryActivity.this, MainMenu.class);
+                finish(); //testing
+                startActivity(intent);
+
             }
         });
     }
@@ -349,25 +384,24 @@ public class SearchInventoryActivity extends AppCompatActivity {
     public void createShelfSpinner(){
         String currentShelf = "";
         shelf_spinner = (Spinner)findViewById(R.id.spinner2);
-        currentAisleSpinner = aisle_spinner.getSelectedItemPosition();
-        currentBaySpinner = bay_spinner.getSelectedItemPosition();
+        String crntA = aisle_spinner.getSelectedItem().toString();
+        String crntB= bay_spinner.getSelectedItem().toString();
+        Log.i("xcv: CrntAisleBay:", crntA+ " "+ crntB);
 
-        shelf_spinnerValues = new ArrayList<>();
-        for (int i = 0; i <= currentAisleSpinner; i++) {
-            for (int j = 0; j <= currentBaySpinner; j++) {
-                if (currentAisleSpinner == i && currentBaySpinner == j){
-                    currentShelf = shelfCheckerList.get(j);
-                }
+        String abshold = "";
+        String[] absArr;
+        for (int i = 0; i < allABS.size(); i++) {
+            abshold = allABS.get(i);
+            absArr = abshold.split("¿");
+            if (absArr[0].equals(crntA) && absArr[1].equals(crntB)){
+                currentShelf = absArr[2];
+                Log.i("xcv:SHELFCURRRENT", currentShelf);
             }
         }
-        if (Integer.parseInt(currentShelf)==0){
-            shelf_spinnerValues.add(String.valueOf(0));
-        }else{
-            for (int i = 0; i < Integer.parseInt(currentShelf) ; i++) {
-                shelf_spinnerValues.add(String.valueOf(i));
-            }
+            shelf_spinnerValues = new ArrayList<>();
+        for (int i = 0; i < Integer.parseInt(currentShelf) ; i++) {
+            shelf_spinnerValues.add(String.valueOf(i));
         }
-
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<>
                 (this, android.R.layout.simple_spinner_item, shelf_spinnerValues);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);

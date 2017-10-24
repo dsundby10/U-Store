@@ -6,7 +6,7 @@
     android:orientation="vertical"
     tools:context="accountlogin.registrationapp.StoreLayoutActivity"
     android:weightSum="1">
-    <LinearLayout
+  <!--  <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -48,7 +48,7 @@
             android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.21" />
-    </LinearLayout>
+    </LinearLayout>-->
 
 
     <TextView

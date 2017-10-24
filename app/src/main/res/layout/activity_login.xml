@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/appBackgroundColor"
     tools:context="accountlogin.registrationapp.LoginActivity">
-    <!-- android:background="@color/colorPrimaryDark"-->
+
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
@@ -15,14 +15,14 @@
         android:padding="@dimen/activity_horizontal_margin">
 
 
-        <ImageView
+       <!-- <ImageView
             android:layout_width="@dimen/logo_w_h"
             android:layout_height="@dimen/logo_w_h"
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="30dp"
             android:src="@mipmap/ic_launcher"
             android:contentDescription=""
-            tools:ignore="ContentDescription" />
+            tools:ignore="ContentDescription" />-->
 
 
         <EditText
@@ -35,8 +35,6 @@
             android:textColor="@color/editTextColor"
             android:textColorHint="@color/editTextHintColor"/>
 
-
-
         <EditText
             android:id="@+id/password"
             android:layout_width="fill_parent"
@@ -46,9 +44,6 @@
             android:inputType="textPassword"
             android:textColor="@color/editTextColor"
             android:textColorHint="@color/editTextHintColor" />
-
-
-        <!-- Login Button -->
 
         <Button
             android:id="@+id/btn_login"

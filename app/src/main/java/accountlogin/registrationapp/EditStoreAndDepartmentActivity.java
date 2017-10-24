@@ -84,8 +84,6 @@ public class EditStoreAndDepartmentActivity extends AppCompatActivity {
                 for(DataSnapshot data: dataSnapshot.getChildren()) {
                     if (data.getKey().equals("deptNames")){
                         deptNamesString = data.getValue().toString();
-                        //deptListArray = deptListString.split("\\s*,\\s*");
-                        Log.i("zCurrentDept Names ", data.getValue().toString());
                     }
                 }
                 /*====Update both spinner values ===== */
@@ -109,7 +107,6 @@ public class EditStoreAndDepartmentActivity extends AppCompatActivity {
                 deptHolder="";
                 String addDeptString = add_dept_txt.getText().toString();
                 String[] addToDeptArr = deptNamesString.split("\\s*,\\s*");
-                //addToDeptArr = deptNamesString.split("\\s*,\\s*");
                 count = 0;
                 //compare the addDeptTxt with each already established Department
                 ArrayList<String> deptArrList = new ArrayList<>();

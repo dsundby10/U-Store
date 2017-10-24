@@ -3,17 +3,14 @@ package accountlogin.registrationapp;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -28,6 +25,7 @@ import java.util.ArrayList;
 public class SearchInventoryByDepartmentActivity extends AppCompatActivity {
     Spinner dept_spinner;
     ListView listView;
+    Button main_menu_btn;
     //Firebase Variables
     private FirebaseDatabase mFirebaseDatabase;
     private FirebaseAuth mAuth;
@@ -53,13 +51,17 @@ public class SearchInventoryByDepartmentActivity extends AppCompatActivity {
         setContentView(R.layout.activity_search_inventory_by_department);
         setTitle("Search by Department");
         Intent intent = getIntent();
+
         dept_spinner = (Spinner)findViewById(R.id.dept_spinner);
+        main_menu_btn = (Button)findViewById(R.id.view_layout_btn);
+
         //Firebase initialization
         mAuth = FirebaseAuth.getInstance();
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         myRef = mFirebaseDatabase.getReference();
         final FirebaseUser user = mAuth.getCurrentUser();
         userID = user.getUid();
+
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -76,6 +78,10 @@ public class SearchInventoryByDepartmentActivity extends AppCompatActivity {
         ABS.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                if(!this.getClass().equals(SearchInventoryByDepartmentActivity.class)){
+                    Log.i("REMOVING ABS LISTENER!", "");
+                    ABS.removeEventListener(this);
+                }
                 productChecker = new ArrayList<String>();
                 deptProductInfo = "";
                 for (DataSnapshot data : dataSnapshot.getChildren()) {
@@ -86,11 +92,33 @@ public class SearchInventoryByDepartmentActivity extends AppCompatActivity {
                     productChecker.add(deptProductInfo);
                 }
             }
+
             @Override
             public void onCancelled(DatabaseError databaseError) {
+
             }
         });
 
+        /*======= Aisle DB Reference =======*/
+        AisleBayShelfRef = mFirebaseDatabase.getReference().child(userID);
+        AisleBayShelfRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                //deptString = "";
+                dept_spinnerValues = new ArrayList<String>();
+                for(DataSnapshot data: dataSnapshot.getChildren()) {
+                    if (data.getKey().equals("deptNames") && !data.getValue().toString().trim().equals("")) {
+                        deptString = data.getValue().toString();
+                        createDeptSpinner(deptString);
+                    }
+                }
+
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
         /*=====Department Spinner Listner =====*/
         dept_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -113,55 +141,44 @@ public class SearchInventoryByDepartmentActivity extends AppCompatActivity {
                     listView = (ListView) findViewById(R.id.listView);
                     ArrayAdapter arrayAdapter = new ArrayAdapter(SearchInventoryByDepartmentActivity.this, android.R.layout.simple_list_item_1, currentDeptProductInfo);
                     listView.setAdapter(arrayAdapter);
+                } else {
+                    currentDeptProductInfo.add("No Products To Display For This Department!");
+                    listView = (ListView) findViewById(R.id.listView);
+                    ArrayAdapter emptyAdapter = new ArrayAdapter(SearchInventoryByDepartmentActivity.this, android.R.layout.simple_list_item_1, currentDeptProductInfo);
+                    listView.setAdapter(emptyAdapter);
                 }
-
             }
-
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
 
             }
         });
+        main_menu_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(SearchInventoryByDepartmentActivity.this, MainMenu.class);
 
-        /*======= Aisle DB Reference =======*/
-        AisleBayShelfRef = mFirebaseDatabase.getReference().child(userID);
-        AisleBayShelfRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                deptString = "";
-                dept_spinnerValues = new ArrayList<String>();
-                for(DataSnapshot data: dataSnapshot.getChildren()) {
-                    if (data.getKey().equals("deptNames") && !data.getValue().toString().trim().equals("")) {
-                        deptString = data.getValue().toString();
-                    }
-                }
-                createDeptSpinner();
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
+                startActivity(intent);
 
             }
         });
-
-
-
     }
-/*===Generate Dept Spinner Values ====*/
-public void createDeptSpinner() {
-    dept_spinner = (Spinner)findViewById(R.id.dept_spinner);
-    dept_spinnerValues = new ArrayList<>();
-    deptArr = deptString.split("\\s*,\\s*");
+    /*===Generate Dept Spinner Values ====*/
+    public void createDeptSpinner(String deptString) {
+        dept_spinner = (Spinner)findViewById(R.id.dept_spinner);
+        dept_spinnerValues = new ArrayList<>();
+        deptArr = deptString.split("\\s*,\\s*");
 
-    //Generate Spinner
-    for (int i = 0; i < deptArr.length; i++) {
+        //Generate Spinner
+        for (int i = 0; i < deptArr.length; i++) {
         String x = String.valueOf(i);
         dept_spinnerValues.add(deptArr[i]);
-    }
-    ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>
+        }
+            ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>
             (this, android.R.layout.simple_spinner_item,  dept_spinnerValues);
-    dataAdapter.setDropDownViewResource
+            dataAdapter.setDropDownViewResource
             (android.R.layout.simple_spinner_dropdown_item);
-    dept_spinner.setAdapter(dataAdapter);
+            dept_spinner.setAdapter(dataAdapter);
     }
 
     @Override

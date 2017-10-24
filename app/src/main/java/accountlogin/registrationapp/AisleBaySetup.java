@@ -1,9 +1,12 @@
 package accountlogin.registrationapp;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -25,12 +28,14 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
 
 public class AisleBaySetup extends AppCompatActivity {
     private static final String TAG = "Information: ";
+    int dialogChecker = 0;
     EditText aisle_creation, gen_bay_creation, adv_bay_creation;
     Button aisles_creation_btn, gen_bay_btn, adv_bay_btn, getAssign_Shelving_Btn, getMainMenu_Btn, getView_Layout_Btn;
     ListView listView;
@@ -52,28 +57,40 @@ public class AisleBaySetup extends AppCompatActivity {
     String advBayCounter ="";
     ArrayList<String> advBayCounterList = new ArrayList<>();
 
-    //add firebase variables
+
+    ArrayList<String> aisleCheckerList = new ArrayList<>();
+    ArrayList<String> bayCheckerListz = new ArrayList<String>();
+    ArrayList<String> shelfCheckerList = new ArrayList<>();
+    ArrayList<String> allABS = new ArrayList<>();
+
+
+    //Firebase Variables & References
     private FirebaseDatabase mFirebaseDatabase;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private DatabaseReference myRef;
     private DatabaseReference AisleBayRef;
     private DatabaseReference AisleRef;
+    private DatabaseReference ShelfRef;
     private String userID;
 
-
-
+    ArrayList<String> aisleBayToAdd = new ArrayList<>();
+    ArrayList<String> aisleBayToCheck = new ArrayList<>();
+    String[] splitter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_aisle_bay_setup);
-
+        setTitle("Part 2: Aisle & Bay Setup");
         //Prevents keyboard from auto popping up
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         Intent intent = getIntent();
 
-       // listView = (ListView)findViewById(R.id.listView);
+        //Input checker to verify only integers have been entered
+        regexStr  = "^[0-9]*$";
+
+        listView = (ListView)findViewById(R.id.listView);
 
         //EditTexts
         aisle_creation = (EditText)findViewById(R.id.aisle_creation);
@@ -99,8 +116,7 @@ public class AisleBaySetup extends AppCompatActivity {
         FirebaseUser user = mAuth.getCurrentUser();
         userID = user.getUid();
 
-        //Input checker to verify only integers have been entered
-        regexStr  = "^[0-9]*$";
+
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -118,7 +134,9 @@ public class AisleBaySetup extends AppCompatActivity {
                 genBayChecker = "A";
                 aislebayshelfChecker = 0;
                 aisleChecker = "B";
-
+                String ValueHold = "";
+                String place = "";
+                listViewArray = new ArrayList<String>();
                 currentAisleBayShelfList = new ArrayList<String>();
                 aisle_creation = (EditText)findViewById(R.id.aisle_creation);
                 for(DataSnapshot data: dataSnapshot.getChildren()) {
@@ -139,7 +157,6 @@ public class AisleBaySetup extends AppCompatActivity {
                     }
                     if (data.getKey().equals("GenBay") && !data.getValue().toString().trim().equals("")) {
                         genBayChecker = data.getValue().toString();
-                        Log.i("Check genBayChecker: ", genBayChecker +" Real Data " + data.getValue().toString());
                     }
                     if (data.getKey().equals("ShelfSetup")) {
                         Log.i("Check Shelf: ", data.getKey() + " Val: " + data.getValue().toString());
@@ -148,9 +165,16 @@ public class AisleBaySetup extends AppCompatActivity {
                     }
                     if (data.getKey().equals("AdvBayCounter") && !data.getValue().toString().trim().equals("")) {
                         advBayCounter = data.getValue().toString();
-                       // Log.i("AdvBayCounter: " , advBayCounter);
                     }
+                    if (data.getKey().equals("BaySetup")&& !data.getValue().toString().trim().equals("")){
+                        ValueHold = data.getValue().toString();
+                    }
+                    place = ValueHold;
                 }
+                    //Format ValueHold with combineAisleBay method
+                    listViewArray = combineAisleBay(place);
+                ArrayAdapter arrayAdapter = new ArrayAdapter(AisleBaySetup.this,android.R.layout.simple_list_item_1,listViewArray);
+                listView.setAdapter(arrayAdapter);
                 if (aisleChecker.equals("B")){
                     gen_bay_btn.setVisibility(View.GONE);
                     adv_bay_btn.setVisibility(View.GONE);
@@ -166,56 +190,118 @@ public class AisleBaySetup extends AppCompatActivity {
         });
 
         /*======== AisleBay DB Reference =========*/
+        //AisleBayRef = mFirebaseDatabase.getReference().child(userID).child("BaySetup");
+        //AisleBayRef.orderByChild("aisle").addValueEventListener(new ValueEventListener() {
         AisleBayRef = mFirebaseDatabase.getReference().child(userID).child("BaySetup");
-        AisleBayRef.orderByChild("BaySetup").addValueEventListener(new ValueEventListener() {
-            String bayHold = "";
+        AisleBayRef.addValueEventListener(new ValueEventListener() {
+            String spacer = "\t\t\t\t\t\t";
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 listViewArray = new ArrayList<String>();
+                String aisleHold = "";
+                String bayHold = "";
                 for(DataSnapshot data: dataSnapshot.getChildren()) {
-                        bayHold = data.getValue().toString();
-                        //listViewArray.add(bayHold); //will be used for the listView
+                    bayHold = data.getValue().toString();
                 }
             }
+
+
             @Override
             public void onCancelled(DatabaseError databaseError) {
 
             }
         });
-       //ArrayAdapter arrayAdapter = new ArrayAdapter(AisleBaySetup.this,android.R.layout.simple_list_item_1,listViewArray);
-       //listView.setAdapter(arrayAdapter);
-
 
         /*---------Aisles Button Listener----*/
         aisles_creation_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                String aisle = aisle_creation.getText().toString();
-                if (aisle.trim().matches(regexStr)){
-                    aislesInt=0;
-                    aislesInt = Integer.parseInt(aisle);
-                     /*=== assign aisles to the database ==== */
-                    myRef.child(userID).child("aisles").setValue(aisle);
-                    int counter = 0;
-                    for (int i = 0; i < aislesInt; i++) {
-                        if (i == 0) { //Remove all Preexisting data entries for AisleBays & ShelfSetup
-                            myRef.child(userID).child("BaySetup").removeValue();
-                            myRef.child(userID).child("ShelfSetup").removeValue();
-                            myRef.child(userID).child("GenBay").removeValue();
-                        }
-                        myRef.child(userID).child("BaySetup").child("AisleBays" + counter).child("aisle").setValue(String.valueOf(i));
-                        myRef.child(userID).child("BaySetup").child("AisleBays" + counter).child("bays").setValue(String.valueOf(0));
-                        counter++;
+                final ListView listxView = (ListView)findViewById(R.id.listView);
+                listView = listxView;
+                //String aisle = "";
+                dialogChecker=0;
+                if (aisleChecker!="B"){
+                    AlertDialog.Builder builder;
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        builder = new AlertDialog.Builder(aisles_creation_btn.getContext(), android.R.style.Theme_Material_Dialog_Alert);
+                    } else {
+                        builder = new AlertDialog.Builder(aisles_creation_btn.getContext());
                     }
-                    //Set hint back to original color & text
-                    aisle_creation.setHintTextColor(getResources().getColor(R.color.editTextHintColor));
-                    aisle_creation.setHint("Number of Aisles in Store");
+                    builder.setTitle("Aisle Already Exists")
+                            .setMessage("Warning! Updating your number of Aisles will delete all Aisle/Bay/Shelf data, are you sure you want to proceed?")
+                            /*==== delete data ===*/
+                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    String aisle = aisle_creation.getText().toString();
+                                    if (aisle.trim().matches(regexStr)) {
+                                        aislesInt = 0;
+                                        aislesInt = Integer.parseInt(aisle);
+                                        /*=== assign aisles to the database ==== */
+                                        myRef.child(userID).child("aisles").setValue(aisle);
+                                        int counter = 0;
+                                        for (int i = 0; i < aislesInt; i++) {
+                                            if (i == 0) { //Remove all Preexisting data entries for AisleBays & ShelfSetup
+                                                myRef.child(userID).child("BaySetup").removeValue();
+                                                myRef.child(userID).child("ShelfSetup").removeValue();
+                                                myRef.child(userID).child("GenBay").removeValue();
+                                            }
+                                                myRef.child(userID).child("BaySetup").child("AisleBays" + counter).child("aisle").setValue(String.valueOf(i));
+                                                myRef.child(userID).child("BaySetup").child("AisleBays" + counter).child("bays").setValue(String.valueOf(0));
+                                                counter++;
+
+                                        }
+                                       startActivity(new Intent (AisleBaySetup.this,AisleBaySetup.class));
+                                        //Set hint back to original color & text
+                                        aisle_creation.setHintTextColor(getResources().getColor(R.color.editTextHintColor));
+                                        aisle_creation.setHint("Number of Aisles in Store");
+                                    } else {
+                                        //Set hint to standout more
+                                        aisle_creation.setText("");
+                                        aisle_creation.setHintTextColor(Color.RED);
+                                        aisle_creation.setHint("* Must be an Integer");
+                                    }
+
+                                }
+                            })
+                            /*==== dont delete data ===*/
+                            .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialogChecker = 2;
+                                    // do nothing
+                                }
+                            })
+                            .setIcon(android.R.drawable.ic_dialog_alert)
+                            .show();
+
+                    /*====Don't have any Aisle info in database yet ===*/
                 } else {
-                    //Set hint to standout more
-                    aisle_creation.setText("");
-                    aisle_creation.setHintTextColor(Color.RED);
-                    aisle_creation.setHint("* Must be an Integer");
+                    String aisle = aisle_creation.getText().toString();
+                    if (aisle.trim().matches(regexStr)) {
+                        aislesInt = 0;
+                        aislesInt = Integer.parseInt(aisle);
+                     /*=== assign aisles to the database ==== */
+                        myRef.child(userID).child("aisles").setValue(aisle);
+                        int counter = 0;
+                        for (int i = 0; i < aislesInt; i++) {
+                            if (i == 0) { //Remove all Preexisting data entries for AisleBays & ShelfSetup
+                                myRef.child(userID).child("BaySetup").removeValue();
+                                myRef.child(userID).child("ShelfSetup").removeValue();
+                                myRef.child(userID).child("GenBay").removeValue();
+                            }
+                            myRef.child(userID).child("BaySetup").child("AisleBays" + counter).child("aisle").setValue(String.valueOf(i));
+                            myRef.child(userID).child("BaySetup").child("AisleBays" + counter).child("bays").setValue(String.valueOf(0));
+                            counter++;
+                        }
+
+                        //Set hint back to original color & text
+                        aisle_creation.setHintTextColor(getResources().getColor(R.color.editTextHintColor));
+                        aisle_creation.setHint("Number of Aisles in Store");
+                    } else {
+                        //Set hint to standout more
+                        aisle_creation.setText("");
+                        aisle_creation.setHintTextColor(Color.RED);
+                        aisle_creation.setHint("* Must be an Integer");
+                    }
                 }
             }
         });
@@ -234,7 +320,6 @@ public class AisleBaySetup extends AppCompatActivity {
 
                     //Assign GenBay to database to for value checking in Adv Bay
                     myRef.child(userID).child("GenBay").setValue(genBay);
-
 
                     /*======Generate BaySetup In DB =====*/
                     int counter = 0;
@@ -264,7 +349,8 @@ public class AisleBaySetup extends AppCompatActivity {
                             myRef.child(userID).child("ShelfSetup").child(a+"AisleID" + j).child("num_of_shelves").setValue(String.valueOf(0));
                         }
                     }
-
+                    ArrayAdapter arrayAdapter = new ArrayAdapter(AisleBaySetup.this,android.R.layout.simple_list_item_1,listViewArray);
+                    listView.setAdapter(arrayAdapter);
                 //Set hint back to original color & text
                 aisle_creation.setHintTextColor(getResources().getColor(R.color.editTextHintColor));
                 aisle_creation.setText("Number of Aisles in Store");
@@ -279,11 +365,9 @@ public class AisleBaySetup extends AppCompatActivity {
                 /*Check if theres a different value than the preassigned value of 'A' for the genBay Creation
                  *Meaning the user assigned a general bay value & now is trying to assign advanced values
                  *so we delete all the already generated values and replace them with adv bay values. */
-
                 int counter = 0;
                 if (!genBayChecker.equals("A")) {
                     //Remove all Preexisting data entries for AisleBays & ShelfSetup
-                    Log.i("genBayChcker VALUE: ",genBayChecker );
                     myRef.child(userID).child("GenBay").removeValue();
                     myRef.child(userID).child("ShelfSetup").removeValue();
                     myRef.child(userID).child("BaySetup").removeValue();
@@ -297,45 +381,44 @@ public class AisleBaySetup extends AppCompatActivity {
                         myRef.child(userID).child("BaySetup").child("AisleBays" + counter).child("bays").setValue(String.valueOf(0));
                         counter++;
                     }
+                    ArrayAdapter arrayAdapter = new ArrayAdapter(AisleBaySetup.this,android.R.layout.simple_list_item_1,listViewArray);
+                    listView.setAdapter(arrayAdapter);
                 }
-                   // String advString = advBayCounter;
-                   // Log.i("AdvBayCounter STring ", advString);
+
                     //Spinner Initialization
                     getAisle_Spinner = (Spinner) findViewById(R.id.aisle_num_spinner);
-                    String aisleSpinnerTxt = getAisle_Spinner.getSelectedItem().toString();
+                    final String aisleSpinnerTxt = getAisle_Spinner.getSelectedItem().toString();
                     currentSpinnerInt = Integer.parseInt(aisleSpinnerTxt);
                     //EditText value
-                    String advBay = adv_bay_creation.getText().toString();
+                    final String advBay = adv_bay_creation.getText().toString();
                     /* Assigning a single bay value to a single aisle value in the DB to "BaySetup" */
                     myRef.child(userID).child("BaySetup").child("AisleBays" + currentSpinnerInt).child("aisle").setValue(aisleSpinnerTxt);
                     myRef.child(userID).child("BaySetup").child("AisleBays" + currentSpinnerInt).child("bays").setValue(advBay);
-                   // myRef.child(userID).child("AdvBayCounter").setValue(String.valueOf(currentSpinnerInt));
-                    String myADV = advBayCounter;
 
-                /*Come back to Later -- Trying to make it so they have to complete bay setup to advance to mainmenu / shelving*/
-             //  advBayCounterList.add(currentSpinnerInt, advBayCounter);
-               // for (int i = 0; i < advBayCounterList.size(); i++) {
-               //     Log.i("AdvBayCounter List " , advBayCounterList.get(i));
-              //  }
+                String aHolder = myRef.child(userID).child("BaySetup").child("AisleBays" + currentSpinnerInt).child("aisle").child(aisleSpinnerTxt).toString();
+                String bHolder = myRef.child(userID).child("BaySetup").child("AisleBays" + currentSpinnerInt).child("bays").child(advBay).toString();
 
+
+                aisleBayToAdd = new ArrayList<>();
 
                 String a = "";
                 String alphabet = "abcdefghijklmnopqrstuvwxyz";
-                /*==== Auto - Generate Shelfs for this specific Aisle&Bay ====*/
+                /*==== Auto - Generate Shelves for this specific Aisle&Bay ====*/
                 for (int i = 0; i < Integer.parseInt(aisleSpinnerTxt) + 1; i++) {
                     String[] alphabetSplitter = alphabet.split("");
                     a = alphabetSplitter[i + 1].toString();
                     if (i == Integer.parseInt(aisleSpinnerTxt)) {
-                        Log.i("Its equals It equals!!", "kaskd");
                         for (int j = 0; j < Integer.parseInt(advBay); j++) {
                             myRef.child(userID).child("ShelfSetup").child(a + "AisleID" + j).setValue(String.valueOf(j));
+                            aisleBayToAdd.add(a+"AisleID"+j);
                             myRef.child(userID).child("ShelfSetup").child(a + "AisleID" + j).child("aisle_num").setValue(String.valueOf(i));
                             myRef.child(userID).child("ShelfSetup").child(a + "AisleID" + j).child("bay_num").setValue(String.valueOf(j));
                             myRef.child(userID).child("ShelfSetup").child(a + "AisleID" + j).child("num_of_shelves").setValue(String.valueOf(0));
-
                         }
                     }
                 }
+                ArrayAdapter arrayAdapter = new ArrayAdapter(AisleBaySetup.this,android.R.layout.simple_list_item_1,listViewArray);
+                listView.setAdapter(arrayAdapter);
             }
         });
         /*----AssignShelving Btn Listener------*/
@@ -361,7 +444,39 @@ public class AisleBaySetup extends AppCompatActivity {
                 startActivity(intent3);
             }
         });
+    }
+    public ArrayList<String> combineAisleBay (String ABstring){
+        String newString = ABstring.replaceAll("[a-zA-Z]","");
+        String newestString = newString.replaceAll("[^a-zA-Z0-9]","");
+        String spacing = "\t\t\t\t\t";
+        ArrayList<String>tempbay = new ArrayList<>();
+        ArrayList<String>tempaisle = new ArrayList<>();
 
+        ArrayList<String>holdAisle = new ArrayList<>();
+        System.out.println("SXCnew " +newestString);
+        String aisleNew= "";
+        String bayNew= "";
+        String combine = "";
+        int x = 0;
+        int y = 1;
+        int z = 2;
+        String[] arrHold = new String[newestString.length()/3];
+        for (int i = 0; i < newestString.length()/3 ; i++) {
+            aisleNew = String.valueOf(newestString.charAt(z));
+            bayNew = String.valueOf(newestString.charAt(y));
+            x+=3;
+            y+=3;
+            z+=3;
+            combine =  spacing + "Aisles: " + aisleNew + spacing +"Bays: " + bayNew;
+            int checker = Integer.parseInt(aisleNew);
+            arrHold[checker] = combine;
+
+        }
+        for (int i = 0; i < arrHold.length; i++) {
+            holdAisle.add(arrHold[i]);
+        }
+
+        return holdAisle;
     }
 
     public void createSpinner() {

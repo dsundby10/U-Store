@@ -1,11 +1,14 @@
 package accountlogin.registrationapp;
 
 import android.annotation.SuppressLint;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -79,15 +82,17 @@ public class MainMenu extends AppCompatActivity {
         search_inv_btn.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (position == 1){
+                String currentPosition = search_inv_btn.getSelectedItem().toString();
+                if (currentPosition.equals("Department")) {
+                    Intent intent5 = new Intent(MainMenu.this, SearchInventoryByDepartmentActivity.class);
+                    startActivity(intent5);
+                }
+                if (currentPosition.equals("Location")){
                     Intent intent = new Intent(MainMenu.this, SearchInventoryActivity.class);
                     startActivity(intent);
                 }
-                if (position == 2) {
-                    Intent intent = new Intent(MainMenu.this, SearchInventoryByDepartmentActivity.class);
-                    startActivity(intent);
-                }
-                search_inv_btn.setSelection(0);
+
+               search_inv_btn.setSelection(0);
             }
 
             @Override
@@ -149,8 +154,28 @@ public class MainMenu extends AppCompatActivity {
        acct_info_btn.setOnClickListener(new View.OnClickListener() {
            @Override
            public void onClick(View v) {
-               Intent intent = new Intent(MainMenu.this, Main2Activity.class);
-               startActivity(intent);
+               AlertDialog.Builder builder;
+               if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                   builder = new AlertDialog.Builder(acct_info_btn.getContext(), android.R.style.Theme_Material_Dialog_Alert);
+               } else {
+                   builder = new AlertDialog.Builder(acct_info_btn.getContext());
+               }
+               builder.setTitle("Delete entry")
+                       .setMessage("Are you sure you want to delete this entry?")
+                       .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                           public void onClick(DialogInterface dialog, int which) {
+                               // continue with delete
+                           }
+                       })
+                       .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                           public void onClick(DialogInterface dialog, int which) {
+                               // do nothing
+                           }
+                       })
+                       .setIcon(android.R.drawable.ic_dialog_alert)
+                       .show();
+               //Intent intent = new Intent(MainMenu.this, Main2Activity.class);
+               //startActivity(intent);
            }
        });
 

@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -33,43 +32,74 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
-import java.util.List;
-
-
 
 public class AddInventory extends AppCompatActivity {
     private static final int RESULT_LOAD_IMAGE = 1;
     private static final int RESULT_TAKE_IMAGE = 2;
     static int PICTURE_OPTION = 0;
-    static List<String> arrMaxAisles = new ArrayList<>(); //place holder for the Array
-    static List<String> arrMaxBays = new ArrayList<>();
-    static int MAXAISLES = 0;
-    static String DEPTNAMES = "";
-    static String[] ARR_DEPTNAMES;
-    static String BAY_NUMBERS="";
+
     static int productCounter=0;
     EditText product_name, num_stock, product_id, product_desc;
     Spinner dept_spinner, aisle_spinner, bay_spinner, shelf_spinner;
-    Button add_product_btn, take_image_btn, upload_image_btn;
+    Button add_product_btn, take_image_btn, upload_image_btn, main_menu_btn;
     ImageView imageView;
+
+    /*-Aisle Spinner Vars-*/
+    String aisleChecker = "";
+    ArrayList<String> aisle_spinnerValues = new ArrayList<>();
+    ArrayList<String> aisleCheckerList = new ArrayList<>();
+    int currentAisleSpinner = 0;
+
+    /*-Bay Spinner Vars-*/
+    String bayChecker = "";
+    ArrayList<String> bay_spinnerValues = new ArrayList<>();
+    ArrayList<String> bayCheckerList = new ArrayList<>();
+    ArrayList<String> bayCheckerListz = new ArrayList<String>();
+    int currentBaySpinner = 0;
+
+    /*-Shelf Spinner Vars-*/
+    ArrayList<String> shelf_spinnerValues = new ArrayList<>();
+    ArrayList<String> shelfCheckerList = new ArrayList<>();
+    int currentShelfSpinner = 0;
+
+    ArrayList<String> allABS = new ArrayList<>();
+
+    /*-Dept Spinner Vars-*/
+    String deptString = "";
+    String[] deptArr;
+    ArrayList<String> dept_spinnerValues = new ArrayList<>();
+
+    //Place holders for the selected products current spinner values
+    String p_curAisle = "";
+    String p_curBay="";
+    String p_curShelf="";
+    String p_curDept="";
+    String p_curKey= "";
+    String imgPath="";
+    String p_curImg="";
+
 
     //Firebase Variables
     private FirebaseDatabase mFirebaseDatabase;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
+
+    //Firebase Database References
     private DatabaseReference myRef;
-    private DatabaseReference AisleBayShelfRef;
+    private DatabaseReference AisleRef;
     private DatabaseReference AisleBayRef;
+    private DatabaseReference ShelfRef;
+    private DatabaseReference ProductRef;
     private String userID;
 
     //Firebase Image StorageReference
     FirebaseStorage storage = FirebaseStorage.getInstance();
     StorageReference storageRef = storage.getReferenceFromUrl("gs://accountloginregistrationapp.appspot.com");
     StorageReference productImg;
-    String imagePath = "";
     Uri cur_ur;
     Bitmap cur_bitmap;
-    String imgPath = "";
+
+    int maxAisleCount = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,8 +107,8 @@ public class AddInventory extends AppCompatActivity {
         setContentView(R.layout.activity_add_inventory);
         final Intent intent = getIntent();
 
-        imageView = (ImageView) findViewById(R.id.imageView);
         //Variable initialization
+        imageView = (ImageView) findViewById(R.id.imageView);
         dept_spinner = (Spinner) findViewById(R.id.dept_spinner);
         aisle_spinner = (Spinner) findViewById(R.id.aisle_spinner);
         bay_spinner = (Spinner) findViewById(R.id.bay_spinner);
@@ -88,7 +118,7 @@ public class AddInventory extends AppCompatActivity {
         num_stock = (EditText) findViewById(R.id.num_stock);
         product_id = (EditText) findViewById(R.id.product_id);
         product_desc = (EditText) findViewById(R.id.product_desc);
-
+        main_menu_btn = (Button)findViewById(R.id.view_layout_btn);
         add_product_btn = (Button) findViewById(R.id.save_changes_btn);
         take_image_btn = (Button) findViewById(R.id.take_image_btn);
         upload_image_btn = (Button) findViewById(R.id.upload_image_btn);
@@ -111,51 +141,70 @@ public class AddInventory extends AppCompatActivity {
             }
         };
 
-        /*============Get Max Aisles & All Dept Names===========*/
-        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            ArrayList<String> DeptNamesList = new ArrayList<String>();
-            zAllUserData zInfo = new zAllUserData();
-
+           /*======= Pulling Aisle & Dept from DB=======*/
+        AisleRef = mFirebaseDatabase.getReference().child(userID);
+        AisleRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                zInfo.setNumAisles(dataSnapshot.child(userID).child("aisles").getValue(String.class));
-                MAXAISLES = Integer.parseInt(zInfo.getNumAisles());
+                deptString = "";
 
-                zInfo.setDeptNames(dataSnapshot.child(userID).child("deptNames").getValue(String.class));
-                DEPTNAMES = zInfo.getDeptNames();
-                ARR_DEPTNAMES = DEPTNAMES.split("\\s*,\\s*");
+                dept_spinnerValues = new ArrayList<String>();
+                for(DataSnapshot data: dataSnapshot.getChildren()) {
+                    /*=== If User has an Existing Aisle Entry in the Database ===*/
+                    if (data.getKey().equals("aisles") && !data.getValue().toString().trim().equals("")) {
+                        aisleChecker = data.getValue().toString();
+                        maxAisleCount = Integer.parseInt(aisleChecker);
+                    }
+                    createSpinner(maxAisleCount);
 
-                String deptHolder = "";
-                for (int i = 0; i < ARR_DEPTNAMES.length; i++) {
-                    deptHolder = ARR_DEPTNAMES[i].toString();
-                    DeptNamesList.add(deptHolder);
+                    if (data.getKey().equals("deptNames") && !data.getValue().toString().trim().equals("")) {
+                      deptString = data.getValue().toString();
+                    }
+                    createDeptSpinner();
                 }
-                ArrayAdapter deptAdp = new ArrayAdapter(AddInventory.this, android.R.layout.simple_spinner_dropdown_item, DeptNamesList);
-                dept_spinner.setAdapter(deptAdp);
             }
-
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
             }
         });
 
+        /*==== Pulling Bay Number out of "BaySetup" in the Database ===*/
         AisleBayRef = mFirebaseDatabase.getReference().child(userID).child("BaySetup");
-        AisleBayRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            ArrayList<String> arrayz = new ArrayList<>();
-
+        AisleBayRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                arrMaxAisles = new ArrayList<String>();
-                for (DataSnapshot childSnapShot : dataSnapshot.getChildren()) {
-                    String advAisle = (String) childSnapShot.child("aisle").getValue();
-                    String advBay = (String) childSnapShot.child("bays").getValue();
+                bayCheckerList = new ArrayList<>();
+                for (DataSnapshot data : dataSnapshot.getChildren()) {
+                    bayCheckerList.add(data.child("bays").getValue().toString());
+                }
 
-                    String advA = "ADVAisle: " + advAisle + "ADVBays: " + advBay;
-                    arrayz.add(advA);
-                    arrMaxAisles.add(advAisle);
-                    arrMaxBays.add(advBay);
-                    BAY_NUMBERS += advBay;
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+
+
+        ShelfRef = mFirebaseDatabase.getReference().child(userID).child("ShelfSetup");
+        ShelfRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                aisleCheckerList = new ArrayList<String>();
+                bayCheckerListz = new ArrayList<String>();
+                shelfCheckerList = new ArrayList<String>();
+
+                allABS = new ArrayList<String>();
+
+                for (DataSnapshot data : dataSnapshot.getChildren()) {
+                    String a = data.child("aisle_num").getValue().toString();
+                    String b = data.child("bay_num").getValue().toString();
+                    String s = data.child("num_of_shelves").getValue().toString();
+                    aisleCheckerList.add(a);
+                    bayCheckerListz.add(b);
+                    shelfCheckerList.add(s);
+                    //Add corresponding aisle bay shelves together to easily identify the shelf number
+                    allABS.add(a + "¿" + b + "¿" + s);
                 }
             }
 
@@ -164,92 +213,8 @@ public class AddInventory extends AppCompatActivity {
 
             }
         });
-        AisleBayShelfRef = mFirebaseDatabase.getReference().child(userID).child("ShelfSetup");
-        AisleBayShelfRef.addValueEventListener(new ValueEventListener() {
-            ArrayList<String> allAisles = new ArrayList<>();
-            ArrayList<String> allBays = new ArrayList<>();
-            ArrayList<String> allShelves = new ArrayList<>();
 
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot childSnapShot : dataSnapshot.getChildren()) {
-                    String aisleNum = (String) childSnapShot.child("aisle_num").getValue();
-                    String bayNum = (String) childSnapShot.child("bay_num").getValue();
-                    String shelfNum = (String) childSnapShot.child("num_of_shelves").getValue();
-                    allAisles.add(aisleNum);
-                    allBays.add(bayNum);
-                    allShelves.add(shelfNum);
-
-                }
-                ArrayAdapter arrayAdapter1 = new ArrayAdapter(AddInventory.this, android.R.layout.simple_spinner_dropdown_item, arrMaxAisles);
-                aisle_spinner.setAdapter(arrayAdapter1);
-
-                //Set Bay Spinner according to the specific Aisle Num Spinner Selected
-                aisle_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                    @Override
-                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                        int currentAisleSelected = position;
-                        currentAisleSelected = aisle_spinner.getSelectedItemPosition();
-                        int bayHolder = 0;
-                        ArrayList<String> currentNumBays = new ArrayList<String>();
-                        for (int i = 0; i < arrMaxAisles.size(); i++) {
-                            if (i == currentAisleSelected) {
-                                bayHolder = Integer.parseInt(arrMaxBays.get(i));
-                            }
-                        }
-                        for (int j = 0; j < bayHolder; j++) {
-                            currentNumBays.add(String.valueOf(j));
-                        }
-
-                        ArrayAdapter advBadp = new ArrayAdapter(AddInventory.this, android.R.layout.simple_spinner_dropdown_item, currentNumBays);
-                        bay_spinner.setAdapter(advBadp);
-                    }
-
-                    @Override
-                    public void onNothingSelected(AdapterView<?> parent) {
-                    }
-                });
-                bay_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                    ArrayList<String> currentShelfArr = new ArrayList<String>();
-
-                    @Override
-                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                        currentShelfArr = new ArrayList<String>();
-                        int currentBaySelected = position;
-                        int currentAisleSelected = aisle_spinner.getSelectedItemPosition();
-                        currentBaySelected = bay_spinner.getSelectedItemPosition();
-                        String currentShelf = "";
-                        for (int i = 0; i <= currentAisleSelected; i++) {
-                            for (int j = 0; j <= currentBaySelected; j++) {
-                                if (i == currentAisleSelected && j == currentBaySelected) {
-                                    currentShelf = allShelves.get(j);
-                                }
-                            }
-                        }
-                        int shelfCounter = Integer.parseInt(currentShelf);
-                        if (Integer.parseInt(currentShelf) == 0) {
-                            currentShelfArr.add(String.valueOf(0));
-                        } else {
-                            for (int i = 0; i < shelfCounter; i++) {
-                                currentShelfArr.add(String.valueOf(i));
-                            }
-                        }
-                        ArrayAdapter shelfAdp = new ArrayAdapter(AddInventory.this, android.R.layout.simple_spinner_dropdown_item, currentShelfArr);
-                        shelf_spinner.setAdapter(shelfAdp);
-                    }
-
-                    @Override
-                    public void onNothingSelected(AdapterView<?> parent) {
-
-                    }
-                });
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
+        /*===Take Image on click Listener ===*/
         take_image_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -257,12 +222,12 @@ public class AddInventory extends AppCompatActivity {
                 startActivityForResult(intent, RESULT_TAKE_IMAGE);
             }
         });
+        /*===Upload picture on click listener ===*/
         upload_image_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                 startActivityForResult(gallery, RESULT_LOAD_IMAGE);
-
             }
 
         });
@@ -271,6 +236,12 @@ public class AddInventory extends AppCompatActivity {
         add_product_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (product_name.getText().toString().trim().length() == 0){
+                    toastMessage("You must assign a name your product!");
+                } else {
+
+
+
 
                 String p_id = product_id.getText().toString();
                 String p_name = product_name.getText().toString();
@@ -280,8 +251,9 @@ public class AddInventory extends AppCompatActivity {
                 String currentAisleSpinner = aisle_spinner.getSelectedItem().toString();
                 String currentBaySpinner = bay_spinner.getSelectedItem().toString();
                 String currentShelfSpinner = shelf_spinner.getSelectedItem().toString();
-                String currentDeptSpinner = dept_spinner.getSelectedItem().toString();
 
+
+                String currentDeptSpinner = dept_spinner.getSelectedItem().toString();
 
                 String ProductKey = myRef.child(userID).child("Products").child("Product" + productCounter).push().getKey();
                 myRef.child(userID).child("Products").child(ProductKey).push().getKey();
@@ -293,8 +265,6 @@ public class AddInventory extends AppCompatActivity {
                 myRef.child(userID).child("Products").child(ProductKey).child("P_Aisle").setValue(currentAisleSpinner);
                 myRef.child(userID).child("Products").child(ProductKey).child("P_Bay").setValue(currentBaySpinner);
                 myRef.child(userID).child("Products").child(ProductKey).child("P_Shelf").setValue(currentShelfSpinner);
-                productCounter++;
-
 
                 imgPath = "n/a";
 
@@ -302,13 +272,11 @@ public class AddInventory extends AppCompatActivity {
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     cur_bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
                     productImg = storageRef.child(userID + ".images/" + p_name + ".jpg");
-                    Log.i("P.Option", productImg.toString());
                     imgPath = product_name.getText().toString() + ".jpg";
-
                     myRef.child(userID).child("Products").child(ProductKey).child("P_ImagePath").setValue(imgPath);
-
                     byte[] dataz = baos.toByteArray();
-                    final UploadTask uploadTask = productImg.putBytes(dataz);
+                    UploadTask uploadTask = productImg.putBytes(dataz);
+
                     uploadTask.addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception exception) {
@@ -318,9 +286,7 @@ public class AddInventory extends AppCompatActivity {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                             // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
-                            cur_ur = taskSnapshot.getDownloadUrl();
-                          //  Log.i("P.OptionURI ", cur_ur.getPath().toString());
-
+                            taskSnapshot.getDownloadUrl();
                         }
                     });
                 }
@@ -328,31 +294,155 @@ public class AddInventory extends AppCompatActivity {
                 if (PICTURE_OPTION == 1) {
                     //Storing images in folders based on the userID (or we can do StoreName)
                     productImg = storageRef.child(userID + ".images/" + p_name + ".jpg");
-                    productImg.putFile(cur_ur);
-                    // imgPath = product_name.getText().toString() + ".jpg";
+                    imgPath = product_name.getText().toString() + ".jpg";
                     myRef.child(userID).child("Products").child(ProductKey).child("P_ImagePath").setValue(imgPath);
-                   // Log.i("P.Option", productImg.toString());
+                    UploadTask uploadTask = productImg.putFile(cur_ur);
+                    uploadTask.addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception exception) {
+                            // Handle unsuccessful uploads
+                        }
+                    }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                        }
+                    });
+
                 }
                 if (PICTURE_OPTION == 0) {
                     myRef.child(userID).child("Products").child(ProductKey).child("P_ImagePath").setValue(imgPath);
-
                 }
-
-
                 PICTURE_OPTION = 0;
+                productCounter++;
+                toastMessage(p_name + " has been added to your inventory!");
+
+                //Restart activity
+                startActivity(new Intent(AddInventory.this, AddInventory.class));
+                }
+            }
+        });
+        aisle_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                createBaySpinner();
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        bay_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                createShelfSpinner();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        main_menu_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(AddInventory.this, MainMenu.class);
+                startActivity(intent);
             }
         });
 
     }
+    /*============Create Aisle Spinner==========*/
+    public void createSpinner(int numAisles) {
+        aisle_spinner = (Spinner) findViewById(R.id.aisle_spinner);
+        aisle_spinnerValues = new ArrayList<>();
 
+        for (int i = 0; i < numAisles; i++) {
+            aisle_spinnerValues.add(String.valueOf(i));
+        }
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>
+                (this, android.R.layout.simple_spinner_item, aisle_spinnerValues);
+        dataAdapter.setDropDownViewResource
+                (android.R.layout.simple_spinner_dropdown_item);
+        aisle_spinner.setAdapter(dataAdapter);
+        aisle_spinner.setSelection(0);
+
+    }
+    /*========= Create Bay Spinner==========*/
+    public void createBaySpinner(){
+        bay_spinner = (Spinner)findViewById(R.id.bay_spinner);
+        String crntA = aisle_spinner.getSelectedItem().toString();
+        bay_spinnerValues = new ArrayList<>();
+        for (int i = 0; i < Integer.parseInt(aisleChecker); i++) {
+            if (String.valueOf(i).equals(crntA)) {
+                bayChecker = bayCheckerList.get(i);
+                for (int j = 0; j < Integer.parseInt(bayChecker); j++) {
+                    bay_spinnerValues.add(String.valueOf(j));
+                }
+            }
+        }
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<>
+                (this, android.R.layout.simple_spinner_item, bay_spinnerValues);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        bay_spinner.setAdapter(dataAdapter);
+        bay_spinner.setSelection(0);
+
+    }
+    /*=============Create Shelf Spinner==========*/
+    public void createShelfSpinner(){
+        String currentShelf = "";
+        shelf_spinner = (Spinner)findViewById(R.id.shelf_spinner);
+        String crntA = aisle_spinner.getSelectedItem().toString();
+        String crntB = bay_spinner.getSelectedItem().toString();
+
+        String abshold = "";
+        String[] absArr;
+        for (int i = 0; i < allABS.size(); i++) {
+            abshold = allABS.get(i);
+            absArr = abshold.split("¿");
+            if (absArr[0].equals(crntA) && absArr[1].equals(crntB)){
+                currentShelf = absArr[2];
+            }
+        }
+        shelf_spinnerValues = new ArrayList<>();
+        if (currentShelf.equals("0")){
+            shelf_spinnerValues.add(String.valueOf(0));
+        } else {
+            for (int i = 0; i < Integer.parseInt(currentShelf); i++) {
+                shelf_spinnerValues.add(String.valueOf(i));
+            }
+        }
+            ArrayAdapter<String> dataAdapter = new ArrayAdapter<>
+                    (this, android.R.layout.simple_spinner_item, shelf_spinnerValues);
+            dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            shelf_spinner.setAdapter(dataAdapter);
+
+    }
+    /*===Generate Dept Spinner Values ====*/
+    public void createDeptSpinner() {
+        dept_spinner = (Spinner)findViewById(R.id.dept_spinner);
+        dept_spinnerValues = new ArrayList<>();
+        deptArr = deptString.split("\\s*,\\s*");
+        /*== Auto Generate a None place holder of None into dept list
+             to let user know which products aren't assigned.    ==*/
+        for (int i = 0; i < deptArr.length; i++) {
+                dept_spinnerValues.add(deptArr[i]);
+            }
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>
+                (this, android.R.layout.simple_spinner_item,  dept_spinnerValues);
+        dataAdapter.setDropDownViewResource
+                (android.R.layout.simple_spinner_dropdown_item);
+        dept_spinner.setAdapter(dataAdapter);
+
+    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
         super.onActivityResult(requestCode,resultCode,data);
         if (requestCode==RESULT_LOAD_IMAGE && resultCode == RESULT_OK && data!=null){
             PICTURE_OPTION=1;
-            Uri selectedImage = data.getData();
-            imagePath = selectedImage.getPath();
-            cur_ur = selectedImage;
+            cur_ur = data.getData();
             imageView.setImageURI(cur_ur);
         }
         if (requestCode==RESULT_TAKE_IMAGE && resultCode == RESULT_OK && data!=null){
@@ -361,40 +451,10 @@ public class AddInventory extends AppCompatActivity {
             imageView.setImageBitmap(bitmap);
             imageView.setDrawingCacheEnabled(true);
             imageView.buildDrawingCache();
-
             bitmap = imageView.getDrawingCache();
-            imageView.setImageBitmap(bitmap);
-
             cur_bitmap = bitmap;
-           /* ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-            StorageReference productImage = storageRef.child(userID + ".images/producta123.jpg");
-            byte[] dataz = baos.toByteArray();
-            UploadTask uploadTask = productImage.putBytes(dataz);
-            uploadTask.addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception exception) {
-                    // Handle unsuccessful uploads
-                }
-            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
-                    cur_ur = taskSnapshot.getDownloadUrl();
-                    Log.i("pdtc: ", cur_ur.getPath());
-
-                }
-            });*/
-
-
-            /*Bitmap photo = (Bitmap) data.getExtras().get("data");
-            imageView.setImageBitmap(photo);
-            cur_ur = data.getData();
-            */
-
         }
     }
-
 
     @Override
     public void onStart() {

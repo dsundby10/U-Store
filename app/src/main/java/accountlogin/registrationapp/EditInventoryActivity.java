@@ -15,7 +15,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -30,7 +33,6 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.util.ArrayList;
 
 public class EditInventoryActivity extends AppCompatActivity {
@@ -43,9 +45,10 @@ public class EditInventoryActivity extends AppCompatActivity {
     Spinner product_spinner;
     Spinner dept_spinner, aisle_spinner, bay_spinner, shelf_spinner;
     EditText product_name, product_id, num_stock, product_desc;
-    Button take_image_btn, upload_image_btn, delete_image_btn, undo_changes_btn, save_changes_btn;
+    Button take_image_btn, upload_image_btn, delete_image_btn, main_menu_btn, save_changes_btn;
 
     /*-Aisle Spinner Vars-*/
+    int maxAisles = 0;
     String aisleChecker = "";
     ArrayList<String> aisle_spinnerValues = new ArrayList<>();
 
@@ -63,9 +66,7 @@ public class EditInventoryActivity extends AppCompatActivity {
     String[] deptArr;
     ArrayList<String> dept_spinnerValues = new ArrayList<>();
 
-    int currentAisleSpinner = 0;
-    int currentBaySpinner = 0;
-    int currentShelfSpinner = 0;
+    ArrayList<String> allABS = new ArrayList<>();
 
     //Firebase Variables
     private FirebaseDatabase mFirebaseDatabase;
@@ -84,10 +85,8 @@ public class EditInventoryActivity extends AppCompatActivity {
     FirebaseStorage storage = FirebaseStorage.getInstance();
     StorageReference storageRef = storage.getReferenceFromUrl("gs://accountloginregistrationapp.appspot.com");
     StorageReference productImg;
-    String imagePath = "";
     Uri cur_ur;
     Bitmap cur_bitmap;
-    String UriTricker = "";
     ArrayList<String> productChecker = new ArrayList<>();
     String productString = "";
 
@@ -103,6 +102,7 @@ public class EditInventoryActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTitle("Edit Inventory");
         setContentView(R.layout.activity_edit_inventory);
         Intent intent = getIntent();
 
@@ -124,7 +124,7 @@ public class EditInventoryActivity extends AppCompatActivity {
         take_image_btn = (Button)findViewById(R.id.take_image_btn);
         upload_image_btn = (Button)findViewById(R.id.upload_image_btn);
         delete_image_btn = (Button)findViewById(R.id.delete_image_btn);
-        undo_changes_btn = (Button)findViewById(R.id.undo_changes_btn);
+        main_menu_btn = (Button)findViewById(R.id.view_layout_btn);
 
 
 
@@ -158,13 +158,16 @@ public class EditInventoryActivity extends AppCompatActivity {
                 myRef.child(userID).child("Products").child(p_curKey).child("P_Name").setValue(product_name.getText().toString());
                 myRef.child(userID).child("Products").child(p_curKey).child("P_Stock").setValue(num_stock.getText().toString());
                 imgPath="n/a";
-
+                /*==User Took a picture with camera ====*/
                 if (PICTURE_OPTION == 2) {
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     cur_bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-                    StorageReference productImg = storageRef.child(userID + ".images/" + product_name.getText().toString() + ".jpg");
+                    productImg = storageRef.child(userID + ".images/" + product_name.getText().toString() + ".jpg");
+                    imgPath = product_name.getText().toString() + ".jpg";
+                    myRef.child(userID).child("Products").child(p_curKey).child("P_ImagePath").setValue(imgPath);
                     byte[] dataz = baos.toByteArray();
                     UploadTask uploadTask = productImg.putBytes(dataz);
+
                     uploadTask.addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception exception) {
@@ -174,24 +177,40 @@ public class EditInventoryActivity extends AppCompatActivity {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                             // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
-                            cur_ur = taskSnapshot.getDownloadUrl();
-                            imgPath = product_name.getText().toString() + ".jpg";
-                            Log.i("P.Option=2: ", cur_ur.getPath());
-                            myRef.child(userID).child("Products").child(p_curKey).child("P_ImagePath").setValue(imgPath);
+                           taskSnapshot.getDownloadUrl();
+
                         }
                     });
                 }
+                /*===User uploaded image from gallery====*/
                 if (PICTURE_OPTION == 1) {
                     //Storing images in folders based on the userID (or we can do StoreName)
                     productImg = storageRef.child(userID + ".images/" + product_name.getText().toString() + ".jpg");
-                    productImg.putFile(cur_ur);
                     imgPath = product_name.getText().toString() + ".jpg";
                     myRef.child(userID).child("Products").child(p_curKey).child("P_ImagePath").setValue(imgPath);
-                    Log.i("P.Option=1: ", cur_ur.getPath());
+                    UploadTask uploadTask = productImg.putFile(cur_ur);
+                    uploadTask.addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception exception) {
+                            // Handle unsuccessful uploads
+                        }
+                    }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                        }
+                    });
+
                 }
+                if (PICTURE_OPTION == 0) {
+                    myRef.child(userID).child("Products").child(p_curKey).child("P_ImagePath").setValue(imgPath);
+                }
+
+                toastMessage(product_name + " has been updated!");
 
             }
         });
+        /*=== Camera on Click Listener ==*/
         take_image_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -199,6 +218,7 @@ public class EditInventoryActivity extends AppCompatActivity {
                 startActivityForResult(intent, RESULT_TAKE_IMAGE);
             }
         });
+        /*===Upload image On Click Listener ====*/
         upload_image_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -208,12 +228,31 @@ public class EditInventoryActivity extends AppCompatActivity {
             }
 
         });
-
+        main_menu_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(EditInventoryActivity.this, MainMenu.class);
+                startActivity(intent);
+            }
+        });
+        delete_image_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                    productImg = storageRef.child(userID + ".images/" + product_name.getText().toString() + ".jpg");
+                    productImg.delete();
+                    myRef.child(userID).child("Products").child(p_curKey).removeValue();
+                createProductSpinner();
+            }
+        });
           /*==== Product listener - pulling all the stores product info and forming it into an arrayList ====*/
         ProductRef = mFirebaseDatabase.getReference().child(userID).child("Products");
         ProductRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                if(!this.getClass().equals(EditInventoryActivity.class)){
+                  //  Log.i("REMOVING ProductRef", "");
+                    ProductRef.removeEventListener(this);
+                }
                 productChecker = new ArrayList<String>();
                 productString = "";
                 for (DataSnapshot data : dataSnapshot.getChildren()) {
@@ -255,6 +294,7 @@ public class EditInventoryActivity extends AppCompatActivity {
                         p_dept="None";
                     }
                     productString = p_name + "¿" + p_aisle + "¿" + p_bay + "¿" + p_shelf + "¿" + p_dept + "¿" + p_id + "¿" + p_desc + "¿" + p_stock + "¿" + p_key + "¿"+ p_ImagePath;
+                    Log.i("P.OptionPimage: ", p_ImagePath);
                     productChecker.add(productString);
                 }
                 createProductSpinner();
@@ -265,7 +305,7 @@ public class EditInventoryActivity extends AppCompatActivity {
             }
         });
 
-        /*====== On Product Selected ====*/
+        /*====== On Product Selected Listener ====*/
         product_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -307,18 +347,20 @@ public class EditInventoryActivity extends AppCompatActivity {
                             num_stock.setText(myProdArr[7]);
                         }
                         if (!myProdArr[9].equals("n/a")) {
-                           // productImg = storageRef.child(userID + ".images/" + myProdArr[0] + ".jpg");
-                            Uri downloadURI = storageRef.child(userID+".images/"+myProdArr[0]+".jpg").getDownloadUrl().getResult();
-                            imageView.setImageURI(downloadURI);
+                            productImg = storageRef.child(userID+".images/"+myProdArr[9]);
+                            imageView.findViewById(R.id.imageView);
+                            Glide.with(EditInventoryActivity.this).using(new FirebaseImageLoader()).load(productImg).into(imageView);
+                            imageView.setVisibility(View.VISIBLE);
+                        } else {
+                            imageView = (ImageView)findViewById(R.id.imageView);
 
-
+                            //imageView.setVisibility(View.GONE);
                         }
                     }
                 }
-
                 /*==Generate Aisle/Bay/Shelf/Dept Spinners====*/
-                createSpinner();
-                createBaySpinner();
+                createSpinner(maxAisles);
+                createBaySpinner(maxAisles);
                 createShelfSpinner();
                 createDeptSpinner();
             }
@@ -328,11 +370,13 @@ public class EditInventoryActivity extends AppCompatActivity {
 
             }
         });
+        /*===Reset the createShelfSpinner * BaySpinner Positions ====*/
         aisle_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                createBaySpinner(maxAisles);
                 createShelfSpinner();
-                createBaySpinner();
+
             }
 
             @Override
@@ -340,6 +384,7 @@ public class EditInventoryActivity extends AppCompatActivity {
 
             }
         });
+        /*===Reset the ShelfSpinner Positions===*/
         bay_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -357,11 +402,14 @@ public class EditInventoryActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 deptString = "";
+                aisleChecker="";
+
                 dept_spinnerValues = new ArrayList<String>();
                 for(DataSnapshot data: dataSnapshot.getChildren()) {
                     /*=== If User has an Existing Aisle Entry in the Database ===*/
                     if (data.getKey().equals("aisles") && !data.getValue().toString().trim().equals("")) {
                         aisleChecker = data.getValue().toString();
+                        maxAisles = Integer.parseInt(aisleChecker);
                     }
                     if (data.getKey().equals("deptNames") && !data.getValue().toString().trim().equals("")) {
                         deptString = data.getValue().toString();
@@ -378,7 +426,12 @@ public class EditInventoryActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 shelfCheckerList = new ArrayList<String>();
+                allABS = new ArrayList<String>();
                 for (DataSnapshot data : dataSnapshot.getChildren()) {
+                    String a = data.child("aisle_num").getValue().toString();
+                    String b = data.child("bay_num").getValue().toString();
+                    String s = data.child("num_of_shelves").getValue().toString();
+                    allABS.add(a + "¿" + b + "¿" + s);
                     shelfCheckerList.add(data.child("num_of_shelves").getValue().toString());
                 }
             }
@@ -404,6 +457,7 @@ public class EditInventoryActivity extends AppCompatActivity {
             }
         });
     }
+
     /*========Create Product Spinner ==========*/
     public void createProductSpinner(){
         product_spinner = (Spinner)findViewById(R.id.product_spinner);
@@ -424,14 +478,12 @@ public class EditInventoryActivity extends AppCompatActivity {
 
 
     /*============Create Aisle Spinner==========*/
-    public void createSpinner() {
+    public void createSpinner(int maxAisles) {
         aisle_spinner = (Spinner) findViewById(R.id.aisle_spinner);
         int cur_selection = 0;
-        aisle_spinnerValues = new ArrayList<>(); //ensures spinner values wont duplicate
-        if (Integer.parseInt(aisleChecker) < 0) {
-            Log.i("Checking Aisle in DB: ", "There's no value!");
-        } else { //Generate Spinner
-            for (int i = 0; i < Integer.parseInt(aisleChecker); i++) {
+        aisle_spinnerValues = new ArrayList<>();
+            //Generate Spinner
+            for (int i = 0; i < maxAisles; i++) {
                 /*--Get Current Product Aisle Position--*/
                 if (i == Integer.parseInt(p_curAisle)){
                     cur_selection = i;
@@ -446,14 +498,14 @@ public class EditInventoryActivity extends AppCompatActivity {
             aisle_spinner.setSelection(cur_selection);
 
         }
-    }
+    //}
     /*========= Create Bay Spinner==========*/
-    public void createBaySpinner(){
+    public void createBaySpinner(int maxAisles){
         int cur_selection = 0;
         bay_spinner = (Spinner)findViewById(R.id.bay_spinner);
         int currentAisleSpinner = aisle_spinner.getSelectedItemPosition();
         bay_spinnerValues = new ArrayList<>();
-        for (int i = 0; i < Integer.parseInt(aisleChecker); i++) {
+        for (int i = 0; i < maxAisles; i++) {
             if (i == currentAisleSpinner) {
                 bayChecker = bayCheckerList.get(i);
                 for (int j = 0; j < Integer.parseInt(bayChecker); j++) {
@@ -472,37 +524,39 @@ public class EditInventoryActivity extends AppCompatActivity {
         bay_spinner.setSelection(cur_selection);
     }
     /*=============Create Shelf Spinner==========*/
-    public void createShelfSpinner() {
-        int cur_selection = 0;
+    public void createShelfSpinner(){
         String currentShelf = "";
-        shelf_spinner = (Spinner) findViewById(R.id.shelf_spinner);
-        currentAisleSpinner = aisle_spinner.getSelectedItemPosition();
-        currentBaySpinner = bay_spinner.getSelectedItemPosition();
+        int cur_selection = 0;
+        shelf_spinner = (Spinner)findViewById(R.id.shelf_spinner);
+        String crntA = aisle_spinner.getSelectedItem().toString();
+        String crntB = bay_spinner.getSelectedItem().toString();
+        Log.i("xcv: CrntAisleBay:", crntA+ " "+ crntB);
 
-        shelf_spinnerValues = new ArrayList<>();
-        for (int i = 0; i <= currentAisleSpinner; i++) {
-            for (int j = 0; j <= currentBaySpinner; j++) {
-                if (currentAisleSpinner == i && currentBaySpinner == j) {
-                    currentShelf = shelfCheckerList.get(j);
-                }
+        String abshold = "";
+        String[] absArr;
+        for (int i = 0; i < allABS.size(); i++) {
+            abshold = allABS.get(i);
+            absArr = abshold.split("¿");
+            if (absArr[0].equals(crntA) && absArr[1].equals(crntB)){
+                currentShelf = absArr[2];
             }
         }
-        if (Integer.parseInt(currentShelf) == 0) {
-            shelf_spinnerValues.add(String.valueOf(0));
-        } else {
+        shelf_spinnerValues = new ArrayList<>();
             for (int i = 0; i < Integer.parseInt(currentShelf); i++) {
                 /*--Get Current Product Shelf Position--*/
                 if (i == Integer.parseInt(p_curShelf)){
                     cur_selection = i;
                 }
-                shelf_spinnerValues.add(String.valueOf(i));
             }
+        for (int i = 0; i < Integer.parseInt(currentShelf) ; i++) {
+            shelf_spinnerValues.add(String.valueOf(i));
         }
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<>
                 (this, android.R.layout.simple_spinner_item, shelf_spinnerValues);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         shelf_spinner.setAdapter(dataAdapter);
         shelf_spinner.setSelection(cur_selection);
+
     }
     /*===Generate Dept Spinner Values ====*/
     public void createDeptSpinner() {
@@ -536,7 +590,6 @@ public class EditInventoryActivity extends AppCompatActivity {
         if (requestCode==RESULT_LOAD_IMAGE && resultCode == RESULT_OK && data!=null){
             PICTURE_OPTION=1;
             Uri selectedImage = data.getData();
-            imagePath = selectedImage.getPath();
             cur_ur = selectedImage;
             imageView.setImageURI(cur_ur);
         }
@@ -546,14 +599,12 @@ public class EditInventoryActivity extends AppCompatActivity {
             imageView.setImageBitmap(bitmap);
             imageView.setDrawingCacheEnabled(true);
             imageView.buildDrawingCache();
-
             bitmap = imageView.getDrawingCache();
             imageView.setImageBitmap(bitmap);
-
             cur_bitmap = bitmap;
-
         }
     }
+
     @Override
     public void onStart() {
         super.onStart();
@@ -566,5 +617,8 @@ public class EditInventoryActivity extends AppCompatActivity {
         if (mAuthListener != null) {
             mAuth.removeAuthStateListener(mAuthListener);
         }
+    }
+    private void toastMessage(String message) {
+        Toast.makeText(this,message, Toast.LENGTH_SHORT).show();
     }
 }

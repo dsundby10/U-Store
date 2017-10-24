@@ -39,14 +39,15 @@ public class StoreLayoutActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_store_layout);
         Intent intent = getIntent();
+        setTitle("Store Layout");
         myTV = (TextView)findViewById(R.id.textView4);
         mListView = (ListView)findViewById(R.id.listviewX);
-        spin0 = (Spinner)findViewById(R.id.spinner0);
-        spin1 = (Spinner)findViewById(R.id.spinner1);
-        spin2 = (Spinner)findViewById(R.id.spinner2);
-        spin3 = (Spinner)findViewById(R.id.spinner3);
-        spin4 = (Spinner)findViewById(R.id.spinner4);
-        spin5 = (Spinner)findViewById(R.id.spinner5);
+     //   spin0 = (Spinner)findViewById(R.id.spinner0);
+      //  spin1 = (Spinner)findViewById(R.id.spinner1);
+       // spin2 = (Spinner)findViewById(R.id.spinner2);
+     //   spin3 = (Spinner)findViewById(R.id.spinner3);
+      //  spin4 = (Spinner)findViewById(R.id.spinner4);
+       // spin5 = (Spinner)findViewById(R.id.spinner5);
 
 
         mAuth = FirebaseAuth.getInstance();
@@ -82,10 +83,10 @@ public class StoreLayoutActivity extends AppCompatActivity {
                     advAarr.add(advAisle);
                     advBarr.add(advBay);
                 }
-                ArrayAdapter advAadp = new ArrayAdapter(StoreLayoutActivity.this,android.R.layout.simple_spinner_dropdown_item, advAarr);
-                spin0.setAdapter(advAadp);
-                ArrayAdapter advBadp = new ArrayAdapter(StoreLayoutActivity.this,android.R.layout.simple_spinner_dropdown_item, advBarr);
-                spin1.setAdapter(advBadp);
+              //  ArrayAdapter advAadp = new ArrayAdapter(StoreLayoutActivity.this,android.R.layout.simple_spinner_dropdown_item, advAarr);
+                //spin0.setAdapter(advAadp);
+                //ArrayAdapter advBadp = new ArrayAdapter(StoreLayoutActivity.this,android.R.layout.simple_spinner_dropdown_item, advBarr);
+               // spin1.setAdapter(advBadp);
                 //ArrayAdapter arrayAdapter = new ArrayAdapter(StoreLayoutActivity.this,android.R.layout.simple_list_item_1,arrayz);
                 //mListView.setAdapter(arrayAdapter);
 
@@ -119,12 +120,12 @@ public class StoreLayoutActivity extends AppCompatActivity {
                 }
                 ArrayAdapter arrayAdapter1 = new ArrayAdapter(StoreLayoutActivity.this,android.R.layout.simple_list_item_1,array2);
                 mListView.setAdapter(arrayAdapter1);
-                ArrayAdapter Aadp = new ArrayAdapter(StoreLayoutActivity.this,android.R.layout.simple_spinner_dropdown_item,Aarr);
-                spin3.setAdapter(Aadp);
-                ArrayAdapter Badp = new ArrayAdapter(StoreLayoutActivity.this,android.R.layout.simple_spinner_dropdown_item,Barr);
-                spin4.setAdapter(Badp);
-                ArrayAdapter Sadp = new ArrayAdapter(StoreLayoutActivity.this,android.R.layout.simple_spinner_dropdown_item, Sarr);
-                spin5.setAdapter(Sadp);
+               // ArrayAdapter Aadp = new ArrayAdapter(StoreLayoutActivity.this,android.R.layout.simple_spinner_dropdown_item,Aarr);
+               // spin3.setAdapter(Aadp);
+               // ArrayAdapter Badp = new ArrayAdapter(StoreLayoutActivity.this,android.R.layout.simple_spinner_dropdown_item,Barr);
+               // spin4.setAdapter(Badp);
+               // ArrayAdapter Sadp = new ArrayAdapter(StoreLayoutActivity.this,android.R.layout.simple_spinner_dropdown_item, Sarr);
+               // spin5.setAdapter(Sadp);
             }
 
             @Override

@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.ArrayMap;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -25,7 +24,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class ShelvingAddEditActivity extends AppCompatActivity {
 
@@ -47,17 +45,12 @@ public class ShelvingAddEditActivity extends AppCompatActivity {
     int aisleSpinInt = 0;
     int baySpinInt = 0;
     int count = 0;
-    int my_list_counter =0;
     int arrCounter = 0;
-    String arrHolder = "";
     ArrayList<String> aisle_id_arr;
     ArrayList<String> aisle_num_arr;
     ArrayList<String> bay_num_arr;
     ArrayList<String> num_of_shelves;
-
     ArrayList<String> my_arr_listview;
-
-    String[] myStringList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,8 +64,8 @@ public class ShelvingAddEditActivity extends AppCompatActivity {
         bay_num_spinner = (Spinner) findViewById(R.id.bay_num_spinner);
         num_shelves = (EditText) findViewById(R.id.num_shelves);
         assign_shelves_btn = (Button) findViewById(R.id.assign_shelves_btn);
-        view_layout_btn = (Button) findViewById(R.id.layout_btn);
-        main_menu_btn = (Button)findViewById(R.id.main_menu_btn);
+        view_layout_btn = (Button) findViewById(R.id.view_layout_btn);
+        main_menu_btn = (Button)findViewById(R.id.view_layout_btn);
         mListView = (ListView) findViewById(R.id.listviewX);
 
         //Firebase initialization
@@ -216,7 +209,7 @@ public class ShelvingAddEditActivity extends AppCompatActivity {
                             bayHolder = Integer.parseInt(advBarr.get(i));
                             for (int j = 0; j < bayHolder; j++) {
                                 if (advAarr.get(i).equals(aisleSpinTxt) && String.valueOf(j).equals(baySpinTxt)) {
-                                    Log.i("CheckAddShelf", abc[placer]+"AisleID:" + i + " " + aisleSpinTxt + " " + baySpinTxt);
+                                   // Log.i("CheckAddShelf", abc[placer]+"AisleID:" + i + " " + aisleSpinTxt + " " + baySpinTxt);
                                     myRef.child(userID).child("ShelfSetup").child(abc[placer] + "AisleID" + j).child("num_of_shelves").setValue(strNumShelves);
                                     toastMessage("Success: " + strNumShelves + " Shelves Added To\n" +"\t\t\t\t" + "Aisle: "  + aisleSpinTxt + " at Bay: " + baySpinTxt);
                                 }

@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
@@ -24,14 +23,14 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.List;
+
 public class ShelvingSetup extends AppCompatActivity {
     private static final String TAG = "ShelvingSetup: ";
     Spinner aisle_num_spinner, bay_num_spinner;
     EditText num_shelves;
     Button assign_shelves_btn;
     ListView mListView;
-    Button viewLayout;
+    Button main_menu_btn, absetup_btn;
 
     //add firebase variables
     private FirebaseDatabase mFirebaseDatabase;
@@ -49,6 +48,9 @@ public class ShelvingSetup extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_shelving_setup);
+        setTitle("Part 3: Assign Shelving");
+        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_MODE_CHANGED);
         Intent intent = getIntent();
         //Prevents keyboard from auto popping up
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
@@ -57,8 +59,9 @@ public class ShelvingSetup extends AppCompatActivity {
         bay_num_spinner = (Spinner)findViewById(R.id.bay_num_spinner);
         num_shelves = (EditText)findViewById(R.id.num_shelves);
         assign_shelves_btn = (Button)findViewById(R.id.assign_shelves_btn);
-        viewLayout = (Button)findViewById(R.id.layout_btn);
+        main_menu_btn = (Button)findViewById(R.id.view_layout_btn);
         mListView = (ListView)findViewById(R.id.listviewX);
+        absetup_btn = (Button)findViewById(R.id.absetup_btn);
 
         //Firebase initialization
         mAuth = FirebaseAuth.getInstance();
@@ -184,7 +187,7 @@ public class ShelvingSetup extends AppCompatActivity {
                     String aisleNum = (String) childSnapShot.child("aisle_num").getValue();
                     String bayNum = (String) childSnapShot.child("bay_num").getValue();
                     String shelfNum = (String) childSnapShot.child("num_of_shelves").getValue();
-                    String strHold = "Aisle: " + aisleNum + " Bay: " + bayNum + " Shelves: " + shelfNum;
+                    String strHold = "\t\t\t\tAisle: " + aisleNum + "\t\t\t\tBay: " + bayNum + "\t\t\t\tShelves: " + shelfNum;
 
                     my_arr_list.add(strHold);
 
@@ -198,11 +201,17 @@ public class ShelvingSetup extends AppCompatActivity {
 
             }
         });
-
-        viewLayout.setOnClickListener(new View.OnClickListener() {
+        main_menu_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(ShelvingSetup.this, StoreLayoutActivity.class);
+                Intent intent = new Intent(ShelvingSetup.this, MainMenu.class);
+                startActivity(intent);
+            }
+        });
+            absetup_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ShelvingSetup.this, AisleBaySetup.class);
                 startActivity(intent);
             }
         });
