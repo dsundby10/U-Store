@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -89,7 +90,6 @@ public class AddInventory extends AppCompatActivity {
     private DatabaseReference AisleRef;
     private DatabaseReference AisleBayRef;
     private DatabaseReference ShelfRef;
-    private DatabaseReference ProductRef;
     private String userID;
 
     //Firebase Image StorageReference
@@ -98,14 +98,21 @@ public class AddInventory extends AppCompatActivity {
     StorageReference productImg;
     Uri cur_ur;
     Bitmap cur_bitmap;
-
     int maxAisleCount = 0;
 
+    //Intent Properties to verify user & permissions
+    String getUserPermissions;
+    String employeeID;
+    String getStoreName;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_inventory);
-        final Intent intent = getIntent();
+        Intent intent = getIntent();
+
+        employeeID = getIntent().getStringExtra("STORE_USER");
+        getUserPermissions = getIntent().getStringExtra("USER_PERMISSIONS").trim();
+        getStoreName = getIntent().getStringExtra("STORE_NAME");
 
         //Variable initialization
         imageView = (ImageView) findViewById(R.id.imageView);
@@ -118,7 +125,7 @@ public class AddInventory extends AppCompatActivity {
         num_stock = (EditText) findViewById(R.id.num_stock);
         product_id = (EditText) findViewById(R.id.product_id);
         product_desc = (EditText) findViewById(R.id.product_desc);
-        main_menu_btn = (Button)findViewById(R.id.view_layout_btn);
+        main_menu_btn = (Button)findViewById(R.id.main_menu_btn);
         add_product_btn = (Button) findViewById(R.id.save_changes_btn);
         take_image_btn = (Button) findViewById(R.id.take_image_btn);
         upload_image_btn = (Button) findViewById(R.id.upload_image_btn);
@@ -141,7 +148,8 @@ public class AddInventory extends AppCompatActivity {
             }
         };
 
-           /*======= Pulling Aisle & Dept from DB=======*/
+
+        /*======= Pulling Aisle & Dept from DB=======*/
         AisleRef = mFirebaseDatabase.getReference().child(userID);
         AisleRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -173,11 +181,13 @@ public class AddInventory extends AppCompatActivity {
         AisleBayRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                if(!this.getClass().equals(AddInventory.class)){
+                    AisleBayRef.removeEventListener(this);
+                }
                 bayCheckerList = new ArrayList<>();
                 for (DataSnapshot data : dataSnapshot.getChildren()) {
                     bayCheckerList.add(data.child("bays").getValue().toString());
                 }
-
             }
 
             @Override
@@ -190,6 +200,9 @@ public class AddInventory extends AppCompatActivity {
         ShelfRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                if(!this.getClass().equals(AddInventory.class)){
+                    ShelfRef.removeEventListener(this);
+                }
                 aisleCheckerList = new ArrayList<String>();
                 bayCheckerListz = new ArrayList<String>();
                 shelfCheckerList = new ArrayList<String>();
@@ -239,10 +252,6 @@ public class AddInventory extends AppCompatActivity {
                 if (product_name.getText().toString().trim().length() == 0){
                     toastMessage("You must assign a name your product!");
                 } else {
-
-
-
-
                 String p_id = product_id.getText().toString();
                 String p_name = product_name.getText().toString();
                 String p_stock = num_stock.getText().toString();
@@ -251,7 +260,6 @@ public class AddInventory extends AppCompatActivity {
                 String currentAisleSpinner = aisle_spinner.getSelectedItem().toString();
                 String currentBaySpinner = bay_spinner.getSelectedItem().toString();
                 String currentShelfSpinner = shelf_spinner.getSelectedItem().toString();
-
 
                 String currentDeptSpinner = dept_spinner.getSelectedItem().toString();
 
@@ -267,35 +275,40 @@ public class AddInventory extends AppCompatActivity {
                 myRef.child(userID).child("Products").child(ProductKey).child("P_Shelf").setValue(currentShelfSpinner);
 
                 imgPath = "n/a";
-
+                    /*--Uploading from Camera--*/
                 if (PICTURE_OPTION == 2) {
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     cur_bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-                    productImg = storageRef.child(userID + ".images/" + p_name + ".jpg");
-                    imgPath = product_name.getText().toString() + ".jpg";
+
+                    String imageKey = myRef.child(userID).child("Products").child(ProductKey).child("P_ImagePath").push().getKey();
+                    productImg = storageRef.child(userID + ".images/" + p_name + "ú" + imageKey + ".jpg");
+                    imgPath = product_name.getText().toString() + "ú" + imageKey + ".jpg";
                     myRef.child(userID).child("Products").child(ProductKey).child("P_ImagePath").setValue(imgPath);
+
                     byte[] dataz = baos.toByteArray();
                     UploadTask uploadTask = productImg.putBytes(dataz);
 
                     uploadTask.addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception exception) {
-                            // Handle unsuccessful uploads
+
                         }
                     }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
-                            taskSnapshot.getDownloadUrl();
+
                         }
                     });
                 }
 
+                /*--Uploading image--*/
                 if (PICTURE_OPTION == 1) {
-                    //Storing images in folders based on the userID (or we can do StoreName)
-                    productImg = storageRef.child(userID + ".images/" + p_name + ".jpg");
-                    imgPath = product_name.getText().toString() + ".jpg";
+
+                    String imageKey = myRef.child(userID).child("Products").child(ProductKey).child("P_ImagePath").push().getKey();
+                    productImg = storageRef.child(userID + ".images/" + p_name + "ú" + imageKey + ".jpg");
+                    imgPath = product_name.getText().toString() + "ú" + imageKey + ".jpg";
                     myRef.child(userID).child("Products").child(ProductKey).child("P_ImagePath").setValue(imgPath);
+
                     UploadTask uploadTask = productImg.putFile(cur_ur);
                     uploadTask.addOnFailureListener(new OnFailureListener() {
                         @Override
@@ -305,7 +318,7 @@ public class AddInventory extends AppCompatActivity {
                     }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                     //       Uri downloadUrl = taskSnapshot.getDownloadUrl();
                         }
                     });
 
@@ -317,23 +330,23 @@ public class AddInventory extends AppCompatActivity {
                 productCounter++;
                 toastMessage(p_name + " has been added to your inventory!");
 
-                //Restart activity
-                startActivity(new Intent(AddInventory.this, AddInventory.class));
+                    //Restart activity
+                    Intent intent = new Intent(AddInventory.this, AddInventory.class);
+                    sendIntentData(intent);
                 }
             }
         });
+
         aisle_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 createBaySpinner();
-
             }
-
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-
             }
         });
+
         bay_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -345,11 +358,12 @@ public class AddInventory extends AppCompatActivity {
 
             }
         });
+
         main_menu_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(AddInventory.this, MainMenu.class);
-                startActivity(intent);
+                sendIntentData(intent);
             }
         });
 
@@ -359,7 +373,7 @@ public class AddInventory extends AppCompatActivity {
         aisle_spinner = (Spinner) findViewById(R.id.aisle_spinner);
         aisle_spinnerValues = new ArrayList<>();
 
-        for (int i = 0; i < numAisles; i++) {
+        for (int i = 1; i <= numAisles; i++) {
             aisle_spinnerValues.add(String.valueOf(i));
         }
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>
@@ -375,10 +389,10 @@ public class AddInventory extends AppCompatActivity {
         bay_spinner = (Spinner)findViewById(R.id.bay_spinner);
         String crntA = aisle_spinner.getSelectedItem().toString();
         bay_spinnerValues = new ArrayList<>();
-        for (int i = 0; i < Integer.parseInt(aisleChecker); i++) {
+        for (int i = 1; i <= Integer.parseInt(aisleChecker); i++) {
             if (String.valueOf(i).equals(crntA)) {
-                bayChecker = bayCheckerList.get(i);
-                for (int j = 0; j < Integer.parseInt(bayChecker); j++) {
+                bayChecker = bayCheckerList.get(i-1);
+                for (int j = 1; j <= Integer.parseInt(bayChecker); j++) {
                     bay_spinnerValues.add(String.valueOf(j));
                 }
             }
@@ -410,15 +424,14 @@ public class AddInventory extends AppCompatActivity {
         if (currentShelf.equals("0")){
             shelf_spinnerValues.add(String.valueOf(0));
         } else {
-            for (int i = 0; i < Integer.parseInt(currentShelf); i++) {
-                shelf_spinnerValues.add(String.valueOf(i));
+            for (int i = 1; i <= Integer.parseInt(currentShelf); i++) {
+               shelf_spinnerValues.add(String.valueOf(i));
             }
         }
-            ArrayAdapter<String> dataAdapter = new ArrayAdapter<>
-                    (this, android.R.layout.simple_spinner_item, shelf_spinnerValues);
-            dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            shelf_spinner.setAdapter(dataAdapter);
-
+           ArrayAdapter<String> dataAdapter = new ArrayAdapter<>
+                   (this, android.R.layout.simple_spinner_item, shelf_spinnerValues);
+           dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+           shelf_spinner.setAdapter(dataAdapter);
     }
     /*===Generate Dept Spinner Values ====*/
     public void createDeptSpinner() {
@@ -437,14 +450,22 @@ public class AddInventory extends AppCompatActivity {
         dept_spinner.setAdapter(dataAdapter);
 
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
         super.onActivityResult(requestCode,resultCode,data);
+        /*== Retrieve Uploading Image==*/
         if (requestCode==RESULT_LOAD_IMAGE && resultCode == RESULT_OK && data!=null){
             PICTURE_OPTION=1;
             cur_ur = data.getData();
-            imageView.setImageURI(cur_ur);
+            Glide.with(AddInventory.this)
+                    .load(cur_ur)
+                    .override(200,160)
+                    .into(imageView);
+            //imageView.setImageURI(cur_ur);
+
         }
+        /*=== Retrieve Taking Image ==*/
         if (requestCode==RESULT_TAKE_IMAGE && resultCode == RESULT_OK && data!=null){
             PICTURE_OPTION=2;
             Bitmap bitmap = (Bitmap) data.getExtras().get("data");
@@ -454,6 +475,14 @@ public class AddInventory extends AppCompatActivity {
             bitmap = imageView.getDrawingCache();
             cur_bitmap = bitmap;
         }
+    }
+
+
+    public void sendIntentData(Intent intent){
+        intent.putExtra("STORE_USER", employeeID);
+        intent.putExtra("STORE_NAME", getStoreName);
+        intent.putExtra("USER_PERMISSIONS", getUserPermissions);
+        startActivity(intent);
     }
 
     @Override

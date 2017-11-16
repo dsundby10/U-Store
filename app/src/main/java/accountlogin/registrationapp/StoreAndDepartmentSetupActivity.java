@@ -37,10 +37,17 @@ public class StoreAndDepartmentSetupActivity extends AppCompatActivity {
     private FirebaseAuth.AuthStateListener mAuthListener;
     private DatabaseReference myRef;
     private DatabaseReference myStoreRef;
+    private DatabaseReference manageStoreRef;
     private String userID;
 
     String currentStoreName = "";
     String currentDeptNames = "";
+
+    //Intent Data Variables
+    private String getStoreName = "";
+    private String employeeID;
+    private String getUserPermissions="";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,6 +55,10 @@ public class StoreAndDepartmentSetupActivity extends AppCompatActivity {
         setTitle("Part 1: Store & Department Setup");
 
         Intent intent = getIntent();
+        getStoreName = intent.getStringExtra("STORE_NAME");
+        getUserPermissions = intent.getStringExtra("USER_PERMISSIONS");
+        employeeID = intent.getStringExtra("STORE_USER");
+
 
         submit = (Button)findViewById(R.id.Submit_Info);
         storeName = (EditText)findViewById(R.id.Storename);
@@ -58,9 +69,9 @@ public class StoreAndDepartmentSetupActivity extends AppCompatActivity {
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         myRef = mFirebaseDatabase.getReference();
         myStoreRef = mFirebaseDatabase.getReference();
+        manageStoreRef = mFirebaseDatabase.getReference();
         final FirebaseUser user = mAuth.getCurrentUser();
         userID = user.getUid();
-
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -74,18 +85,17 @@ public class StoreAndDepartmentSetupActivity extends AppCompatActivity {
 
         /*====== Value Event Listener To Check if store & dept names exists & display them if they already do ====*/
         myStoreRef = mFirebaseDatabase.getReference().child(userID);
-        myStoreRef.orderByChild("storeName").addValueEventListener(new ValueEventListener() { //(This works for ALL the values within the user ID)
+        myStoreRef.orderByChild("storeName").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 storeName = (EditText)findViewById(R.id.Storename);
                 for(DataSnapshot data: dataSnapshot.getChildren()) {
                     String store_name_string = data.toString();
-                    //Log.i("Checking Current Data: ", store_name_string);
+
                     //Check if storeName key exists & the key's value doesn't equal null & display value
                     if (data.getKey().equals("storeName") && !data.getValue().toString().trim().equals("")){
                         currentStoreName = data.getValue().toString();
                         storeName.setText(data.getValue().toString());
-                       // Log.i("Checking StoreName.... ",  currentStoreName);
                     }
                     //Check if deptName key exists & the key's value doesn't equal null & display value
                     if (data.getKey().equals("deptNames") && !data.getValue().toString().trim().equals("")){
@@ -115,13 +125,23 @@ public class StoreAndDepartmentSetupActivity extends AppCompatActivity {
 
                 //Verify storeName has a real string value
                 if (!StoreName.trim().equals("")) {
-                        myRef.child(userID).child("storeName").setValue(StoreName);
-                        Intent intent = new Intent(StoreAndDepartmentSetupActivity.this,AisleBaySetup.class);
+                    myRef.child(userID).child("storeName").setValue(StoreName);
+                    manageStoreRef.child("StoreUsers").child(userID).child("StoreName").setValue(StoreName);
+                    manageStoreRef.child("StoreUsers").child(userID).child("StoreUniquePass").setValue("randomvalue");
+                    String genPassKey = manageStoreRef.child("StoreUsers").child(userID).child("StoreUniquePass").push().getKey();
+                    manageStoreRef.child("StoreUsers").child(userID).child("StoreUniquePass").setValue(genPassKey);
 
-                        //Set hint back to original color & text
-                        storeName.setHintTextColor(getResources().getColor(R.color.editTextHintColor));
-                        storeName.setHint("Store Name");
-                        startActivity(intent);
+                    //Set hint back to original color & text
+                    storeName.setHintTextColor(getResources().getColor(R.color.editTextHintColor));
+                    storeName.setHint("Store Name");
+
+
+                    Intent intent = new Intent(StoreAndDepartmentSetupActivity.this,AisleBaySetup.class);
+                    intent.putExtra("STORE_USER", employeeID);
+                    intent.putExtra("STORE_NAME", StoreName);
+                    intent.putExtra("USER_PERMISSIONS", getUserPermissions);
+                    startActivity(intent);
+
 
                 } else { //Try again
                         storeName.setHint("* You Must Name Your Store");
@@ -131,6 +151,13 @@ public class StoreAndDepartmentSetupActivity extends AppCompatActivity {
             }
         });
     }
+    public void sendIntentData(Intent intent){
+        intent.putExtra("STORE_USER", employeeID);
+        intent.putExtra("STORE_NAME", getStoreName);
+        intent.putExtra("USER_PERMISSIONS", getUserPermissions);
+        startActivity(intent);
+    }
+
 
     @Override
     public void onStart() {
@@ -148,4 +175,5 @@ public class StoreAndDepartmentSetupActivity extends AppCompatActivity {
     private void toastMessage(String message) {
         Toast.makeText(this,message, Toast.LENGTH_SHORT).show();
     }
+
 }

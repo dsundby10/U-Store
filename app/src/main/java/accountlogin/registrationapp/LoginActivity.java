@@ -18,8 +18,13 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
 
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG ="Something Important: ";
@@ -28,19 +33,26 @@ public class LoginActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private Button btnSignup, btnLogin, btnReset;
 
+    //Added
+    Button storeEmployee;
+
     //Firebase Variables
     private FirebaseDatabase mFirebaseDatabase;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private DatabaseReference myRef;
+    private DatabaseReference verifyStore;
     private String userID;
-    private String checkStoreName;
 
+    private String checkStoreName;
+    private String verifyStoreName;
+    ArrayList<String> getStoreNameString = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         setTitle("U-Store Login");
+
         //Firebase initialization
         mAuth = FirebaseAuth.getInstance();
         mFirebaseDatabase = FirebaseDatabase.getInstance();
@@ -50,10 +62,10 @@ public class LoginActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
 
         //Uncomment this during testing phase to avoid having to login every time
-        if (mAuth.getCurrentUser() != null  ) {
-            startActivity(new Intent(LoginActivity.this, MainActivity.class));
-            finish();
-       }
+      // if (mAuth.getCurrentUser() != null  ) {
+          //  startActivity(new Intent(LoginActivity.this, MainMenu.class));
+          //  finish();
+       //}
 
         setContentView(R.layout.activity_login);
         inputEmail = (EditText) findViewById(R.id.email);
@@ -62,6 +74,7 @@ public class LoginActivity extends AppCompatActivity {
         btnSignup = (Button) findViewById(R.id.btn_signup);
         btnLogin = (Button) findViewById(R.id.btn_login);
         btnReset = (Button) findViewById(R.id.btn_reset_password);
+
 
         //Get Firebase auth instance
         mAuth = FirebaseAuth.getInstance();
@@ -80,6 +93,14 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+        //added storeEmployee login
+        storeEmployee = (Button)findViewById(R.id.storeEmployee);
+        storeEmployee.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(LoginActivity.this, LoginStoreEmployee.class));
+            }
+        });
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -119,28 +140,82 @@ public class LoginActivity extends AppCompatActivity {
                                     if (mAuth.getCurrentUser() != null){
                                         FirebaseUser user = mAuth.getCurrentUser();
                                         userID = user.getUid();
-                                        //just checks to see if the storeName has been created in the dataabase
-                                        checkStoreName = myRef.child(userID).child("storeName").toString();
-                                        Log.i("Store Name Check ", checkStoreName.toString());
-                                        //User doesn't have a store created yet
-                                        if (checkStoreName.length() < 1) {
-                                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                                                Log.i("Store Name Check ", checkStoreName.toString());
-                                                startActivity(intent);
-                                                finish();
-                                            //User has already created a store, and can log in to the main menu
-                                        } else {
-                                            Log.i("Store Name Check ", checkStoreName.toString());
-                                            Intent intent = new Intent(LoginActivity.this, MainMenu.class);
-                                            startActivity(intent);
-                                            finish();
-                                        }
+                                        //Checks to see if the storeName has been created in the database
+                                        //checkStoreName = myRef.child(userID).child("storeName").toString();
+                                        String store = "";
+                                        /*Added this as temporary for allowing additional users to login under the store*/
+                                        myRef.child(userID).child("StoreInfo").child("storeEmail").push();
+                                        myRef.child(userID).child("StoreInfo").child("storePass").push();
+                                        myRef.child(userID).child("StoreInfo").child("storeEmail").setValue(inputEmail.getText().toString());
+                                        myRef.child(userID).child("StoreInfo").child("storePass").setValue(inputPassword.getText().toString());
+                                        myRef.child("StoreUsers").child(userID).child("StoreInfoEmail").setValue(inputEmail.getText().toString());
+                                        myRef.child("StoreUsers").child(userID).child("StoreInfoPass").setValue(inputPassword.getText().toString());
+                                        verifyIfStoreExists(userID);
                                     }
                                 }
                             }
                         });
             }
         });
+
+
+
+    }
+
+    public void verifyIfStoreExists(String currentUserID){
+        final Intent intent = new Intent(LoginActivity.this,MainMenu.class);
+
+        verifyStore = mFirebaseDatabase.getReference().child(currentUserID);
+        verifyStore.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String x = "";
+                getStoreNameString = new ArrayList<String>();
+                for (DataSnapshot data: dataSnapshot.getChildren()){
+                    if (data.getKey().equals("storeName") && data.getValue().toString().length() > 1){
+                        x = data.getValue().toString().trim();
+                        intent.putExtra("STORE_NAME", x);
+                        intent.putExtra("STORE_USER", "null");
+                        intent.putExtra("USER_PERMISSIONS", "111111111");
+                        startActivity(intent);
+                        finish();
+                        break;
+
+                    } else {
+                        intent.putExtra("STORE_NAME","?¿NA¿?");
+                        intent.putExtra("STORE_USER", "null");
+                        intent.putExtra("USER_PERMISSIONS", "111111111");
+                        startActivity(intent);
+                        finish();
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
+    public void sendIntentData(){
+        Intent intent = new Intent(LoginActivity.this, MainMenu.class);
+        intent.putExtra("STORE_NAME", "StoreName");
+        intent.putExtra("STORE_USER", "null");
+        intent.putExtra("USER_PERMISSIONS", "1111111");
+        startActivity(intent);
+    }
+
+
+    public void onLoginGenerateDB(){
+         /*Added this as temporary for allowing additional users to login under the store*/
+        myRef.child(userID).child("StoreInfo").child("storeEmail").push();
+        myRef.child(userID).child("StoreInfo").child("storePass").push();
+        myRef.child(userID).child("StoreInfo").child("storeEmail").setValue(inputEmail.getText().toString());
+        myRef.child(userID).child("StoreInfo").child("storePass").setValue(inputPassword.getText().toString());
+        myRef.child("StoreUsers").child(userID).child("StoreInfoEmail").setValue(inputEmail.getText().toString());
+        myRef.child("StoreUsers").child(userID).child("StoreInfoPass").setValue(inputPassword.getText().toString());
     }
 }
 

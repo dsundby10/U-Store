@@ -4,77 +4,47 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="accountlogin.registrationapp.EditInventoryActivity"
     tools:layout_editor_absoluteY="81dp"
     tools:layout_editor_absoluteX="0dp">
+
+
     <Spinner
         android:id="@+id/product_spinner"
         android:layout_width="0dp"
-        android:layout_height="30dp"
-        android:layout_marginEnd="13dp"
-        android:layout_marginStart="13dp"
+        android:layout_height="0dp"
         tools:layout_constraintTop_creator="1"
         tools:layout_constraintRight_creator="1"
         tools:layout_constraintBottom_creator="1"
-        app:layout_constraintBottom_toBottomOf="@+id/product_name"
+        app:layout_constraintBottom_toTopOf="@+id/product_name"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
         app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="24dp"
         tools:layout_constraintLeft_creator="1"
-        android:layout_marginBottom="44dp"
+        android:layout_marginBottom="7dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginLeft="13dp"
-        android:layout_marginRight="13dp" />
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp" />
 
     <TextView
         android:id="@+id/textView7"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginEnd="14dp"
-        android:layout_marginStart="14dp"
         android:text="Select a product to edit"
         tools:layout_constraintTop_creator="1"
         tools:layout_constraintRight_creator="1"
         tools:layout_constraintBottom_creator="1"
         app:layout_constraintBottom_toTopOf="@+id/product_spinner"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
         app:layout_constraintRight_toRightOf="parent"
         android:layout_marginTop="6dp"
         tools:layout_constraintLeft_creator="1"
-        android:layout_marginBottom="9dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginLeft="14dp"
-        android:layout_marginRight="14dp" />
-
-    <Button
-        android:id="@+id/save_changes_btn"
-        style="@style/Widget.AppCompat.Button.Borderless"
-        android:layout_width="0dp"
-        android:layout_height="48dp"
-        android:background="@color/appButtonColor"
-        android:text="Save Changes"
-        tools:layout_constraintRight_creator="1"
-        tools:layout_constraintBottom_creator="1"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toRightOf="@+id/imageView"
-        tools:layout_constraintLeft_creator="1"
-        android:layout_marginBottom="12dp"
-        app:layout_constraintLeft_toLeftOf="@+id/imageView" />
-
-    <Button
-        android:id="@+id/upload_image_btn"
-        style="@style/Widget.AppCompat.Button.Borderless"
-        android:layout_width="0dp"
-        android:layout_height="40dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginStart="16dp"
-        android:background="@color/appButtonColor"
-        android:text="Upload"
-        android:textSize="10sp"
-        app:layout_constraintBottom_toTopOf="@+id/take_image_btn"
-        app:layout_constraintLeft_toLeftOf="parent"
-        tools:layout_constraintLeft_creator="1" />
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp" />
 
     <EditText
         android:id="@+id/product_name"
@@ -84,40 +54,40 @@
         android:hint="Product Name"
         android:inputType="textPersonName"
         android:textSize="16sp"
-        app:layout_constraintRight_toLeftOf="@+id/product_id"
         tools:layout_constraintTop_creator="1"
         tools:layout_constraintRight_creator="1"
         tools:layout_constraintBottom_creator="1"
-        android:layout_marginStart="16dp"
         app:layout_constraintBottom_toBottomOf="@+id/product_id"
-        android:layout_marginEnd="21dp"
+        android:layout_marginEnd="1dp"
+        app:layout_constraintRight_toRightOf="@+id/dept_spinner"
         tools:layout_constraintLeft_creator="1"
-        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintLeft_toLeftOf="@+id/product_spinner"
         app:layout_constraintTop_toTopOf="@+id/product_id"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="21dp" />
+        android:layout_marginRight="1dp" />
 
     <EditText
         android:id="@+id/product_id"
-        android:layout_width="0dp"
-        android:layout_height="37dp"
+        android:layout_width="110dp"
+        android:layout_height="38dp"
         android:ems="10"
         android:hint="Product ID"
         android:inputType="textPersonName"
         android:textSize="16sp"
         tools:layout_constraintTop_creator="1"
         tools:layout_constraintRight_creator="1"
+        tools:layout_constraintBottom_creator="1"
+        app:layout_constraintBottom_toBottomOf="@+id/num_stock"
+        android:layout_marginEnd="9dp"
         app:layout_constraintRight_toRightOf="@+id/product_spinner"
-        android:layout_marginTop="77dp"
-        tools:layout_constraintLeft_creator="1"
-        app:layout_constraintLeft_toLeftOf="@+id/num_stock"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_marginTop="61dp"
+        android:layout_marginBottom="45dp"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginRight="9dp" />
 
     <EditText
         android:id="@+id/num_stock"
-        android:layout_width="108dp"
-        android:layout_height="0dp"
-        android:layout_marginEnd="19dp"
+        android:layout_width="0dp"
+        android:layout_height="38dp"
         android:ems="10"
         android:hint="# in Stock"
         android:inputType="textPersonName"
@@ -125,31 +95,41 @@
         tools:layout_constraintTop_creator="1"
         tools:layout_constraintRight_creator="1"
         tools:layout_constraintBottom_creator="1"
-        app:layout_constraintBottom_toTopOf="@+id/product_desc"
+        android:layout_marginStart="19dp"
+        app:layout_constraintBottom_toBottomOf="@+id/linearLayout29"
+        android:layout_marginEnd="16dp"
         app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginTop="11dp"
-        app:layout_constraintTop_toBottomOf="@+id/product_id"
-        android:layout_marginBottom="11dp"
-        android:layout_marginRight="19dp" />
+        android:layout_marginTop="106dp"
+        tools:layout_constraintLeft_creator="1"
+        android:layout_marginBottom="106dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toRightOf="@+id/dept_spinner"
+        android:layout_marginLeft="19dp"
+        android:layout_marginRight="16dp" />
 
     <Spinner
         android:id="@+id/dept_spinner"
         android:layout_width="0dp"
-        android:layout_height="37dp"
+        android:layout_height="38dp"
+        app:layout_constraintRight_toLeftOf="@+id/product_id"
         tools:layout_constraintTop_creator="1"
         tools:layout_constraintRight_creator="1"
-        app:layout_constraintRight_toRightOf="@+id/product_name"
-        android:layout_marginTop="11dp"
-        app:layout_constraintTop_toBottomOf="@+id/product_name"
+        tools:layout_constraintBottom_creator="1"
+        android:layout_marginStart="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/product_desc"
+        android:layout_marginEnd="18dp"
+        android:layout_marginTop="45dp"
         tools:layout_constraintLeft_creator="1"
-        app:layout_constraintLeft_toLeftOf="@+id/product_name" />
+        android:layout_marginBottom="45dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/product_name"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="18dp" />
 
     <EditText
         android:id="@+id/product_desc"
         android:layout_width="0dp"
-        android:layout_height="39dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginStart="16dp"
+        android:layout_height="0dp"
         android:ems="10"
         android:hint="Product Desc..."
         android:inputType="textPersonName"
@@ -157,187 +137,273 @@
         tools:layout_constraintTop_creator="1"
         tools:layout_constraintRight_creator="1"
         tools:layout_constraintBottom_creator="1"
-        app:layout_constraintBottom_toBottomOf="@+id/linearLayout11"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout29"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
         app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginTop="60dp"
-        app:layout_constraintTop_toBottomOf="@+id/product_name"
+        android:layout_marginTop="6dp"
+        app:layout_constraintTop_toBottomOf="@+id/num_stock"
         tools:layout_constraintLeft_creator="1"
-        android:layout_marginBottom="58dp"
+        android:layout_marginBottom="11dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp" />
+
+
+
+
+    <!--Linear layout holding AisleBayShelf Txt/Spinners -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_editor_absoluteX="16dp"
+        app:layout_editor_absoluteY="200dp"
+        android:id="@+id/linearLayout29"
+        tools:layout_constraintTop_creator="1"
+        tools:layout_constraintRight_creator="1"
+        tools:layout_constraintBottom_creator="1"
+        app:layout_constraintBottom_toBottomOf="@+id/linearLayout30"
+        android:layout_marginEnd="11dp"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginTop="200dp"
+        android:layout_marginBottom="190dp"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginRight="11dp">
+        <!--TextView Linear Layout Aisle Bay Shelf -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_editor_absoluteX="16dp"
+            app:layout_editor_absoluteY="187dp">
+            <TextView
+                android:id="@+id/textView8"
+                android:layout_width="90dp"
+                android:layout_height="20dp"
+                android:layout_marginEnd="31dp"
+                android:layout_marginStart="16dp"
+                android:text="Aisle"
+                android:textAlignment="center"
+                android:textAllCaps="false"
+                android:textStyle="bold"
+                tools:layout_editor_absoluteX="16dp"
+                tools:layout_editor_absoluteY="187dp" />
+
+            <TextView
+                android:id="@+id/textView9"
+                android:layout_width="90dp"
+                android:layout_height="20dp"
+                android:text="Bay"
+                android:textAlignment="center"
+                android:textStyle="bold"
+                tools:layout_editor_absoluteX="106dp"
+                tools:layout_editor_absoluteY="187dp" />
+
+            <TextView
+                android:id="@+id/textView10"
+                android:layout_width="90dp"
+                android:layout_height="20dp"
+                android:layout_marginEnd="17dp"
+                android:layout_marginStart="23dp"
+                android:layout_weight="0.42"
+                android:text="Shelf"
+                android:textAlignment="center"
+                android:textStyle="bold"
+                tools:layout_editor_absoluteX="196dp"
+                tools:layout_editor_absoluteY="187dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_editor_absoluteX="16dp"
+            app:layout_editor_absoluteY="207dp">
+            <Spinner
+                android:id="@+id/aisle_spinner"
+                android:layout_width="90dp"
+                android:layout_height="30dp"
+                android:layout_marginEnd="31dp"
+                android:layout_marginStart="16dp"
+                tools:layout_editor_absoluteX="16dp"
+                tools:layout_editor_absoluteY="207dp" />
+
+            <Spinner
+                android:id="@+id/bay_spinner"
+                android:layout_width="90dp"
+                android:layout_height="30dp"
+                tools:layout_editor_absoluteX="106dp"
+                tools:layout_editor_absoluteY="207dp" />
+
+            <Spinner
+                android:id="@+id/shelf_spinner"
+                android:layout_width="90dp"
+                android:layout_height="30dp"
+                android:layout_marginEnd="17dp"
+                android:layout_marginStart="23dp"
+                android:layout_weight="0.42"
+                tools:layout_editor_absoluteX="196dp"
+                tools:layout_editor_absoluteY="207dp" />
+        </LinearLayout>
+    </LinearLayout>
+
+
+    <!--Left hand side button Linear Layout -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_editor_absoluteX="16dp"
+        app:layout_editor_absoluteY="290dp"
+        tools:layout_constraintBottom_creator="1"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout28"
+        android:layout_marginStart="16dp"
+        tools:layout_constraintLeft_creator="1"
+        android:layout_marginBottom="15dp"
         app:layout_constraintLeft_toLeftOf="parent"
         android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintVertical_bias="1.0" />
+        android:id="@+id/linearLayout30">
+
+        <Button
+            android:id="@+id/upload_image_btn"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="100dp"
+            android:layout_height="40dp"
+            android:background="@color/appButtonColor"
+            android:text="Upload"
+            android:textSize="12sp"
+            tools:layout_editor_absoluteX="16dp"
+            tools:layout_editor_absoluteY="333dp" />
+
+        <Button
+            android:id="@+id/take_image_btn"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="100dp"
+            android:layout_height="40dp"
+            android:background="@color/appButtonColor"
+            android:text="Camera"
+            android:textSize="12sp"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="15dp"
+            tools:layout_editor_absoluteX="16dp"
+            tools:layout_editor_absoluteY="395dp" />
+
+        <Button
+            android:id="@+id/delete_image_btn"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="100dp"
+            android:layout_height="40dp"
+            android:background="@color/appButtonColor"
+            android:text="Remove"
+            android:textSize="12sp"
+            tools:layout_editor_absoluteX="16dp"
+            tools:layout_editor_absoluteY="400dp" />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout28"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginLeft="14dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginStart="16dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_editor_absoluteX="16dp"
+        app:layout_editor_absoluteY="455dp"
+        tools:layout_constraintBottom_creator="1"
+        tools:layout_constraintLeft_creator="1"
+        tools:layout_constraintRight_creator="1"
+        app:layout_constraintHorizontal_bias="0.0">
+
+        <Button
+            android:id="@+id/main_menu_btn"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="100dp"
+            android:layout_height="40dp"
+            android:background="@color/appButtonColor"
+            android:text="Main Menu"
+            android:textSize="12sp"
+            tools:layout_editor_absoluteX="16dp"
+            tools:layout_editor_absoluteY="455dp" />
+
+
+        <Button
+            android:id="@+id/delete_product_btn"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="120dp"
+            android:layout_height="39dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="10dp"
+            android:background="@color/appButtonColor"
+            android:text="Delete Product"
+            android:textSize="12sp"
+            tools:layout_editor_absoluteX="130dp"
+            tools:layout_editor_absoluteY="456dp" />
+
+        <Button
+            android:id="@+id/save_changes_btn"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="90dp"
+            android:layout_height="40dp"
+            android:background="@color/appButtonColor"
+            android:text="Update"
+            android:textSize="12sp"
+            tools:layout_editor_absoluteX="268dp"
+            tools:layout_editor_absoluteY="455dp" />
+
+    </LinearLayout>
 
 
     <TextView
-        android:id="@+id/textView4"
-        android:layout_width="127dp"
-        android:layout_height="22dp"
-        android:text="Product Image"
-        android:textStyle="bold"
-        android:layout_marginStart="16dp"
-        android:layout_marginBottom="-10dp"
-        app:layout_constraintBottom_toTopOf="@+id/upload_image_btn"
-        tools:layout_constraintLeft_creator="1"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginLeft="16dp" />
-
-    <Button
-        android:id="@+id/take_image_btn"
-        style="@style/Widget.AppCompat.Button"
+        android:id="@+id/textView13"
         android:layout_width="0dp"
-        android:layout_height="40dp"
-        android:layout_marginBottom="8dp"
-        android:background="@color/appButtonColor"
-        android:text="Camera"
-        android:textSize="10sp"
-        app:layout_constraintBottom_toTopOf="@+id/delete_image_btn"
-        app:layout_constraintLeft_toLeftOf="@+id/upload_image_btn"
-        app:layout_constraintRight_toRightOf="@+id/upload_image_btn"
+        android:layout_height="21dp"
+        android:text="Add / Edit Product Image"
+        android:textAlignment="center"
+        android:textAllCaps="true"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        tools:layout_constraintTop_creator="1"
+        tools:layout_constraintRight_creator="1"
+        tools:layout_constraintBottom_creator="1"
+        android:layout_marginStart="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/linearLayout30"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginTop="156dp"
         tools:layout_constraintLeft_creator="1"
-        tools:layout_constraintRight_creator="1" />
-
+        android:layout_marginBottom="157dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/dept_spinner"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp" />
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="165dp"
-        android:layout_height="130dp"
+        android:layout_width="200dp"
+        android:layout_height="0dp"
+        android:scaleType="centerCrop"
+        android:layout_marginRight="16dp"
+        app:layout_constraintRight_toRightOf="parent"
         tools:layout_constraintTop_creator="1"
-        tools:layout_constraintRight_creator="1"
         tools:layout_constraintBottom_creator="1"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout28"
         android:layout_marginEnd="16dp"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginTop="80dp"
-        android:layout_marginBottom="80dp"
-        app:layout_constraintTop_toTopOf="@+id/linearLayout10"
-        android:layout_marginRight="16dp" />
-
-    <Button
-        android:id="@+id/delete_image_btn"
-        style="@style/Widget.AppCompat.Button.Borderless"
-        android:layout_width="wrap_content"
-        android:layout_height="40dp"
-        android:layout_marginBottom="59dp"
-        android:background="@color/appButtonColor"
-        android:text="Delete"
-        android:textSize="10sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="@+id/take_image_btn"
-        app:layout_constraintRight_toRightOf="@+id/take_image_btn"
-        tools:layout_constraintBottom_creator="1"
-        tools:layout_constraintLeft_creator="1"
-        tools:layout_constraintRight_creator="1" />
-    <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="20dp"
-        android:id="@+id/linearLayout10"
-        tools:layout_constraintTop_creator="1"
-        tools:layout_constraintRight_creator="1"
-        tools:layout_constraintBottom_creator="1"
-        app:layout_constraintBottom_toTopOf="@+id/textView4"
-        android:layout_marginStart="12dp"
-        android:layout_marginEnd="12dp"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginTop="47dp"
-        tools:layout_constraintLeft_creator="1"
-        android:layout_marginBottom="47dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/product_desc"
-        android:layout_marginLeft="12dp"
-        android:layout_marginRight="12dp">
-
-        <TextView
-            android:id="@+id/textView8"
-            android:layout_width="90dp"
-            android:layout_height="20dp"
-            android:layout_marginEnd="31dp"
-            android:layout_marginStart="16dp"
-            android:text="Aisle"
-            android:textAlignment="center"
-            tools:layout_editor_absoluteX="56dp"
-            tools:layout_editor_absoluteY="223dp" />
-
-        <TextView
-            android:id="@+id/textView9"
-            android:layout_width="90dp"
-            android:layout_height="20dp"
-            android:text="Bay"
-            android:textAlignment="center"
-            tools:layout_editor_absoluteX="181dp"
-            tools:layout_editor_absoluteY="223dp" />
-
-        <TextView
-            android:id="@+id/textView10"
-            android:layout_width="90dp"
-            android:layout_height="20dp"
-            android:text="Shelf"
-            android:layout_marginEnd="17dp"
-            android:layout_marginStart="23dp"
-            android:textAlignment="center"
-            tools:layout_editor_absoluteX="287dp"
-            tools:layout_editor_absoluteY="223dp" />
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="30dp"
-        android:weightSum="1"
-        android:id="@+id/linearLayout11"
-        tools:layout_constraintTop_creator="1"
-        tools:layout_constraintRight_creator="1"
-        tools:layout_constraintBottom_creator="1"
-        android:layout_marginStart="12dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginEnd="12dp"
-        app:layout_constraintRight_toRightOf="parent"
-        tools:layout_constraintLeft_creator="1"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginLeft="12dp"
-        android:layout_marginRight="12dp">
-
-        <Spinner
-            android:id="@+id/aisle_spinner"
-            android:layout_width="90dp"
-            android:layout_height="20dp"
-            android:layout_marginEnd="31dp"
-            android:layout_marginStart="16dp"
-            tools:layout_editor_absoluteX="16dp"
-            tools:layout_editor_absoluteY="243dp" />
-
-        <Spinner
-            android:id="@+id/bay_spinner"
-            android:layout_width="90dp"
-            android:layout_height="20dp"
-            tools:layout_editor_absoluteX="141dp"
-            tools:layout_editor_absoluteY="242dp" />
-
-        <Spinner
-            android:id="@+id/shelf_spinner"
-            android:layout_width="90dp"
-            android:layout_height="20dp"
-            android:layout_marginEnd="17dp"
-            android:layout_marginStart="23dp"
-            android:layout_weight="0.42"
-            tools:layout_editor_absoluteX="263dp"
-            tools:layout_editor_absoluteY="241dp" />
-    </LinearLayout>
-
-    <Button
-        android:id="@+id/view_layout_btn"
-        style="@style/Widget.AppCompat.Button.Borderless"
-        android:layout_width="160dp"
-        android:layout_height="48dp"
-        android:layout_marginBottom="12dp"
-        android:background="@color/appButtonColor"
-        android:text="Main Menu"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="@+id/delete_image_btn"
-        tools:layout_constraintBottom_creator="1"
-        tools:layout_constraintLeft_creator="1"
-        android:layout_marginTop="8dp"
-        app:layout_constraintTop_toBottomOf="@+id/delete_image_btn" />
-
-
+        android:layout_marginTop="6dp"
+        app:layout_constraintTop_toBottomOf="@+id/textView13"
+        android:layout_marginBottom="6dp" />
 
 </android.support.constraint.ConstraintLayout>
+
+
+
+
+
+

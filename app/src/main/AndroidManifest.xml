@@ -6,6 +6,8 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
+    <!-- android:windowSoftInputMode="adjustNothing" -->
+    <!-- android:screenOrientation="portrait" -->
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -16,6 +18,7 @@
         <activity android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -25,17 +28,26 @@
         <activity android:name=".MainMenu" />
         <activity android:name=".StoreAndDepartmentSetupActivity" />
         <activity android:name=".AisleBaySetup"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustPan" />
-
-        <activity android:name=".ShelvingSetup" />
-        <activity android:name=".AddInventory" />
-        <activity android:name=".EditStoreAndDepartmentActivity" />
+            android:windowSoftInputMode="adjustNothing|stateAlwaysHidden" />
+        <activity android:name=".ShelvingSetup"
+            android:windowSoftInputMode="adjustNothing|stateAlwaysHidden"/>
+        <activity android:name=".AddInventory"
+            android:windowSoftInputMode="adjustNothing|stateAlwaysHidden"/>
+        <activity android:name=".EditStoreAndDepartmentActivity"
+            android:windowSoftInputMode="adjustNothing|stateAlwaysHidden"/>
         <activity android:name=".StoreLayoutActivity" />
         <activity android:name=".SearchInventoryActivity" />
-        <activity android:name=".ShelvingAddEditActivity" />
-        <activity android:name=".SearchInventoryByDepartmentActivity"/>
+        <activity android:name=".ShelvingAddEditActivity"
+            android:windowSoftInputMode="adjustNothing|stateAlwaysHidden"/>
+        <activity android:name=".SearchInventoryByDepartmentActivity" />
         <activity android:name=".EditInventoryActivity" />
+        <activity android:name=".SearchInventoryByKeyword" />
+        <activity android:name=".ManageAccountActivity" />
+        <activity android:name=".LoginStoreEmployee" />
+        <activity android:name=".ManageUserPermissionsAddUser" />
+        <activity android:name=".ManageUserPermissionsMainPage" />
+        <activity android:name=".ManageUserPermissionsEditUser" />
+        <activity android:name=".ManageUserPermissionsDeleteUser"></activity>
     </application>
-<!--android:windowSoftInputMode="adjustNothing"-->
+
 </manifest>

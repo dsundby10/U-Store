@@ -32,8 +32,21 @@ dependencies {
     compile 'com.google.firebase:firebase-core:10.0.1'
     compile 'com.firebaseui:firebase-ui-storage:0.6.0'
     compile 'com.android.support:design:26.+'
+    compile 'com.android.support:support-v4:26.+'
     testCompile 'junit:junit:4.12'
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

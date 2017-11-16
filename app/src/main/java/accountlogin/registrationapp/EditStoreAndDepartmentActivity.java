@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -34,6 +35,7 @@ public class EditStoreAndDepartmentActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private DatabaseReference myRef;
+    private DatabaseReference AisleBayRef;
     private DatabaseReference myDeptRef;
     private String userID;
 
@@ -74,6 +76,28 @@ public class EditStoreAndDepartmentActivity extends AppCompatActivity {
                 }
             }
         };
+        /*======== AisleBay DB Reference =========*/
+        AisleBayRef = mFirebaseDatabase.getReference().child(userID).child("BaySetup");
+        AisleBayRef.addValueEventListener(new ValueEventListener() {
+            String spacer = "\t\t\t\t\t\t";
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+
+                String aisleHold = "";
+                String bayHold = "";
+                for(DataSnapshot data: dataSnapshot.getChildren()) {
+
+
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
         /*=== Department Name Listener to keep track of current deptListString ==== */
         myDeptRef = mFirebaseDatabase.getReference().child(userID);
         myDeptRef.addValueEventListener(new ValueEventListener() {
