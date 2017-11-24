@@ -115,8 +115,7 @@ public class EditInventoryActivity extends AppCompatActivity {
         getStoreName = intent.getStringExtra("STORE_NAME");
         getUserPermissions = intent.getStringExtra("USER_PERMISSIONS");
         employeeID = intent.getStringExtra("STORE_USER");
-        System.out.println("Intent Received! \n(STORE_NAME) : " + getStoreName
-                + "\n(STORE_USER) : " + employeeID + "\n(USER_PERMISSIONS) : " + getUserPermissions);
+
         imageView = (ImageView)findViewById(R.id.imageView);
 
         //Variable initialization
@@ -667,7 +666,6 @@ public class EditInventoryActivity extends AppCompatActivity {
             PICTURE_OPTION=1;
             Uri selectedImage = data.getData();
             cur_ur = selectedImage;
-            System.out.println("CurURI " +cur_ur);
             Glide.with(EditInventoryActivity.this).load(cur_ur).into(imageView);
         }
         if (requestCode==RESULT_TAKE_IMAGE && resultCode == RESULT_OK && data!=null){

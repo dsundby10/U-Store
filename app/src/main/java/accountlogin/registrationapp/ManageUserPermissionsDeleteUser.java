@@ -24,7 +24,6 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 
 public class ManageUserPermissionsDeleteUser extends AppCompatActivity {
-    CheckBox enable_perm_cbox;
     Spinner user_options, currentUserSpinner;
     Button main_menu_btn, back_btn, submit_btn;
     EditText userEmail;
@@ -44,7 +43,7 @@ public class ManageUserPermissionsDeleteUser extends AppCompatActivity {
     private FirebaseAuth.AuthStateListener mAuthListener;
     private DatabaseReference myRef;
     private DatabaseReference ManageStore;
-    private DatabaseReference PermListener;
+
     private String userID;
     //Intent Data Variables
     private String getStoreName = "";
@@ -75,8 +74,8 @@ public class ManageUserPermissionsDeleteUser extends AppCompatActivity {
         };
         currentUserSpinner = (Spinner) findViewById(R.id.currentUserSpinner);
         userEmail = (EditText)findViewById(R.id.userEmail);
-        //Permission enabled listener
-        permissionCheckBoxListener();
+
+
         bottomButtonListeners();
         generateUserOptions();
 
@@ -111,7 +110,7 @@ public class ManageUserPermissionsDeleteUser extends AppCompatActivity {
         });
 
         ManageStore = mFirebaseDatabase.getReference().child("StoreUsers").child(userID).child("Users");
-        ManageStore.addValueEventListener(new ValueEventListener() {
+        ManageStore.addListenerForSingleValueEvent(new ValueEventListener() {
             //ManageStore.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -120,18 +119,20 @@ public class ManageUserPermissionsDeleteUser extends AppCompatActivity {
                 storeUserPerm = new ArrayList<String>();
                 storeUserKey = new ArrayList<String>();
                 for (DataSnapshot data: dataSnapshot.getChildren()){
-                    String PPE = data.getValue().toString();
-                    String[] xp = new String[3];
-                    xp = PPE.split(",");
-                    String perm = xp[0].trim();
-                    String pass = xp[1].trim();
-                    String email = xp[2].trim();
 
+                        String PPE = data.getValue().toString();
+                        String[] xp = PPE.split(",");
+                        if (xp.length==2){
+                            String perm = xp[0].trim();
+                            String pass = xp[1].trim();
+                            String email = xp[2].trim();
 
-                    storeUserKey.add(data.getKey());
-                    storeUserPerm.add(perm.substring(10, perm.length()));
-                    storeUserPass.add(pass.substring(9, pass.length()));
-                    storeUserEmail.add(email.substring(10, email.length() - 1));
+                            storeUserKey.add(data.getKey());
+                            storeUserPerm.add(perm.substring(10, perm.length()));
+                            storeUserPass.add(pass.substring(9, pass.length()));
+                            storeUserEmail.add(email.substring(10, email.length() - 1));
+                        }
+
                 }
                   /*==Generate values for currrent user spinner==*/
                 for (int i = 0; i <storeUserEmail.size(); i++) {
@@ -194,11 +195,6 @@ public class ManageUserPermissionsDeleteUser extends AppCompatActivity {
 
             }
         });
-    }
-
-    public void permissionCheckBoxListener(){
-        enable_perm_cbox = (CheckBox)findViewById(R.id.enable_perm_cBox);
-        enable_perm_cbox.setVisibility(View.INVISIBLE);
     }
 
     /*=== Genereate Array List & Adapater for user_Options spinner ===*/

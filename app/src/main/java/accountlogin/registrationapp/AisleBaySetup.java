@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -32,6 +33,7 @@ import java.util.List;
 
 public class AisleBaySetup extends AppCompatActivity {
     int dialogChecker = 0;
+    LinearLayout advBay_linearLayout, genBay_linearLayout;
     EditText aisle_creation, gen_bay_creation, adv_bay_creation;
     Button aisles_creation_btn, gen_bay_btn, adv_bay_btn, getAssign_Shelving_Btn, getMainMenu_Btn, getView_Layout_Btn;
     ListView listView;
@@ -61,6 +63,7 @@ public class AisleBaySetup extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_aisle_bay_setup);
+
         setTitle("Part 2: Aisle & Bay Setup");
 
         Intent intent = getIntent();
@@ -68,7 +71,7 @@ public class AisleBaySetup extends AppCompatActivity {
         getUserPermissions = intent.getStringExtra("USER_PERMISSIONS");
         employeeID = intent.getStringExtra("STORE_USER");
 
-        listView = (ListView)findViewById(R.id.listView);
+        listView = (ListView)findViewById(R.id.listViewX);
 
         //EditTexts
         aisle_creation = (EditText)findViewById(R.id.aisle_creation);
@@ -91,7 +94,7 @@ public class AisleBaySetup extends AppCompatActivity {
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         myRef = mFirebaseDatabase.getReference();
         AisleRef = mFirebaseDatabase.getReference();
-        final FirebaseUser user = mAuth.getCurrentUser();
+        FirebaseUser user = mAuth.getCurrentUser();
         userID = user.getUid();
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
@@ -194,8 +197,6 @@ public class AisleBaySetup extends AppCompatActivity {
                     AisleBayRef.child("AisleBay" + abCount).child("aisle").setValue(String.valueOf(abCount));
                     AisleBayRef.child("AisleBay" + abCount).child("bays").setValue(advBayText);
 
-                    //Populate & display the Listview
-                    //generateListView();
 
                     //Set letter placers for easy readability in database
                     String alphabet = "abcdefghijklmnopqrstuvwxyz";
@@ -238,9 +239,6 @@ public class AisleBaySetup extends AppCompatActivity {
                         AisleBayRef.child("AisleBay" + abCount).child("bays").setValue(genBayText);
                         abCount++;
                     }
-                    //Populate & display the Listview
-
-                   // generateListView();
 
                     //Add a "BayType" to Database to help control the values (if they need to be deleted or not if user tries to use both adv & gen)
                     myRef.child(userID).child("BayType").push();
@@ -283,6 +281,8 @@ public class AisleBaySetup extends AppCompatActivity {
                         bayType = data.getValue().toString();
                         generateListView();
                     }
+                    //Hide or show the adv/gen bay setup
+                    determineBottomLayoutVisibility();
                 }
             }
             @Override
@@ -299,7 +299,7 @@ public class AisleBaySetup extends AppCompatActivity {
                     String advAisle = (String) data.child("aisle").getValue();
                     String advBay = (String) data.child("bays").getValue();
                     if (advAisle!=null && advBay!=null){
-                        System.out.println("advA&B: " +advAisle + " " + advBay);
+
                     }
                 }
             }
@@ -348,7 +348,7 @@ public class AisleBaySetup extends AppCompatActivity {
     }
 
     public void generateListView(){
-        listView = (ListView)findViewById(R.id.listView);
+        listView = (ListView)findViewById(R.id.listViewX);
 
         AisleBayRef = mFirebaseDatabase.getReference().child(userID).child("BaySetup");
         AisleBayRef.addValueEventListener(new ValueEventListener() {
@@ -380,7 +380,25 @@ public class AisleBaySetup extends AppCompatActivity {
             }
         });
     }
-
+    public void determineBottomLayoutVisibility(){
+        if (aisleChecker.equals("None")){
+            hideBottomLayout();
+        } else {
+            showBottomLayout();
+        }
+    }
+    public void hideBottomLayout(){
+        advBay_linearLayout = (LinearLayout)findViewById(R.id.advBay_linearLayout);
+        genBay_linearLayout = (LinearLayout)findViewById(R.id.genBay_linearLayout);
+        advBay_linearLayout.setVisibility(View.INVISIBLE);
+        genBay_linearLayout.setVisibility(View.INVISIBLE);
+    }
+    public void showBottomLayout(){
+        advBay_linearLayout = (LinearLayout)findViewById(R.id.advBay_linearLayout);
+        genBay_linearLayout = (LinearLayout)findViewById(R.id.genBay_linearLayout);
+        advBay_linearLayout.setVisibility(View.VISIBLE);
+        genBay_linearLayout.setVisibility(View.VISIBLE);
+    }
     public void sendIntentData(Intent intent){
         intent.putExtra("STORE_USER", employeeID);
         intent.putExtra("STORE_NAME", getStoreName);

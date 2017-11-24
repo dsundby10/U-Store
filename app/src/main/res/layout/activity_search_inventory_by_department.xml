@@ -4,10 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="accountlogin.registrationapp.SearchInventoryByDepartmentActivity"
-    tools:layout_editor_absoluteY="81dp"
+    android:background="@drawable/background_image7"
+    tools:context="accountlogin.registrationapp.ManageUserPermissionsAddUser"
+    tools:layout_editor_absoluteY="25dp"
     tools:layout_editor_absoluteX="0dp">
-    <!--app:layout_behavior="@string/appbar_scrolling_view_behavior"-->
 
     <TextView
         android:id="@+id/textView"
@@ -35,181 +35,203 @@
     <Spinner
         android:id="@+id/dept_spinner"
         android:layout_width="0dp"
-        android:layout_height="33dp"
-        tools:layout_constraintTop_creator="1"
-        tools:layout_constraintRight_creator="1"
-        tools:layout_constraintBottom_creator="1"
-        app:layout_constraintBottom_toTopOf="@+id/desc_cbox"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginTop="40dp"
-        tools:layout_constraintLeft_creator="1"
+        android:layout_height="40dp"
         android:layout_marginBottom="42dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginEnd="8dp"
         android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp" />
-
-    <LinearLayout
-        android:layout_width="234dp"
-        android:layout_height="0dp"
-        tools:layout_constraintTop_creator="1"
-        tools:layout_constraintRight_creator="1"
-        tools:layout_constraintBottom_creator="1"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginRight="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="40dp"
+        app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginTop="12dp"
-        app:layout_constraintTop_toBottomOf="@+id/listView"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_constraintBottom_creator="1"
         tools:layout_constraintLeft_creator="1"
-        android:layout_marginBottom="6dp"
-        app:layout_constraintLeft_toLeftOf="parent">
+        tools:layout_constraintRight_creator="1"
+        tools:layout_constraintTop_creator="1" />
 
-        <Button
-            android:id="@+id/main_menu_btn"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="234dp"
-            android:layout_height="25dp"
-            android:background="@color/appButtonColor"
-            android:text="Main Menu"
-            tools:layout_editor_absoluteX="75dp"
-            tools:layout_editor_absoluteY="468dp" />
-    </LinearLayout>
 
     <Button
         android:id="@+id/modify_btn"
         style="@style/Widget.AppCompat.Button.Borderless"
-        android:layout_width="212dp"
+        android:layout_width="210dp"
         android:layout_height="48dp"
         android:text="Modify Search Filters"
-        tools:layout_constraintTop_creator="1"
-        tools:layout_constraintRight_creator="1"
         app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginTop="81dp"
-        tools:layout_constraintLeft_creator="1"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <CheckBox
-        android:id="@+id/product_cbox"
+        tools:layout_constraintRight_creator="1"
+        tools:layout_constraintLeft_creator="1"
+        tools:layout_constraintBottom_creator="1"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout15" />
+    <!--CheckBoxes LinearLayout -->
+    <LinearLayout
+        android:id="@+id/checkbox_linearLayout"
         android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginStart="16dp"
-        android:checked="true"
-        android:text="Product"
-        android:textSize="14sp"
-        app:layout_constraintBottom_toTopOf="@+id/pid_cbox"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@+id/stock_cbox"
-        app:layout_constraintTop_toTopOf="@+id/stock_cbox"
-        tools:layout_constraintBottom_creator="1"
-        tools:layout_constraintLeft_creator="1"
-        tools:layout_constraintRight_creator="1"
-        tools:layout_constraintTop_creator="1" />
-
-    <CheckBox
-        android:id="@+id/pid_cbox"
-        android:layout_width="109dp"
-        android:layout_height="0dp"
-        android:layout_marginEnd="61dp"
-        android:layout_marginLeft="59dp"
-        android:layout_marginRight="61dp"
-        android:layout_marginStart="59dp"
-        android:checked="true"
-        android:text="Product ID"
-        app:layout_constraintBottom_toBottomOf="@+id/image_cbox"
-        app:layout_constraintLeft_toLeftOf="@+id/product_cbox"
-        app:layout_constraintRight_toRightOf="@+id/stock_cbox"
-        app:layout_constraintTop_toBottomOf="@+id/stock_cbox"
-        tools:layout_constraintBottom_creator="1"
-        tools:layout_constraintLeft_creator="1"
-        tools:layout_constraintRight_creator="1"
-        tools:layout_constraintTop_creator="1" />
-
-    <CheckBox
-        android:id="@+id/stock_cbox"
-        android:layout_width="105dp"
-        android:layout_height="0dp"
-        android:text="Stock"
-        tools:layout_constraintTop_creator="1"
-        tools:layout_constraintRight_creator="1"
-        tools:layout_constraintBottom_creator="1"
-        app:layout_constraintBottom_toTopOf="@+id/image_cbox"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginRight="17dp"
         app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginTop="2dp"
-        tools:layout_constraintLeft_creator="1"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/desc_cbox" />
-
-    <CheckBox
-        android:id="@+id/desc_cbox"
-        android:layout_width="0dp"
-        android:layout_height="30dp"
-        android:text="Descripton"
-        tools:layout_constraintTop_creator="1"
-        tools:layout_constraintRight_creator="1"
-        tools:layout_constraintBottom_creator="1"
-        android:layout_marginStart="17dp"
-        app:layout_constraintBottom_toBottomOf="@+id/modify_btn"
-        android:layout_marginEnd="16dp"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/modify_btn"
-        tools:layout_constraintLeft_creator="1"
-        app:layout_constraintLeft_toRightOf="@+id/stock_cbox"
         android:layout_marginLeft="17dp"
-        android:layout_marginRight="16dp" />
-
-    <CheckBox
-        android:id="@+id/image_cbox"
-        android:layout_width="100dp"
-        android:layout_height="30dp"
-        android:text="Image"
-        tools:layout_constraintTop_creator="1"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toBottomOf="@+id/modify_btn"
         tools:layout_constraintRight_creator="1"
-        android:layout_marginStart="57dp"
-        android:layout_marginEnd="63dp"
-        app:layout_constraintRight_toRightOf="@+id/listView"
-        android:layout_marginTop="2dp"
-        app:layout_constraintTop_toBottomOf="@+id/desc_cbox"
-        tools:layout_constraintLeft_creator="1"
-        app:layout_constraintLeft_toLeftOf="@+id/stock_cbox"
-        android:layout_marginLeft="57dp"
-        android:layout_marginRight="63dp" />
+        android:layout_marginStart="17dp"
+        android:layout_marginEnd="17dp"
+        tools:layout_constraintLeft_creator="1">
 
-    <TextView
-        android:id="@+id/tvDisplayInfo"
-        android:layout_width="335dp"
-        android:layout_height="18dp"
-        android:textAlignment="center"
-        android:textStyle="bold"
-        app:layout_constraintRight_toLeftOf="@+id/image_cbox"
-        tools:layout_constraintTop_creator="1"
-        tools:layout_constraintRight_creator="1"
-        tools:layout_constraintBottom_creator="1"
-        app:layout_constraintBottom_toBottomOf="@+id/pid_cbox"
-        app:layout_constraintTop_toBottomOf="@+id/pid_cbox"
-        tools:layout_constraintLeft_creator="1"
-        app:layout_constraintLeft_toLeftOf="@+id/image_cbox" />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
-    <ListView
-        android:id="@+id/listView"
+            <CheckBox
+                android:id="@+id/product_cbox"
+                android:layout_width="105dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:checked="true"
+                android:text="Product"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                tools:layout_editor_absoluteX="22dp"
+                tools:layout_editor_absoluteY="144dp" />
+
+            <CheckBox
+                android:id="@+id/pid_cbox"
+                android:layout_width="105dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginLeft="17dp"
+                android:layout_marginRight="17dp"
+                android:checked="true"
+                android:text="Product ID"
+                android:textStyle="bold"
+                tools:layout_editor_absoluteX="75dp"
+                tools:layout_editor_absoluteY="177dp" />
+
+            <CheckBox
+                android:id="@+id/stock_cbox"
+                android:layout_width="105dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="5dp"
+                android:text="Stock"
+                android:textStyle="bold"
+                tools:layout_editor_absoluteX="140dp"
+                tools:layout_editor_absoluteY="144dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <CheckBox
+                android:id="@+id/desc_cbox"
+                android:layout_width="120dp"
+                android:layout_height="30dp"
+                android:layout_marginLeft="40dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:text="Descripton"
+                android:textStyle="bold"
+                tools:layout_editor_absoluteX="251dp"
+                tools:layout_editor_absoluteY="144dp" />
+
+            <CheckBox
+                android:id="@+id/image_cbox"
+                android:layout_width="120dp"
+                android:layout_height="30dp"
+                android:layout_marginLeft="35dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:text="Image"
+                android:textStyle="bold"
+                tools:layout_editor_absoluteX="195dp"
+                tools:layout_editor_absoluteY="177dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <CheckBox
+                android:id="@+id/location_cbox"
+                android:layout_width="120dp"
+                android:layout_height="30dp"
+                android:layout_marginLeft="40dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:text="Location"
+                android:textStyle="bold" />
+
+            <CheckBox
+                android:id="@+id/department_cbox"
+                android:layout_width="120dp"
+                android:layout_height="30dp"
+                android:layout_marginLeft="35dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:text="Department"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </LinearLayout>
+
+
+
+
+    <!-- Listview LinearLayout-->
+    <LinearLayout
+        android:id="@+id/linearLayout15"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginEnd="17dp"
+        android:layout_marginStart="17dp"
+        android:orientation="vertical"
         tools:layout_constraintTop_creator="1"
         tools:layout_constraintRight_creator="1"
         tools:layout_constraintBottom_creator="1"
-        android:layout_marginStart="24dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginEnd="24dp"
+        app:layout_constraintBottom_toBottomOf="@+id/main_menu_btn"
         app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginTop="46dp"
+        android:layout_marginTop="53dp"
+        app:layout_constraintTop_toBottomOf="@+id/dept_spinner"
         tools:layout_constraintLeft_creator="1"
-        android:layout_marginBottom="43dp"
+        android:layout_marginBottom="54dp"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/pid_cbox"
-        android:layout_marginLeft="24dp"
-        android:layout_marginRight="24dp" />
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp">
+
+        <TextView
+            android:id="@+id/tvDisplayInfo"
+            android:layout_width="350dp"
+            android:layout_height="20dp"
+            android:layout_marginBottom="7dp"
+            android:text="Displaying"
+            android:textAlignment="center"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            tools:layout_editor_absoluteX="25dp"
+            tools:layout_editor_absoluteY="207dp" />
+
+        <ListView
+            android:id="@+id/listViewX"
+            android:layout_width="match_parent"
+            android:layout_height="345dp" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/main_menu_btn"
+        android:layout_width="234dp"
+        android:layout_height="48dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/buttonshape1"
+        android:text="Main Menu"
+        android:textColor="@color/textBackgroundColor"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        tools:layout_constraintLeft_creator="1"
+        tools:layout_constraintRight_creator="1" />
 </android.support.constraint.ConstraintLayout>

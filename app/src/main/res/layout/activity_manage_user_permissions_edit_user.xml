@@ -4,178 +4,111 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="accountlogin.registrationapp.ManageUserPermissionsEditUser">
-    <CheckBox
-        android:id="@+id/enable_perm_cBox"
-        android:layout_width="200dp"
-        android:layout_height="0dp"
-        android:text="Enable Store Permissions"
-        tools:layout_constraintTop_creator="1"
-        tools:layout_constraintBottom_creator="1"
-        app:layout_constraintBottom_toTopOf="@+id/user_options"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        tools:layout_constraintLeft_creator="1"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginLeft="16dp" />
+    android:background="@drawable/background_image7"
+    tools:context="accountlogin.registrationapp.ManageUserPermissionsEditUser"
+    tools:layout_editor_absoluteY="25dp"
+    tools:layout_editor_absoluteX="0dp">
+
     <Spinner
         android:id="@+id/user_options"
-        android:layout_width="0dp"
-        android:layout_height="32dp"
+        android:layout_width="350dp"
+        android:layout_height="38dp"
+        tools:layout_constraintTop_creator="1"
         tools:layout_constraintRight_creator="1"
         tools:layout_constraintBottom_creator="1"
-        app:layout_constraintBottom_toTopOf="@+id/editUserLinearLayout"
-        android:layout_marginStart="18dp"
-        android:layout_marginEnd="18dp"
+        app:layout_constraintBottom_toTopOf="@+id/addUserLinearLayout"
         app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginTop="16dp"
         tools:layout_constraintLeft_creator="1"
-        android:layout_marginBottom="8dp"
+        android:layout_marginBottom="20dp"
         app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginLeft="18dp"
-        android:layout_marginRight="18dp" />
-
-    <!--Edit User Linear Layout-->
-    <LinearLayout
-        android:id="@+id/editUserLinearLayout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="14dp"
-        android:layout_marginRight="14dp"
-        android:layout_marginTop="80dp"
-        android:orientation="vertical"
-        android:visibility="visible"
-        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_editor_absoluteX="20dp"
-        app:layout_editor_absoluteY="80dp"
-        tools:layout_constraintRight_creator="1"
-        tools:layout_constraintTop_creator="1">
-
-
-        <Spinner
-            android:id="@+id/currentUserSpinner"
-            android:layout_width="350dp"
-            android:layout_height="30dp"
-            tools:layout_editor_absoluteX="16dp"
-            tools:layout_editor_absoluteY="72dp" />
-
-        <EditText
-            android:id="@+id/userEmail"
-            android:layout_width="350dp"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:inputType="textPersonName"
-            android:textSize="16sp"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="20dp"
-            tools:layout_editor_absoluteX="16dp"
-            tools:layout_editor_absoluteY="102dp" />
-
-        <EditText
-            android:id="@+id/userPass"
-            android:layout_width="350dp"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:inputType="textPersonName"
-            android:textSize="16sp"
-            tools:layout_editor_absoluteX="16dp"
-            tools:layout_editor_absoluteY="144dp" />
-    </LinearLayout>
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp" />
 
     <!--Main CHECKBOX Linear Layout-->
     <LinearLayout
         android:id="@+id/checkBoxLinearLayout"
-        android:layout_width="wrap_content"
+        android:layout_width="350dp"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:visibility="visible"
-        app:layout_editor_absoluteX="30dp"
-        app:layout_editor_absoluteY="225dp"
-        tools:layout_constraintBottom_creator="1"
-        app:layout_constraintBottom_toTopOf="@+id/back_btn"
-        android:layout_marginStart="14dp"
+        tools:layout_constraintTop_creator="1"
+        tools:layout_constraintRight_creator="1"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginTop="13dp"
+        app:layout_constraintTop_toBottomOf="@+id/addUserLinearLayout"
         tools:layout_constraintLeft_creator="1"
-        android:layout_marginBottom="6dp"
-        app:layout_constraintLeft_toLeftOf="@+id/back_btn"
-        android:layout_marginLeft="14dp">
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp">
 
         <!--TextView Top Row -->
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="350dp"
             android:layout_height="wrap_content"
             app:layout_editor_absoluteX="25dp"
             app:layout_editor_absoluteY="187dp">
 
             <TextView
                 android:id="@+id/tvDisplayText"
-                android:layout_width="313dp"
-                android:layout_height="26dp"
-                android:text="User Store Permissions"
+                android:layout_width="350dp"
+                android:layout_height="35dp"
+                android:text="Edit User Permissions"
                 android:textAlignment="center"
                 android:textAllCaps="true"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                tools:layout_editor_absoluteX="26dp"
-                tools:layout_editor_absoluteY="187dp" />
+                android:textSize="20sp"
+                android:textStyle="bold" />
         </LinearLayout>
 
         <!-- 1ST ROW -->
         <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_editor_absoluteX="25dp"
-            app:layout_editor_absoluteY="233dp"
-            tools:layout_editor_absoluteX="26dp"
-            tools:layout_editor_absoluteY="230dp">
+            android:layout_width="350dp"
+            android:layout_height="wrap_content">
 
             <CheckBox
                 android:id="@+id/add_inv_cbox"
-                android:layout_width="138dp"
-                android:layout_height="26dp"
-                android:layout_marginEnd="20dp"
-                android:layout_marginStart="20dp"
+                android:layout_width="150dp"
+                android:layout_height="30dp"
+                android:layout_marginRight="16.67dp"
+                android:layout_marginLeft="16.67dp"
                 android:text="Add Inventory"
-                android:textSize="12sp"
+                android:textSize="14sp"
                 tools:layout_editor_absoluteX="16dp"
-                tools:layout_editor_absoluteY="233dp"></CheckBox>
+                tools:layout_editor_absoluteY="233dp" />
 
             <CheckBox
                 android:id="@+id/edit_ab_cbox"
-                android:layout_width="138dp"
-                android:layout_height="26dp"
+                android:layout_width="150dp"
+                android:layout_height="30dp"
                 android:text="Edit Aisles / Bays"
-                android:textSize="12sp"
+                android:textSize="14sp"
                 tools:layout_editor_absoluteX="210dp"
-                tools:layout_editor_absoluteY="233dp"></CheckBox>
+                tools:layout_editor_absoluteY="233dp" />
 
         </LinearLayout>
         <!--2nd Row -->
         <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_editor_absoluteX="26dp"
-            app:layout_editor_absoluteY="268dp"
-            tools:layout_editor_absoluteX="2dp"
-            tools:layout_editor_absoluteY="268dp">
+            android:layout_width="350dp"
+            android:layout_height="wrap_content">
 
             <CheckBox
                 android:id="@+id/edit_inv_cbox"
-                android:layout_width="138dp"
-                android:layout_height="26dp"
-                android:layout_marginEnd="20dp"
-                android:layout_marginStart="20dp"
+                android:layout_width="150dp"
+                android:layout_height="30dp"
+                android:layout_marginRight="16.67dp"
+                android:layout_marginLeft="16.67dp"
                 android:text="Edit Inventory"
-                android:textSize="12sp"
+                android:textSize="14sp"
                 tools:layout_editor_absoluteX="16dp"
                 tools:layout_editor_absoluteY="268dp" />
 
             <CheckBox
                 android:id="@+id/edit_layout_cbox"
-                android:layout_width="138dp"
-                android:layout_height="26dp"
+                android:layout_width="150dp"
+                android:layout_height="30dp"
                 android:text="Edit Store Layout"
-                android:textSize="12sp"
+                android:textSize="14sp"
                 tools:layout_editor_absoluteX="210dp"
                 tools:layout_editor_absoluteY="268dp" />
         </LinearLayout>
@@ -183,117 +116,167 @@
         <!--3RD Row -->
 
         <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_editor_absoluteX="26dp"
-            app:layout_editor_absoluteY="304dp">
+            android:layout_width="350dp"
+            android:layout_height="wrap_content">
 
             <CheckBox
                 android:id="@+id/search_inv_cbox"
-                android:layout_width="138dp"
-                android:layout_height="26dp"
-                android:layout_marginEnd="20dp"
-                android:layout_marginStart="20dp"
+                android:layout_width="150dp"
+                android:layout_height="30dp"
+                android:layout_marginRight="16.67dp"
+                android:layout_marginLeft="16.67dp"
                 android:text="Search Inventory"
-                android:textSize="12sp"
+                android:textSize="14sp"
                 tools:layout_editor_absoluteX="16dp"
-                tools:layout_editor_absoluteY="304dp"></CheckBox>
+                tools:layout_editor_absoluteY="304dp" />
 
             <CheckBox
                 android:id="@+id/edit_dept_cbox"
-                android:layout_width="138dp"
-                android:layout_height="26dp"
+                android:layout_width="150dp"
+                android:layout_height="30dp"
                 android:text="Edit Departments"
-                android:textSize="12sp"
+                android:textSize="14sp"
                 tools:layout_editor_absoluteX="210dp"
-                tools:layout_editor_absoluteY="304dp"></CheckBox>
+                tools:layout_editor_absoluteY="304dp" />
         </LinearLayout>
 
         <!--4th Row -->
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="350dp"
             android:layout_height="wrap_content"
             app:layout_editor_absoluteX="26dp"
             app:layout_editor_absoluteY="339dp">
 
             <CheckBox
                 android:id="@+id/add_shelving_cbox"
-                android:layout_width="138dp"
-                android:layout_height="26dp"
-                android:layout_marginEnd="20dp"
-                android:layout_marginStart="20dp"
+                android:layout_width="150dp"
+                android:layout_height="30dp"
+                android:layout_marginRight="16.67dp"
+                android:layout_marginLeft="16.67dp"
                 android:text="Add/Edit Shelving"
-                android:textSize="12sp"
+                android:textSize="14sp"
                 tools:layout_editor_absoluteX="16dp"
-                tools:layout_editor_absoluteY="339dp"></CheckBox>
+                tools:layout_editor_absoluteY="339dp" />
 
             <CheckBox
                 android:id="@+id/view_layout_cbox"
-                android:layout_width="138dp"
-                android:layout_height="26dp"
+                android:layout_width="150dp"
+                android:layout_height="30dp"
                 android:text="View Store Layout"
-                android:textSize="12sp"
+                android:textSize="14sp"
                 tools:layout_editor_absoluteX="210dp"
-                tools:layout_editor_absoluteY="339dp"></CheckBox>
+                tools:layout_editor_absoluteY="339dp" />
         </LinearLayout>
 
         <!--5th Row -->
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="350dp"
             android:layout_height="wrap_content"
             app:layout_editor_absoluteX="26dp"
             app:layout_editor_absoluteY="375dp">
 
             <CheckBox
                 android:id="@+id/full_access_cbox"
-                android:layout_width="190dp"
-                android:layout_height="24dp"
-                android:layout_marginEnd="48dp"
-                android:layout_marginStart="75dp"
+                android:layout_width="200dp"
+                android:layout_height="30dp"
+                android:layout_marginLeft="75dp"
                 android:text="Manage Store Account"
-                android:textSize="12sp"
+                android:textSize="14sp"
                 tools:layout_editor_absoluteX="99dp"
-                tools:layout_editor_absoluteY="383dp"></CheckBox>
+                tools:layout_editor_absoluteY="383dp" />
         </LinearLayout>
 
         <Button
             android:id="@+id/submit_btn"
-            android:layout_width="315dp"
-            android:layout_height="45dp"
-            android:layout_marginTop="25dp"
-            android:text="Edit User"
+            android:layout_width="320dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="15dp"
+            android:background="@drawable/buttonshape1"
+            android:text="Edit Store User"
+            android:textColor="@color/textBackgroundColor"
             tools:layout_editor_absoluteX="26dp"
             tools:layout_editor_absoluteY="341dp" />
     </LinearLayout>
-
-    <Button
-        android:id="@+id/main_menu_btn"
-        android:layout_width="170dp"
-        android:layout_height="48dp"
-        android:layout_marginEnd="16dp"
-        android:text="Main Menu"
-        tools:layout_constraintRight_creator="1"
-        tools:layout_constraintBottom_creator="1"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginBottom="8dp"
-        android:layout_marginRight="16dp" />
-
-    <Button
-        android:id="@+id/back_btn"
-        android:layout_width="0dp"
-        android:layout_height="48dp"
-        android:layout_marginEnd="12dp"
-        android:layout_marginStart="16dp"
-        android:text="Go Back"
-        app:layout_constraintRight_toLeftOf="@+id/main_menu_btn"
-        tools:layout_constraintRight_creator="1"
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
         tools:layout_constraintBottom_creator="1"
         app:layout_constraintBottom_toBottomOf="parent"
         tools:layout_constraintLeft_creator="1"
-        android:layout_marginBottom="8dp"
+        android:layout_marginBottom="16dp"
         app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="12dp" />
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        app:layout_constraintRight_toRightOf="parent">
+
+        <Button
+            android:id="@+id/back_btn"
+            android:layout_width="150dp"
+            android:layout_height="40dp"
+            android:background="@drawable/buttonshape1"
+            android:text="Go Back"
+            android:textColor="@color/textBackgroundColor" />
+
+        <Button
+            android:id="@+id/main_menu_btn"
+            android:layout_width="150dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="20dp"
+            android:background="@drawable/buttonshape1"
+            android:text="Main Menu"
+            android:textColor="@color/textBackgroundColor" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/addUserLinearLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:orientation="vertical"
+        android:visibility="visible"
+        tools:layout_constraintTop_creator="1"
+        android:layout_marginTop="74dp"
+        tools:layout_constraintLeft_creator="1"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginRight="8dp"
+        app:layout_constraintRight_toRightOf="parent">
+        <TextView
+            android:id="@+id/textView16"
+            android:layout_width="350dp"
+            android:layout_height="wrap_content"
+            android:text="Edit Store User's Account"
+            android:textAlignment="center"
+            android:textAllCaps="true"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <Spinner
+            android:id="@+id/currentUserSpinner"
+            android:layout_width="350dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="5dp" />
+
+
+        <EditText
+            android:id="@+id/userEmail"
+            android:layout_width="350dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:ems="10"
+            android:hint="Edit username / email"
+            android:inputType="textPersonName" />
+
+        <EditText
+            android:id="@+id/userPass"
+            android:layout_width="350dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="5dp"
+            android:ems="10"
+            android:hint="Edit password"
+            android:inputType="textPersonName" />
+    </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

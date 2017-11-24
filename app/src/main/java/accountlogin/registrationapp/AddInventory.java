@@ -18,6 +18,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -42,7 +43,7 @@ public class AddInventory extends AppCompatActivity {
     static int productCounter=0;
     EditText product_name, num_stock, product_id, product_desc;
     Spinner dept_spinner, aisle_spinner, bay_spinner, shelf_spinner;
-    Button add_product_btn, take_image_btn, upload_image_btn, main_menu_btn;
+    Button add_product_btn, take_image_btn, upload_image_btn, main_menu_btn, delete_image_btn;
     ImageView imageView;
 
     /*-Aisle Spinner Vars-*/
@@ -108,8 +109,9 @@ public class AddInventory extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_inventory);
-        Intent intent = getIntent();
 
+        Intent intent = getIntent();
+        setTitle("Add Inventory");
         employeeID = getIntent().getStringExtra("STORE_USER");
         getUserPermissions = getIntent().getStringExtra("USER_PERMISSIONS").trim();
         getStoreName = getIntent().getStringExtra("STORE_NAME");
@@ -129,6 +131,7 @@ public class AddInventory extends AppCompatActivity {
         add_product_btn = (Button) findViewById(R.id.save_changes_btn);
         take_image_btn = (Button) findViewById(R.id.take_image_btn);
         upload_image_btn = (Button) findViewById(R.id.upload_image_btn);
+        delete_image_btn = (Button)findViewById(R.id.delete_image_btn);
 
         //Firebase initialization
         mAuth = FirebaseAuth.getInstance();
@@ -243,6 +246,21 @@ public class AddInventory extends AppCompatActivity {
                 startActivityForResult(gallery, RESULT_LOAD_IMAGE);
             }
 
+        });
+        /*=== Remove Current Image from the view & database if it exists ===*/
+        delete_image_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!p_curImg.equals("n/a")){
+                    storageRef.child(userID+ ".images/" + p_curImg).delete();
+                    myRef.child(userID).child("Products").child(p_curKey).child("P_ImagePath").setValue("n/a");
+                    //No image exists -- set null
+                    Glide.with(AddInventory.this).using(new FirebaseImageLoader()).load(null).into(imageView);
+                    toastMessage("Image has been removed.");
+                }else {
+                    toastMessage("There's no image to remove.");
+                }
+            }
         });
 
         /*----------------- Adding Products to Data On Click Listener -----------*/

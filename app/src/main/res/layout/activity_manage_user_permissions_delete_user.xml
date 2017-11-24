@@ -4,36 +4,29 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="accountlogin.registrationapp.ManageUserPermissionsDeleteUser">
-    <CheckBox
-        android:id="@+id/enable_perm_cBox"
-        android:layout_width="200dp"
-        android:layout_height="0dp"
-        android:text="Enable Store Permissions"
-        tools:layout_constraintTop_creator="1"
-        tools:layout_constraintBottom_creator="1"
-        app:layout_constraintBottom_toTopOf="@+id/user_options"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        tools:layout_constraintLeft_creator="1"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginLeft="16dp" />
+    android:background="@drawable/background_image7"
+    tools:context="accountlogin.registrationapp.ManageUserPermissionsDeleteUser"
+    tools:layout_editor_absoluteY="25dp"
+    tools:layout_editor_absoluteX="0dp">
+
     <Spinner
         android:id="@+id/user_options"
         android:layout_width="0dp"
-        android:layout_height="32dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginRight="16dp"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginLeft="16dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="33dp"
+        android:layout_marginBottom="33dp"
+        app:layout_constraintBottom_toTopOf="@+id/deleteUserLinearLayout"
+        tools:layout_constraintTop_creator="1"
         tools:layout_constraintRight_creator="1"
         tools:layout_constraintBottom_creator="1"
-        app:layout_constraintBottom_toTopOf="@+id/deleteUserLinearLayout"
-        android:layout_marginStart="18dp"
-        android:layout_marginEnd="18dp"
-        app:layout_constraintRight_toRightOf="parent"
-        tools:layout_constraintLeft_creator="1"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginLeft="18dp"
-        android:layout_marginRight="18dp" />
+        tools:layout_constraintLeft_creator="1" />
     <!--Delete User Linear Layout-->
     <LinearLayout
         android:id="@+id/deleteUserLinearLayout"
@@ -41,20 +34,20 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:visibility="visible"
-        app:layout_editor_absoluteX="17dp"
-        app:layout_editor_absoluteY="80dp"
-        tools:layout_constraintTop_creator="1"
-        android:layout_marginStart="17dp"
-        android:layout_marginTop="80dp"
-        tools:layout_constraintLeft_creator="1"
+        android:layout_marginRight="8dp"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginLeft="8dp"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginLeft="17dp">
+        tools:layout_constraintTop_creator="1"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="106dp"
+        app:layout_constraintTop_toTopOf="parent">
 
         <Spinner
             android:id="@+id/currentUserSpinner"
             android:layout_width="349dp"
-            android:layout_height="35dp"
+            android:layout_height="40dp"
             tools:layout_editor_absoluteX="17dp"
             tools:layout_editor_absoluteY="80dp" />
 
@@ -67,7 +60,7 @@
             android:ems="10"
             android:inputType="textPersonName"
             android:text="Name"
-            android:textSize="16sp"
+            android:textSize="18sp"
             android:visibility="invisible"
             tools:layout_editor_absoluteX="17dp"
             tools:layout_editor_absoluteY="127dp" />
@@ -75,41 +68,46 @@
         <Button
             android:id="@+id/submit_btn"
             android:layout_width="225dp"
-            android:layout_height="46dp"
+            android:layout_height="40dp"
             android:layout_marginLeft="65dp"
+            android:background="@drawable/buttonshape1"
             android:text="Remove User"
+            android:textColor="@color/textBackgroundColor"
             tools:layout_editor_absoluteX="96dp"
             tools:layout_editor_absoluteY="176dp" />
     </LinearLayout>
 
-
-    <Button
-        android:id="@+id/main_menu_btn"
-        android:layout_width="170dp"
-        android:layout_height="48dp"
-        android:layout_marginEnd="16dp"
-        android:text="Main Menu"
-        tools:layout_constraintRight_creator="1"
-        tools:layout_constraintBottom_creator="1"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginBottom="8dp"
-        android:layout_marginRight="16dp" />
-
-    <Button
-        android:id="@+id/back_btn"
-        android:layout_width="0dp"
-        android:layout_height="48dp"
-        android:layout_marginEnd="12dp"
-        android:layout_marginStart="16dp"
-        android:text="Go Back"
-        app:layout_constraintRight_toLeftOf="@+id/main_menu_btn"
-        tools:layout_constraintRight_creator="1"
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
         tools:layout_constraintBottom_creator="1"
         app:layout_constraintBottom_toBottomOf="parent"
         tools:layout_constraintLeft_creator="1"
-        android:layout_marginBottom="8dp"
+        android:layout_marginBottom="16dp"
         app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="12dp" />
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp">
+
+        <Button
+            android:id="@+id/back_btn"
+            android:layout_width="150dp"
+            android:layout_height="40dp"
+            android:background="@drawable/buttonshape1"
+            android:text="Go Back"
+            android:textColor="@color/textBackgroundColor" />
+
+        <Button
+            android:id="@+id/main_menu_btn"
+            android:layout_width="150dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="20dp"
+            android:text="Main Menu"
+            android:background="@drawable/buttonshape1"
+            android:textColor="@color/textBackgroundColor" />
+    </LinearLayout>
+
 </android.support.constraint.ConstraintLayout>

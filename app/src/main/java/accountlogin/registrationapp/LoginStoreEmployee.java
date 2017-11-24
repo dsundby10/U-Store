@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -42,23 +41,19 @@ public class LoginStoreEmployee extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     FirebaseUser user;
-    String checkStoreName="";
-    String userName = "";
+
     String storeID = "";
     String storeInfoEmail="";
     String storeInfoPass="";
     String storeUniquePass="";
     String storeName = "";
 
-    ArrayList<String> storeUserEmail = new ArrayList<>();
-    ArrayList<String> storeUserPass = new ArrayList<>();
-    ArrayList<String> storeUserPerm = new ArrayList<>();
+
     ArrayList<String> verifyStoreOwnerID = new ArrayList<>();
     ArrayList<String> verifyStoreName = new ArrayList<>();
     ArrayList<String> verifyStoreEmail = new ArrayList<>();
     ArrayList<String> verifyStorePass = new ArrayList<>();
     ArrayList<String> verifyStoreUniquePass = new ArrayList<>();
-
     ArrayList<String> verifyStoreUserList = new ArrayList<>();
 
 
@@ -66,21 +61,22 @@ public class LoginStoreEmployee extends AppCompatActivity {
     String currentStoreID= "";
     String currentStoreEmail="";
     String currentStorePass="";
-    String currentStoreUniquePass="";
 
     String currentUserPass = "";
     String currentUserEmail="";
     String currentUserPerm="";
 
-
+    ArrayList<String> storeUserEmail = new ArrayList<>();
+    ArrayList<String> storeUserPass = new ArrayList<>();
+    ArrayList<String> storeUserPerm = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_store_employee);
         Intent intent = getIntent();
-        store_name = (EditText)findViewById(R.id.store_name);
+        store_name = (EditText)findViewById(R.id.store_name1);
         unique_pass = (EditText)findViewById(R.id.unique_pass);
-        email_name = (EditText)findViewById(R.id.email_name);
+        email_name = (EditText)findViewById(R.id.email_name1);
         password = (EditText)findViewById(R.id.password);
         login_btn = (Button)findViewById(R.id.login_btn);
         user_login = (Button)findViewById(R.id.user_login);

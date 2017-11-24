@@ -10,9 +10,7 @@
     <!-- android:screenOrientation="portrait" -->
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".LoginActivity">
@@ -22,32 +20,47 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity" />
         <activity android:name=".SignupActivity" />
         <activity android:name=".ResetPasswordActivity" />
         <activity android:name=".MainMenu" />
         <activity android:name=".StoreAndDepartmentSetupActivity" />
-        <activity android:name=".AisleBaySetup"
+        <activity
+            android:name=".AisleBaySetup"
             android:windowSoftInputMode="adjustNothing|stateAlwaysHidden" />
-        <activity android:name=".ShelvingSetup"
-            android:windowSoftInputMode="adjustNothing|stateAlwaysHidden"/>
-        <activity android:name=".AddInventory"
-            android:windowSoftInputMode="adjustNothing|stateAlwaysHidden"/>
-        <activity android:name=".EditStoreAndDepartmentActivity"
-            android:windowSoftInputMode="adjustNothing|stateAlwaysHidden"/>
+        <activity
+            android:name=".ShelvingSetup"
+            android:windowSoftInputMode="adjustNothing|stateAlwaysHidden" />
+        <activity
+            android:name=".AddInventory"
+            android:windowSoftInputMode="adjustNothing|stateAlwaysHidden" />
+        <activity
+            android:name=".EditStoreAndDepartmentActivity"
+            android:windowSoftInputMode="adjustNothing|stateAlwaysHidden" />
         <activity android:name=".StoreLayoutActivity" />
-        <activity android:name=".SearchInventoryActivity" />
-        <activity android:name=".ShelvingAddEditActivity"
-            android:windowSoftInputMode="adjustNothing|stateAlwaysHidden"/>
-        <activity android:name=".SearchInventoryByDepartmentActivity" />
-        <activity android:name=".EditInventoryActivity" />
-        <activity android:name=".SearchInventoryByKeyword" />
-        <activity android:name=".ManageAccountActivity" />
+        <activity
+            android:name=".SearchInventoryActivity"
+            android:windowSoftInputMode="adjustNothing|stateAlwaysHidden" />
+        <activity
+            android:name=".ShelvingAddEditActivity"
+            android:windowSoftInputMode="adjustNothing|stateAlwaysHidden" />
+        <activity
+            android:name=".SearchInventoryByDepartmentActivity"
+            android:windowSoftInputMode="adjustNothing|stateAlwaysHidden" />
+        <activity
+            android:name=".EditInventoryActivity"
+            android:windowSoftInputMode="adjustNothing|stateAlwaysHidden" />
+        <activity
+            android:name=".SearchInventoryByKeyword"
+            android:windowSoftInputMode="adjustNothing|stateAlwaysHidden" />
+        <activity
+            android:name=".ManageAccountActivity"
+            android:windowSoftInputMode="adjustNothing|stateAlwaysHidden" />
         <activity android:name=".LoginStoreEmployee" />
         <activity android:name=".ManageUserPermissionsAddUser" />
         <activity android:name=".ManageUserPermissionsMainPage" />
         <activity android:name=".ManageUserPermissionsEditUser" />
-        <activity android:name=".ManageUserPermissionsDeleteUser"></activity>
+        <activity android:name=".ManageUserPermissionsDeleteUser" />
+
     </application>
 
 </manifest>

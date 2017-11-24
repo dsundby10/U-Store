@@ -4,58 +4,99 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="accountlogin.registrationapp.StoreAndDepartmentSetupActivity">
+    android:background="@drawable/background_image7"
+    tools:context="accountlogin.registrationapp.StoreAndDepartmentSetupActivity"
+    tools:layout_editor_absoluteY="25dp"
+    tools:layout_editor_absoluteX="0dp">
 
-
-    <EditText
-        android:id="@+id/Storename"
+<LinearLayout
+    android:layout_width="350dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    tools:layout_constraintTop_creator="1"
+    android:layout_marginStart="17dp"
+    android:layout_marginTop="16dp"
+    tools:layout_constraintLeft_creator="1"
+    app:layout_constraintLeft_toLeftOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    android:layout_marginLeft="8dp"
+    android:layout_marginRight="8dp"
+    app:layout_constraintRight_toRightOf="parent">
+    <TextView
+        android:id="@+id/textView18"
         android:layout_width="350dp"
-        android:layout_height="49dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="35dp"
-        android:ems="10"
-        android:hint="Store Name"
-        android:inputType="textPersonName"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout_constraintLeft_creator="1"
-        tools:layout_constraintTop_creator="1" />
+        android:layout_height="wrap_content"
+        android:text="Create Store Name"
+        android:textAlignment="center"
+        android:textAllCaps="true"
+        android:layout_marginBottom="10dp"
+        android:textSize="20sp"
+        android:textStyle="bold"/>
 
-    <EditText
-        android:id="@+id/ListDept"
-        android:layout_width="0dp"
-        android:layout_height="80dp"
-        android:ems="10"
-        android:hint="List Department Names \n(Seperate Entries by a Comma)"
-        android:inputType="textMultiLine"
-        tools:layout_constraintTop_creator="1"
-        tools:layout_constraintRight_creator="1"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginTop="172dp"
-        tools:layout_constraintLeft_creator="1"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        app:layout_constraintHorizontal_bias="0.0" />
+    <LinearLayout
+        android:layout_width="350dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/rounded_textfield"
+        tools:layout_editor_absoluteX="17dp"
+        tools:layout_editor_absoluteY="58dp">
+
+        <EditText
+            android:id="@+id/Storename"
+            android:layout_width="340dp"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Store Name"
+            android:inputType="textPersonName"
+            android:layout_marginLeft="5dp"
+            android:drawableLeft="@drawable/storelogin_logo"
+            android:textColorHint="@color/editTextHintColor"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:layout_constraintLeft_creator="1"
+            tools:layout_constraintTop_creator="1" />
+    </LinearLayout>
+
+
+    <TextView
+        android:id="@+id/textView19"
+        android:layout_width="350dp"
+        android:layout_height="wrap_content"
+        android:text="Assign Department Names"
+        android:textAlignment="center"
+        android:textAllCaps="true"
+        android:layout_marginTop="40dp"
+        android:layout_marginBottom="10dp"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        tools:layout_editor_absoluteX="17dp"
+        tools:layout_editor_absoluteY="151dp" />
+
+    <LinearLayout
+        android:layout_width="350dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/rounded_textfield"
+        tools:layout_editor_absoluteX="17dp"
+        tools:layout_editor_absoluteY="197dp">
+        <EditText
+            android:id="@+id/ListDept"
+            android:layout_width="340dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:drawableLeft="@drawable/dept_logo1"
+            android:ems="10"
+            android:hint="Use Commas To Split Departments"
+            android:textColorHint="@color/editTextHintColor" />
+    </LinearLayout>
 
     <Button
         android:id="@+id/Submit_Info"
-        android:layout_width="175dp"
+        android:layout_width="350dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="90dp"
+        android:background="@drawable/buttonshape1"
+        android:layout_marginTop="20dp"
         android:onClick="sendMessageToAisleAndBaySetup"
         android:text="Submit"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.502"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        tools:layout_constraintBottom_creator="1"
-        tools:layout_constraintLeft_creator="1"
-        tools:layout_constraintRight_creator="1" />
-
+        android:textColor="@color/textBackgroundColor" />
+</LinearLayout>
 </android.support.constraint.ConstraintLayout>
 

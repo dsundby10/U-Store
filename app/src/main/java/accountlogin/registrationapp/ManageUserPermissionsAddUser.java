@@ -29,7 +29,7 @@ public class ManageUserPermissionsAddUser extends AppCompatActivity {
     LinearLayout checkBoxLinearLayout, addUserLinearLayout;
     Spinner user_options;
     CheckBox add_inv_cbox, edit_inv_cbox, search_inv_cbox, view_layout_cbox,
-            edit_layout_cbox, add_shelving_cbox, full_access_cbox, edit_dept_cbox, edit_ab_cbox, enable_perm_cbox;
+            edit_layout_cbox, add_shelving_cbox, full_access_cbox, edit_dept_cbox, edit_ab_cbox;
     Button main_menu_btn, back_btn, submit_btn;
     EditText userEmail, userPass;
 
@@ -49,7 +49,7 @@ public class ManageUserPermissionsAddUser extends AppCompatActivity {
     ArrayList<String> storeUserPass = new ArrayList<>();
     ArrayList<String> storeUserPerm = new ArrayList<>();
     ArrayList<String> storeUserKey = new ArrayList<>();
-    ArrayList<String> currentUserList = new ArrayList<>();
+
 
     //Firebase Variables & References
     private FirebaseDatabase mFirebaseDatabase;
@@ -57,8 +57,8 @@ public class ManageUserPermissionsAddUser extends AppCompatActivity {
     private FirebaseAuth.AuthStateListener mAuthListener;
     private DatabaseReference myRef;
     private DatabaseReference ManageStore;
-    private DatabaseReference PermListener;
     private String userID;
+
     //Intent Data Variables
     private String getStoreName = "";
     private String employeeID;
@@ -67,6 +67,7 @@ public class ManageUserPermissionsAddUser extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manage_user_permissions_add_user);
+
         Intent intent = getIntent();
         getStoreName = intent.getStringExtra("STORE_NAME");
         getUserPermissions = intent.getStringExtra("USER_PERMISSIONS");
@@ -87,7 +88,6 @@ public class ManageUserPermissionsAddUser extends AppCompatActivity {
             }
         };
         //Permission enabled listener
-        permissionCheckBoxListener();
         initializeCheckBoxesAndListeners();
         bottomButtonListeners();
 
@@ -114,7 +114,6 @@ public class ManageUserPermissionsAddUser extends AppCompatActivity {
                     }
                 }
 
-
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
 
@@ -122,7 +121,6 @@ public class ManageUserPermissionsAddUser extends AppCompatActivity {
         });
 
         ManageStore = mFirebaseDatabase.getReference().child("StoreUsers").child(userID).child("Users");
-        //ManageStore.addValueEventListener(new ValueEventListener() {
             ManageStore.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -137,9 +135,6 @@ public class ManageUserPermissionsAddUser extends AppCompatActivity {
                     String perm = xp[0].trim();
                     String pass = xp[1].trim();
                     String email = xp[2].trim();
-                    System.out.println("ZONKPermissions: " + perm.substring(10,perm.length()));
-                    System.out.println("ZONKPassword: " + pass.substring(9, pass.length()));
-                    System.out.println("ZONKEmail: " + email.substring(10,email.length()-1));
 
                     storeUserKey.add(data.getKey());
                     storeUserPerm.add(perm.substring(10, perm.length()));
@@ -154,7 +149,6 @@ public class ManageUserPermissionsAddUser extends AppCompatActivity {
         });
         addUserFunction();
 
-
     }
 
     public void addUserFunction(){
@@ -166,14 +160,14 @@ public class ManageUserPermissionsAddUser extends AppCompatActivity {
             public void onClick(View v) {
                 int checkExist=0;
                     if (userEmail.getText().toString().contains(",") || userPass.getText().toString().contains(",")) {
-                        System.out.println("Your password or email may not contain any commas!");
+                       toastMessage("Your password or email may not contain any commas!");
                     } else {
                         for (int i = 0; i < storeUserEmail.size(); i++) {
                             if (storeUserEmail.get(i).equals(userEmail.getText().toString())){
                                 toastMessage("User already exists!");
                                 checkExist=1;
                             } else {
-                                System.out.println("check");
+
                             }
                         }
                         if (checkExist==1){
@@ -197,11 +191,6 @@ public class ManageUserPermissionsAddUser extends AppCompatActivity {
     }
 
 
-
-    public void permissionCheckBoxListener(){
-        enable_perm_cbox = (CheckBox)findViewById(R.id.enable_perm_cBox);
-        enable_perm_cbox.setVisibility(View.INVISIBLE);
-    }
     /*=== Genereate Array List & Adapater for user_Options spinner ===*/
     public void generateUserOptions(){
         user_options = (Spinner)findViewById(R.id.user_options);
@@ -215,6 +204,7 @@ public class ManageUserPermissionsAddUser extends AppCompatActivity {
         user_options.setAdapter(arrayAdapter);
         user_options.setSelection(1);
     }
+    /*=== Main Menu & Back Button Listeners ===*/
     private void bottomButtonListeners(){
         main_menu_btn = (Button)findViewById(R.id.main_menu_btn);
         back_btn = (Button)findViewById(R.id.back_btn);

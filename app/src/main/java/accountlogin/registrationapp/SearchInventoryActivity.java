@@ -1,6 +1,7 @@
 package accountlogin.registrationapp;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -10,6 +11,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -33,7 +35,8 @@ public class SearchInventoryActivity extends AppCompatActivity {
     Button main_menu_btn;
 
     //added
-    CheckBox product_cbox, pid_cbox, stock_cbox, desc_cbox, image_cbox;
+    LinearLayout checkbox_linearLayout;
+    CheckBox product_cbox, pid_cbox, stock_cbox, desc_cbox, image_cbox, department_cbox, location_cbox;
     TextView tvDisplayInfo;
     Button modify_btn;
 
@@ -42,10 +45,14 @@ public class SearchInventoryActivity extends AppCompatActivity {
     int stockCbox = 0;
     int descCbox = 0;
     int imageCbox = 0;
+    int departmentCbox = 0;
+    int locationCbox = 0;
+
+    ArrayList<String> allImage = new ArrayList<>();
+    ArrayList<String> allProduct = new ArrayList<>();
 
     int totalNumProducts = 0;
     ArrayList<String> currentSelectedLocation = new ArrayList<>();
-    String[] myDeptArr;
     int aisleCbox = 0;
     int bayCbox = 0;
     int shelfCbox = 0;
@@ -75,17 +82,12 @@ public class SearchInventoryActivity extends AppCompatActivity {
     ArrayList<String> productChecker = new ArrayList<>();
     String allABSProductInfo = "";
 
-    ArrayList<String> currentAisleProductInfo = new ArrayList<>();
-    ArrayList<String> currentBayProductInfo = new ArrayList<>();
-    ArrayList<String> currentShelfProductInfo = new ArrayList<>();
 
-    int currentAisleSpinner = 0;
-    int currentBaySpinner = 0;
-    int currentShelfSpinner = 0;
+    ArrayList<String> currentShelfProductInfo = new ArrayList<>();
     ArrayList<String> aisleCheckerList = new ArrayList<String>();
     ArrayList<String> bayCheckerListz = new ArrayList<String>();
-
     ArrayList<String> allABS = new ArrayList<>();
+
     //Intent Data Variables
     private String getStoreName = "";
     private String employeeID;
@@ -94,9 +96,9 @@ public class SearchInventoryActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_search_inventory);
-        //setContentView(R.layout.zzzz_search_inv_location);
         setTitle("Search Inventory: Location");
+        setContentView(R.layout.activity_search_inventory);
+
         Intent intent = getIntent();
         getStoreName = intent.getStringExtra("STORE_NAME");
         getUserPermissions = intent.getStringExtra("USER_PERMISSIONS");
@@ -106,7 +108,7 @@ public class SearchInventoryActivity extends AppCompatActivity {
         initializeModifyVariables();
         modifyCheckBoxListeners();
         modifyButtonListener();
-
+        mainMenuBtnListener();
 
         //Firebase initialization
         mAuth = FirebaseAuth.getInstance();
@@ -116,7 +118,6 @@ public class SearchInventoryActivity extends AppCompatActivity {
         userID = user.getUid();
 
         //variable initialization
-        main_menu_btn = (Button) findViewById(R.id.main_menu_btn);
         aisle_spinner = (Spinner) findViewById(R.id.spinner0);
         bay_spinner = (Spinner) findViewById(R.id.spinner1);
         shelf_spinner = (Spinner) findViewById(R.id.spinner2);
@@ -138,30 +139,27 @@ public class SearchInventoryActivity extends AppCompatActivity {
         };
         /*==== Product listener - pulling all the stores product info and forming it into an arrayList ====*/
         ABS = mFirebaseDatabase.getReference().child(userID).child("Products");
-        ABS.addValueEventListener(new ValueEventListener() {
+        ABS.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if (!this.getClass().equals(SearchInventoryActivity.class)) {
+              /*  if (!this.getClass().equals(SearchInventoryActivity.class)) {
                     ABS.removeEventListener(this);
-                }
-                String p_aisle = "";
-                String p_bay = "";
-                String p_shelf = "";
+                }*/
+
                 productChecker = new ArrayList<String>();
                 allABSProductInfo = "";
                 for (DataSnapshot data : dataSnapshot.getChildren()) {
-                    p_aisle = data.child("P_Aisle").getValue().toString();
-                    p_bay = data.child("P_Bay").getValue().toString();
-                    p_shelf = data.child("P_Shelf").getValue().toString();
+                    String p_aisle = data.child("P_Aisle").getValue().toString();
+                    String p_bay = data.child("P_Bay").getValue().toString();
+                    String p_shelf = data.child("P_Shelf").getValue().toString();
                     String p_name = data.child("P_Name").getValue().toString();
                     String p_desc = data.child("P_Desc").getValue().toString();
                     String p_stock = data.child("P_Stock").getValue().toString();
                     String p_id = data.child("P_ID").getValue().toString();
                     String p_image = data.child("P_ImagePath").getValue().toString();
-
+                    String p_dept = data.child("P_Dept").getValue().toString();
                     // the ¿ servers as the element at which I split the string at to form a string (probably isnt the right way, but easiest?)
-                   // allABSProductInfo = p_aisle + "¿" + p_bay + "¿" + p_shelf + "¿" + p_name;
-                    allABSProductInfo =  p_aisle + "¿" + p_bay + "¿" + p_shelf + "¿" + p_name + "¿" + p_id +"¿"+ p_stock +"¿"+ p_desc + "¿" + p_image;
+                    allABSProductInfo =  p_aisle + "¿" + p_bay + "¿" + p_shelf + "¿" + p_name + "¿" + p_id +"¿"+ p_stock +"¿"+ p_desc + "¿" + p_image + "¿" + p_dept;
                     productChecker.add(allABSProductInfo);
                 }
             }
@@ -171,51 +169,22 @@ public class SearchInventoryActivity extends AppCompatActivity {
 
             }
         });
-        /*=====Aisle Spinnner listener ====*/
+        /*=====Aisle Spinnner listener to update listview ====*/
         aisle_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (checkBox1.isChecked()) {
                     createBaySpinner();
                 } else {
-                    //Testing this method out all stuff underneath can be deleted soon
                     updateListView();
                 }
-
-
-               /* currentAisleSpinner = position + 1;
-                String findAisle = "";
-                String[] myAisleArr;
-                currentAisleProductInfo = new ArrayList<String>();
-                */
-                /*for (int i = 0; i < productChecker.size(); i++) {
-                    findAisle = productChecker.get(i);
-                    myAisleArr = findAisle.split("¿");
-                    if (Integer.parseInt(myAisleArr[0]) == currentAisleSpinner) {
-                        /*=== Load Product info into the appropriate Aisle Spinner thats selected ===*/
-                 /*       String currentAisleBS = "Location: " + myAisleArr[0] + " Product: " + myAisleArr[3];
-                        currentAisleProductInfo.add(currentAisleBS);
-                    }
-                }*/
-                //Update the Bay Spinner
-                /*if (checkBox1.isChecked()) {
-                    createBaySpinner();
-                } else {
-                */
-                   /*===Regenerate the Listview & create it with Products that match Aisle IFF bay checkbox isnt checked ====*/
-                  /*  listView = (ListView) findViewById(R.id.listViewX);
-                    ArrayAdapter arrayAdapter = new ArrayAdapter(SearchInventoryActivity.this, android.R.layout.simple_list_item_1, currentAisleProductInfo);
-                    listView.setAdapter(arrayAdapter);
-                }*/
-
-
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
             }
         });
-        /*======= Bay Spinner Listener =====*/
+        /*======= Bay Spinner Listener to update listview =====*/
         bay_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -223,36 +192,8 @@ public class SearchInventoryActivity extends AppCompatActivity {
                 if (checkBox2.isChecked()) {
                     createShelfSpinner();
                 } else {
-                    //Testing this method out all stuff underneath can be deleted soon
                     updateListView();
                 }
-
-                /*currentBaySpinner = position + 1;
-                String crntAisle = aisle_spinner.getSelectedItem().toString();
-                String crntBay = bay_spinner.getSelectedItem().toString();
-                String findBay = "";
-                String[] myBayArr;
-                currentBayProductInfo = new ArrayList<String>();
-                */
-
-                /*for (int i = 0; i < productChecker.size(); i++) {
-                    findBay = productChecker.get(i);
-                    myBayArr = findBay.split("¿");
-
-                    if (myBayArr[0].equals(crntAisle) && myBayArr[1].equals(crntBay)) {
-                        String currentABayS = "Location: " + myBayArr[0] + " " + myBayArr[1] + " Product: " + myBayArr[3];
-                        currentBayProductInfo.add(currentABayS);
-                    }
-                }
-                //Update Shelf Spinner
-                if (checkBox2.isChecked()) {
-                    createShelfSpinner();
-                } else {
-                /*===Regenerate the Listview & create it with Products that match Aisle & Bay Spinners IFF shelf checkbox isnt checked ====*/
-                  /*  listView = (ListView) findViewById(R.id.listViewX);
-                    ArrayAdapter arrayAdapter = new ArrayAdapter(SearchInventoryActivity.this, android.R.layout.simple_list_item_1, currentBayProductInfo);
-                    listView.setAdapter(arrayAdapter);
-                }*/
             }
 
             @Override
@@ -260,42 +201,11 @@ public class SearchInventoryActivity extends AppCompatActivity {
 
             }
         });
-        /*====Shelf Spinner Listener ====*/
+        /*====Shelf Spinner Listener to update listview====*/
         shelf_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                //Testing this method out all stuff underneath can be deleted soon
                 updateListView();
-
-                currentShelfSpinner = position;
-                String crntShelf = shelf_spinner.getSelectedItem().toString();
-
-                String findShelf;
-                String[] myShelfArr;
-                currentShelfProductInfo = new ArrayList<String>();
-
-                //checking all the stores products
-              /*  for (int i = 0; i < productChecker.size(); i++) {
-                    findShelf = productChecker.get(i);
-                    myShelfArr = findShelf.split("¿");
-                    if (Integer.parseInt(myShelfArr[0]) == currentAisleSpinner && Integer.parseInt(myShelfArr[1]) == currentBaySpinner && myShelfArr[2].equals(crntShelf)) {
-                        String currentABShelf = "Location: " + myShelfArr[0] + " " + myShelfArr[1] + " " + myShelfArr[2] + " Product: " + myShelfArr[3];
-                        currentShelfProductInfo.add(currentABShelf);
-                    }
-                }
-                if (currentShelfProductInfo.size() != 0) {
-                /*===Regenerate the Listview & create it with Products that match Aisle bay shelf====*/
-                   /* listView = (ListView) findViewById(R.id.listViewX);
-                    ArrayAdapter arrayAdapter = new ArrayAdapter(SearchInventoryActivity.this, android.R.layout.simple_list_item_1, currentShelfProductInfo);
-                    listView.setAdapter(arrayAdapter);
-              /*  } else {
-                    currentShelfProductInfo.add("\t\tNo Products to Display for\n\t\t\tAisle: " + aisle_spinner.getSelectedItem().toString()
-                            + " Bay: " + bay_spinner.getSelectedItem().toString() + " Shelf: " + shelf_spinner.getSelectedItem().toString());
-                    listView = (ListView) findViewById(R.id.listViewX);
-                    ArrayAdapter arrayAdapter = new ArrayAdapter(SearchInventoryActivity.this, android.R.layout.simple_list_item_1, currentShelfProductInfo);
-                    listView.setAdapter(arrayAdapter);
-                }*/
-
             }
 
             @Override
@@ -424,8 +334,6 @@ public class SearchInventoryActivity extends AppCompatActivity {
                     shelfCbox = 0;
                     shelf_spinner.setEnabled(false);
                     checkBox2.setChecked(false);
-
-
                 }
             }
         });
@@ -497,16 +405,7 @@ public class SearchInventoryActivity extends AppCompatActivity {
             public void onCancelled(DatabaseError databaseError) {
             }
         });
-        /*==  Main Menu Button Listener  ==*/
-        main_menu_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(SearchInventoryActivity.this, MainMenu.class);
-                finish(); //testing
-                sendIntentData(intent);
 
-            }
-        });
     }
 
     /*==== Create Aisle Spinner ====*/
@@ -515,7 +414,7 @@ public class SearchInventoryActivity extends AppCompatActivity {
         aisle_spinnerValues = new ArrayList<>(); //ensures spinner values wont duplicate
         int aisle = Integer.parseInt(aisleChecker);
         if (aisle < 0) {
-            System.out.println("none");
+
         } else { //Generate Spinner
             for (int i = 1; i <= Integer.parseInt(aisleChecker); i++) {
                 aisle_spinnerValues.add(String.valueOf(i));
@@ -577,7 +476,6 @@ public class SearchInventoryActivity extends AppCompatActivity {
             }
         }
 
-
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<>
                 (this, android.R.layout.simple_spinner_item, shelf_spinnerValues);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -592,6 +490,7 @@ public class SearchInventoryActivity extends AppCompatActivity {
     }
 
     public void initializeModifyVariables() {
+        checkbox_linearLayout = (LinearLayout)findViewById(R.id.checkbox_linearLayout);
         tvDisplayInfo = (TextView) findViewById(R.id.tvDisplayInfo);
         modify_btn = (Button) findViewById(R.id.modify_btn);
         product_cbox = (CheckBox) findViewById(R.id.product_cbox);
@@ -599,10 +498,13 @@ public class SearchInventoryActivity extends AppCompatActivity {
         desc_cbox = (CheckBox) findViewById(R.id.desc_cbox);
         stock_cbox = (CheckBox) findViewById(R.id.stock_cbox);
         image_cbox = (CheckBox) findViewById(R.id.image_cbox);
+        department_cbox = (CheckBox)findViewById(R.id.department_cbox);
+        location_cbox = (CheckBox)findViewById(R.id.location_cbox);
         hideCheckBoxes();
     }
 
     public void hideCheckBoxes() {
+        checkbox_linearLayout.setVisibility(View.INVISIBLE);
         product_cbox.setVisibility(View.INVISIBLE);
         pid_cbox.setVisibility(View.INVISIBLE);
         stock_cbox.setVisibility(View.INVISIBLE);
@@ -611,6 +513,7 @@ public class SearchInventoryActivity extends AppCompatActivity {
     }
 
     public void showCheckBoxes() {
+        checkbox_linearLayout.setVisibility(View.VISIBLE);
         product_cbox.setVisibility(View.VISIBLE);
         pid_cbox.setVisibility(View.VISIBLE);
         stock_cbox.setVisibility(View.VISIBLE);
@@ -660,6 +563,36 @@ public class SearchInventoryActivity extends AppCompatActivity {
                 }
             }
         });
+        image_cbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (image_cbox.isChecked()){
+                    imageCbox = 1;
+                } else {
+                    imageCbox = 0;
+                }
+            }
+        });
+        location_cbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (location_cbox.isChecked()){
+                    locationCbox = 1;
+                }else {
+                    locationCbox = 0;
+                }
+            }
+        });
+        department_cbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(department_cbox.isChecked()){
+                    departmentCbox = 1;
+                } else {
+                    departmentCbox = 0;
+                }
+            }
+        });
     }
 
     public void modifyButtonListener() {
@@ -674,6 +607,7 @@ public class SearchInventoryActivity extends AppCompatActivity {
                     toastMessage("You must have aisles to modify");
                 } else {
                     if (modify_btn.getText().toString().equals(hide)) {
+                        modify_btn.setTextColor(Color.BLACK);
                         updateListView();
                         hideCheckBoxes();
                         listView.setVisibility(View.VISIBLE);
@@ -681,6 +615,7 @@ public class SearchInventoryActivity extends AppCompatActivity {
                         modify_btn.setText(modify);
                     } else {
                         showCheckBoxes();
+                        modify_btn.setTextColor(Color.RED);
                         modify_btn.setText(hide);
                         listView.setVisibility(View.INVISIBLE);
                         tvDisplayInfo.setVisibility(View.INVISIBLE);
@@ -695,24 +630,25 @@ public class SearchInventoryActivity extends AppCompatActivity {
         String pid = "";
         String stock = "";
         String desc = "";
+        String location = "";
+        String dept = "";
         totalNumProducts = 0;
         String findData;
         currentSelectedLocation = new ArrayList<>();
         int curAisle = aisle_spinner.getSelectedItemPosition() + 1;
         int curBay = bay_spinner.getSelectedItemPosition() + 1;
-
+        allImage = new ArrayList<>();
         /*===Find all the products that are assigned to this department===*/
         for (int i = 0; i < productChecker.size(); i++) {
             findData = productChecker.get(i);
             String[] myDeptArr = findData.split("¿");
-
-
+            /*-- Getting Aisle Product Info Only --*/
             if (bayCbox==0){
                 if (myDeptArr[0].trim().equals(String.valueOf(curAisle))){
                     //Aisle Product Info Only
                     totalNumProducts++;
                     if (pCbox == 1) {
-                        pname = "\nProduct: " + myDeptArr[3];
+                        pname = "Product: " + myDeptArr[3];
                     } else {
                         pname = "";
                     }
@@ -731,16 +667,32 @@ public class SearchInventoryActivity extends AppCompatActivity {
                     } else {
                         desc = "";
                     }
-                    String currentDeptProd = pname + pid + stock + desc;
+                    if (imageCbox==1){
+                        allImage.add(myDeptArr[7]);
+                    } else {
+                        allImage.add(null); // set nothing into imageview
+                    }
+                    if (locationCbox==1){
+                        location="\nLocation: A:"+myDeptArr[0] + " B:" +myDeptArr[1]+" S:"+myDeptArr[2];
+                    } else {
+                        location="";
+                    }
+                    if (departmentCbox==1){
+                        dept="\nDepartment: " + myDeptArr[8];
+                    } else {
+                        dept="";
+                    }
+                    String currentDeptProd = pname + pid + stock + desc + location + dept;
                     currentSelectedLocation.add(currentDeptProd);
                 }
             }
+            /*-- Getting Aisle & Bay info --*/
             if (bayCbox==1 && shelfCbox==0){
                 if (myDeptArr[0].trim().equals(String.valueOf(curAisle)) && myDeptArr[1].trim().equals(String.valueOf(curBay))){
                     //Aisle & Bay Product Info Only
                     totalNumProducts++;
                     if (pCbox == 1) {
-                        pname = "\nProduct: " + myDeptArr[3];
+                        pname = "Product: " + myDeptArr[3];
                     } else {
                         pname = "";
                     }
@@ -759,19 +711,34 @@ public class SearchInventoryActivity extends AppCompatActivity {
                     } else {
                         desc = "";
                     }
-                    String currentDeptProd = pname + pid + stock + desc;
+                    if (imageCbox==1){
+                        allImage.add(myDeptArr[7]);
+                    } else {
+                        allImage.add(null); // set nothing into imageview
+                    }
+                    if (locationCbox==1){
+                        location="\nLocation: A:"+myDeptArr[0] + " B:" +myDeptArr[1]+" S:"+myDeptArr[2];
+                    } else {
+                        location="";
+                    }
+                    if (departmentCbox==1){
+                        dept="\nDepartment: " + myDeptArr[8];
+                    } else {
+                        dept="";
+                    }
+                    String currentDeptProd = pname + pid + stock + desc + location + dept;
                     currentSelectedLocation.add(currentDeptProd);
                 }
             }
 
-
+            /*-- Getting Aisle & Bay & Shelf info --*/
             if (shelfCbox==1){
                 String curShelfz = shelf_spinner.getSelectedItem().toString();
                 if (myDeptArr[0].trim().equals(String.valueOf(curAisle)) && myDeptArr[1].trim().equals(String.valueOf(curBay)) && myDeptArr[2].trim().equals(curShelfz)) {
                     //Aisle & Bay & Shelf info
                     totalNumProducts++;
                     if (pCbox == 1) {
-                        pname = "\nProduct: " + myDeptArr[3];
+                        pname = "Product: " + myDeptArr[3];
                     } else {
                         pname = "";
                     }
@@ -790,28 +757,55 @@ public class SearchInventoryActivity extends AppCompatActivity {
                     } else {
                         desc = "";
                     }
-                    String currentDeptProd = pname + pid + stock + desc;
+                    if (imageCbox==1){
+                        allImage.add(myDeptArr[7]);
+                    } else {
+                        allImage.add(null); // set nothing into imageview
+                    }
+                    if (locationCbox==1){
+                        location="\nLocation: A:"+myDeptArr[0] + " B:" +myDeptArr[1]+" S:"+myDeptArr[2];
+                    } else {
+                        location="";
+                    }
+                    if (departmentCbox==1){
+                        dept="\nDepartment: " + myDeptArr[8];
+                    } else {
+                        dept="";
+                    }
+                    String currentDeptProd = pname + pid + stock + desc + location + dept;
                     currentSelectedLocation.add(currentDeptProd);
                 }
             }
         }
 
-
         /*===Regenerate the Listview & create it with Products that match current Dept Selected====*/
         if (currentSelectedLocation.size() >= 1) {
             tvDisplayInfo.setText("Displaying " + totalNumProducts + " Product(s)");
-            listView = (ListView) findViewById(R.id.listViewX);
-            ArrayAdapter arrayAdapter = new ArrayAdapter(SearchInventoryActivity.this, android.R.layout.simple_list_item_1, currentSelectedLocation);
-            listView.setAdapter(arrayAdapter);
+            CustomImageList adapter = new CustomImageList(SearchInventoryActivity.this, currentSelectedLocation, allImage, userID);
+            listView = (ListView)findViewById(R.id.listViewX);
+            listView.setAdapter(adapter);
+
         } else {
             tvDisplayInfo.setText("Displaying " + totalNumProducts + " Product(s)");
             currentSelectedLocation.add("No Products To Display For This Department!");
-            listView = (ListView) findViewById(R.id.listViewX);
-            ArrayAdapter emptyAdapter = new ArrayAdapter(SearchInventoryActivity.this, android.R.layout.simple_list_item_1, currentSelectedLocation);
-            listView.setAdapter(emptyAdapter);
+            allImage.add(null); // set nothing into imageview
+            CustomImageList adapter = new CustomImageList(SearchInventoryActivity.this, currentSelectedLocation, allImage, userID);
+            listView = (ListView)findViewById(R.id.listViewX);
+            listView.setAdapter(adapter);
+
         }
     }
-
+    /*==Main Menu btn listener==*/
+    public void mainMenuBtnListener(){
+        main_menu_btn = (Button)findViewById(R.id.main_menu_btn);
+        main_menu_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(SearchInventoryActivity.this, MainMenu.class);
+                sendIntentData(intent);
+            }
+        });
+    }
 @Override
 public void onStart() {
     super.onStart();

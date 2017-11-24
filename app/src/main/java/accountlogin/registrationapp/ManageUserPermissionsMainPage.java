@@ -65,7 +65,8 @@ public class ManageUserPermissionsMainPage extends AppCompatActivity {
         getStoreName = intent.getStringExtra("STORE_NAME");
         getUserPermissions = intent.getStringExtra("USER_PERMISSIONS");
         employeeID = intent.getStringExtra("STORE_USER");
-        System.out.println(getStoreName  + "\n" + getUserPermissions + "\n" + employeeID);
+
+
         //Firebase Initialization
         mAuth = FirebaseAuth.getInstance();
         mFirebaseDatabase = FirebaseDatabase.getInstance();
@@ -81,6 +82,7 @@ public class ManageUserPermissionsMainPage extends AppCompatActivity {
                 }
             }
         };
+
         unique_password = (TextView)findViewById(R.id.unique_password);
         mainPageLinearLayout = (LinearLayout)findViewById(R.id.mainPageLinearLayout);
         listViewLinearLayout = (LinearLayout)findViewById(R.id.listViewLinearLayout);
@@ -128,7 +130,7 @@ public class ManageUserPermissionsMainPage extends AppCompatActivity {
 
             }
         });
-
+        /*=== Check if user permission is enabled & set checkbox accordingly ===*/
         PermListener = mFirebaseDatabase.getReference().child(userID);
         PermListener.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override

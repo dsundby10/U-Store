@@ -28,7 +28,7 @@ import java.util.ListIterator;
 public class EditStoreAndDepartmentActivity extends AppCompatActivity {
     EditText add_dept_txt, change_dept_txt;
     Spinner remove_dept_spinner, edit_dept_spinner;
-    Button add_dept_btn, remove_dept_btn, change_dept_btn;
+    Button add_dept_btn, remove_dept_btn, change_dept_btn, main_menu_btn;
 
     //Firebase Variables
     private FirebaseDatabase mFirebaseDatabase;
@@ -41,13 +41,23 @@ public class EditStoreAndDepartmentActivity extends AppCompatActivity {
 
     String testString;
     String deptNamesString= "";
-    String[] deptListArray;
+
     ArrayList<String> newDeptArrayList = new ArrayList<>();
+
+    //Intent Data Variables
+    private String getStoreName = "";
+    private String employeeID;
+    private String getUserPermissions="";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_store_and_department);
         Intent intent = getIntent();
+        /*==Retrieve intent data ==*/
+        getStoreName = intent.getStringExtra("STORE_NAME");
+        getUserPermissions = intent.getStringExtra("USER_PERMISSIONS");
+        employeeID = intent.getStringExtra("STORE_USER");
+
         //EditText initialization
         add_dept_txt = (EditText) findViewById(R.id.add_dept_txt);
         change_dept_txt = (EditText) findViewById(R.id.change_dept_txt);
@@ -56,6 +66,7 @@ public class EditStoreAndDepartmentActivity extends AppCompatActivity {
         add_dept_btn = (Button) findViewById(R.id.add_dept_btn);
         remove_dept_btn = (Button) findViewById(R.id.remove_dept_btn);
         change_dept_btn = (Button) findViewById(R.id.change_dept_btn);
+        mainMenuBtnListener();
 
         //Spinner initialization
         edit_dept_spinner = (Spinner) findViewById(R.id.edit_dept_spinner);
@@ -76,28 +87,7 @@ public class EditStoreAndDepartmentActivity extends AppCompatActivity {
                 }
             }
         };
-        /*======== AisleBay DB Reference =========*/
-        AisleBayRef = mFirebaseDatabase.getReference().child(userID).child("BaySetup");
-        AisleBayRef.addValueEventListener(new ValueEventListener() {
-            String spacer = "\t\t\t\t\t\t";
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
 
-
-                String aisleHold = "";
-                String bayHold = "";
-                for(DataSnapshot data: dataSnapshot.getChildren()) {
-
-
-                }
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
         /*=== Department Name Listener to keep track of current deptListString ==== */
         myDeptRef = mFirebaseDatabase.getReference().child(userID);
         myDeptRef.addValueEventListener(new ValueEventListener() {
@@ -128,43 +118,49 @@ public class EditStoreAndDepartmentActivity extends AppCompatActivity {
             int count = 0;
             @Override
             public void onClick(View view) {
-                deptHolder="";
+                deptHolder = "";
                 String addDeptString = add_dept_txt.getText().toString();
                 String[] addToDeptArr = deptNamesString.split("\\s*,\\s*");
                 count = 0;
                 //compare the addDeptTxt with each already established Department
                 ArrayList<String> deptArrList = new ArrayList<>();
-                for (int i = 0; i < addToDeptArr.length; i++) {
-                    if (addToDeptArr[i].equals(addDeptString)) {
-                        count=1;
-                        message1=addDeptString+ " Already exists at position '" + (i+1) + "' in your department list, no duplicates allowed!";
-                    } else {
-                        deptArrList.add(addToDeptArr[i]);
-                    }
-                }
 
-
-
-                if (deptNamesString.trim().isEmpty()){
-                    deptHolder = addDeptString+",";
-                    myRef.child(userID).child("deptNames").setValue(deptHolder);
-                } else {
-                    if (count == 1) {
-                        toastMessage(message1);
-                    } else {
-                    /*=== Gathering current data and adding the new dept to end of deptArrList ===*/
-                        for (int i = 0; i < deptArrList.size() + 1; i++) {
-                            if (i == deptArrList.size()) {
-                                deptHolder += addDeptString + ",";
-                                Log.i("zAddtoSize equals", " Adding " + addDeptString);
-                            } else {
-                                deptHolder += deptArrList.get(i) + ",";
-                            }
+                if (!addDeptString.contains(",")) { // no commas allowed
+                    //check for duplicates
+                    for (int i = 0; i < addToDeptArr.length; i++) {
+                        if (addToDeptArr[i].equals(addDeptString)) {
+                            count = 1;
+                            message1 = addDeptString + " Already exists at position '" + (i + 1) + "' in your department list, no duplicates allowed!";
+                        } else {
+                            deptArrList.add(addToDeptArr[i]);
                         }
-                        myRef.child(userID).child("deptNames").setValue(deptHolder);
                     }
+
+                    if (deptNamesString.trim().isEmpty()) {//if its empty
+                        deptHolder = addDeptString + ",";
+                        myRef.child(userID).child("deptNames").setValue(deptHolder);
+                    } else { //if there was a duplicate triggered
+                        if (count == 1) {
+                            toastMessage(message1);
+                        } else { //add to dept list
+                        /*=== Gathering current data and adding the new dept to end of deptArrList ===*/
+                            for (int i = 0; i < deptArrList.size() + 1; i++) {
+                                if (i == deptArrList.size()) {
+                                    deptHolder += addDeptString + ",";
+                                } else {
+                                    deptHolder += deptArrList.get(i) + ",";
+                                }
+                            }
+                            toastMessage(addDeptString + " has been added to your departments.");
+                            myRef.child(userID).child("deptNames").setValue(deptHolder);
+                        }
+                    }
+                }else {
+                    toastMessage("Your Department name cant contain any commas");
                 }
             }
+
+
         });
         /*=======Remove Dept Btn On Click ======*/
         remove_dept_btn.setOnClickListener(new View.OnClickListener() {
@@ -216,7 +212,6 @@ public class EditStoreAndDepartmentActivity extends AppCompatActivity {
 
         /************Change Dept Btn On Click *****************/
         change_dept_btn.setOnClickListener(new View.OnClickListener() {
-            //String[] deptListArr;
             String strToChange;
             String newList="";
             String message1; //failed to add to database
@@ -229,6 +224,8 @@ public class EditStoreAndDepartmentActivity extends AppCompatActivity {
                 String[] deptListArr = deptNamesString.split("\\s*,\\s*");
 
                 ArrayList<String> deptArrList = new ArrayList<>();
+                if (!changeDeptTxt.contains(",")){ //no commas allowed
+
                 for (int i = 0; i < deptListArr.length; i++) {
                     //checking for any matches between the user textfield and the original dept list
                     if(changeDeptTxt.equals(deptListArr[i].toString())) {
@@ -267,7 +264,11 @@ public class EditStoreAndDepartmentActivity extends AppCompatActivity {
                     myRef.child(userID).child("deptNames").setValue(newList);
                 }
                 newList= "";
+            } else {
+                    toastMessage("Department name cant contain any commas.");
+                }
             }
+
         });
     }
 
@@ -291,6 +292,22 @@ public class EditStoreAndDepartmentActivity extends AppCompatActivity {
         ArrayAdapter arrayAdapter1 = new ArrayAdapter(EditStoreAndDepartmentActivity.this, android.R.layout.simple_spinner_dropdown_item, newDeptArrayList);
         edit_dept_spinner.setAdapter(arrayAdapter1);
 
+    }
+    public void mainMenuBtnListener(){
+        main_menu_btn = (Button)findViewById(R.id.main_menu_btn);
+        main_menu_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(EditStoreAndDepartmentActivity.this, MainMenu.class);
+                sendIntentData(intent);
+            }
+        });
+    }
+    public void sendIntentData(Intent intent){
+        intent.putExtra("STORE_USER", employeeID);
+        intent.putExtra("STORE_NAME", getStoreName);
+        intent.putExtra("USER_PERMISSIONS", getUserPermissions);
+        startActivity(intent);
     }
     @Override
     public void onStart() {

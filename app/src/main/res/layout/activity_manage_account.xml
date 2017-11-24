@@ -4,12 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/background_image7"
     tools:context="accountlogin.registrationapp.ManageAccountActivity"
     tools:layout_editor_absoluteY="81dp"
     tools:layout_editor_absoluteX="0dp">
 
     <Button
         android:id="@+id/submit_btn"
+        android:background="@drawable/buttonshape1"
+        android:textColor="@color/textBackgroundColor"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Submit"
@@ -51,10 +54,12 @@
 
     <Button
         android:id="@+id/main_menu_btn"
-        android:layout_width="wrap_content"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
+        android:background="@drawable/buttonshape1"
         android:text="Back to Main Menu"
+        android:textColor="@color/textBackgroundColor"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"

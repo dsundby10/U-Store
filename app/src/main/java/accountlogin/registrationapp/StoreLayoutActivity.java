@@ -126,19 +126,13 @@ public class StoreLayoutActivity extends AppCompatActivity {
         });
 
             BayRef = mFirebaseDatabase.getReference().child(userID).child("ShelfSetup");
-           //BayRef.addValueEventListener(new ValueEventListener() {
             BayRef.addListenerForSingleValueEvent(new ValueEventListener() {
-
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    //if(!this.getClass().equals(StoreLayoutActivity.class)){
-                    // BayRef.removeEventListener(this);
-                    //}
                     intMaxBay = new ArrayList<Integer>();
                     mySortedMaxBays = new ArrayList<Integer>();
                     mySortedMaxAisles = new ArrayList<Integer>();
                     amaxBays = 0;
-                    int size = 0;
                     zAisle = new ArrayList<>();
                     zBay = new ArrayList<>();
 
@@ -149,30 +143,28 @@ public class StoreLayoutActivity extends AppCompatActivity {
                             zAisle.add(tAisle);
                             zBay.add(tBay);
                     }
-                    int crntSize;
+
                     ICOUNT = 1;
                     sortCrntBays = new ArrayList<Integer>();
+
                     for (int i = 0; i < zAisle.size(); i++) {
                         if (i == zAisle.size() - 1) {
                             Collections.sort(sortCrntBays);
-                            crntSize = sortCrntBays.size() + 1;
-                            mySortedMaxBays.add(crntSize);
+                            mySortedMaxBays.add(sortCrntBays.size() + 1);
                             mySortedMaxAisles.add(ICOUNT);
                             sortCrntBays.clear();
                             ICOUNT++;
                             sortCrntBays.add(Integer.parseInt(zBay.get(i)));
                         } else {
                             if (Integer.parseInt(zAisle.get(i)) != ICOUNT) {
-                                crntSize = sortCrntBays.size();
                                 Collections.sort(sortCrntBays);
-                                mySortedMaxBays.add(crntSize);
+                                mySortedMaxBays.add(sortCrntBays.size());
                                 mySortedMaxAisles.add(ICOUNT);
                                 sortCrntBays.clear();
                                 ICOUNT++;
                                 sortCrntBays.add(Integer.parseInt(zBay.get(i)));
                             } else {
                                 sortCrntBays.add(Integer.parseInt(zBay.get(i)));
-
                             }
                         }
                     }
@@ -182,6 +174,7 @@ public class StoreLayoutActivity extends AppCompatActivity {
                     }
                     // Get the MaxBay (for screen sizing)
                     Collections.sort(intMaxBay);
+                    int size = 0;
                     size = intMaxBay.size();
                     if (size != 0) {
                         amaxBays = intMaxBay.get(size - 1);
@@ -206,7 +199,6 @@ public class StoreLayoutActivity extends AppCompatActivity {
                     String bay_num = (String) childSnapShot.child("bay_num").getValue();
                     String num_of_shelves = (String) childSnapShot.child("num_of_shelves").getValue();
                     String shelfSet = aisleNum +","+ bay_num +","+  num_of_shelves;
-                    System.out.println("Second shelfSetup: " + shelfSet);
                     ABSarr.add(shelfSet);
                     Aarr.add(aisleNum);
                     Barr.add(bay_num);
@@ -225,7 +217,7 @@ public class StoreLayoutActivity extends AppCompatActivity {
         //drawView = new Draw(this); //Create a new instance of your drawview class
         //hsv.addView(drawView);
         updateLayout();
-        btn = (Button)findViewById(R.id.btn);
+       // btn = (Button)findViewById(R.id.btn);
         shelfKey = (TextView)findViewById(R.id.shelfKey);
 
         placeButton();
@@ -239,11 +231,8 @@ public class StoreLayoutActivity extends AppCompatActivity {
     }
 
     public void updateLayout(){
-
-
         setContentView(R.layout.activity_store_layout);
         hsv = (HorizontalScrollView)findViewById(R.id.hsv);
-
         drawView = new Draw(this); //Create a new instance of your drawview class
         hsv.addView(drawView);
     }
@@ -256,9 +245,7 @@ public class StoreLayoutActivity extends AppCompatActivity {
     }
 
     public void placeButton(){
-
         AisleRef = mFirebaseDatabase.getReference().child(userID);
-        //AisleRef.addListenerForSingleValueEvent(new ValueEventListener() {
         AisleRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -270,11 +257,6 @@ public class StoreLayoutActivity extends AppCompatActivity {
                         amaxAisles = Integer.parseInt(maxAisles);
                     }
                 }
-                btn.setVisibility(View.INVISIBLE);
-               // btn = (Button)findViewById(R.id.btn);
-               // int v = amaxAisles*50;
-               // btn.setX(v);
-               // btn.setY(400);
                 placeShelfKey(amaxAisles,amaxBays);
             }
             @Override
@@ -295,8 +277,7 @@ public class StoreLayoutActivity extends AppCompatActivity {
 
         @Override
         public void onDraw(Canvas canvas) {
-            int spacing = 50;
-            int aisleCounter = 1;
+            int aisleCounter = 1; // used to display the aisle number on top of each bay 1
             int bayTop = 50;
             int bayBottom = 175;
             int bayLeft = 50;
@@ -305,7 +286,7 @@ public class StoreLayoutActivity extends AppCompatActivity {
             int spaceBay = 5;
             int baySpacer = (bayBottom - bayTop) + spaceBay;
 
-            int spaceAisle = 10;
+            int spaceAisle = 30;
             int aisleSpacer = (bayRight - bayLeft) + spaceAisle;
 
             nextAisle = 1;
@@ -317,8 +298,9 @@ public class StoreLayoutActivity extends AppCompatActivity {
                 currentBay = Integer.parseInt(splitABS[1]);
                 currentShelf = Integer.parseInt(splitABS[2]);
 
+                //Drawing aisle/bay/shelves on to the layout
                 if (currentAisle == mySortedMaxAisles.get(nextAisle-1)) {
-
+                    //Calculating each bays top/bottom & left/right dimensions with bay/aisle spacing
                     t = (baySpacer * currentBay) + bayTop;
                     b = (baySpacer * currentBay) + bayBottom;
                     l = (aisleSpacer * currentAisle) + bayLeft;
@@ -338,10 +320,12 @@ public class StoreLayoutActivity extends AppCompatActivity {
                     }
 
                 } else {
+                    //Calculating each bays top/bottom & left/right dimensions with bay/aisle spacing
                     t = (baySpacer * currentBay) + bayTop;
                     b = (baySpacer * currentBay) + bayBottom;
                     l = (aisleSpacer * currentAisle) + bayLeft;
                     r = (aisleSpacer * currentAisle) + bayRight;
+
                     //Draw the Bay
                     paint.setColor(Color.BLACK);
                     canvas.drawRect(l, t, r, b, paint);
@@ -350,6 +334,7 @@ public class StoreLayoutActivity extends AppCompatActivity {
                     drawShelves(canvas, currentShelf,l, t, r, b);
                     nextAisle++;
 
+                    //Draw the Aisle Number on top of each bay 1 in each aisle
                     if (currentBay==1) {
                         paint.setColor(Color.BLACK);
                         paint.setTextSize(40);

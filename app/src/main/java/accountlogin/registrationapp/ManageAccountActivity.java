@@ -1,7 +1,10 @@
 package accountlogin.registrationapp;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -35,9 +38,6 @@ public class ManageAccountActivity extends AppCompatActivity {
     private FirebaseAuth.AuthStateListener mAuthListener;
     private DatabaseReference myRef;
     private DatabaseReference DeleteStoreUsers;
-    private DatabaseReference StoreRef;
-    private DatabaseReference ManageStore;
-    private DatabaseReference ShelfRef;
     private String userID;
 
     ArrayList<String> getUserInfo = new ArrayList<>();
@@ -62,15 +62,13 @@ public class ManageAccountActivity extends AppCompatActivity {
 
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         myRef = mFirebaseDatabase.getReference();
-        ManageStore = mFirebaseDatabase.getReference();
-        StoreRef = mFirebaseDatabase.getReference();
+
 
         mAuth = FirebaseAuth.getInstance();
-        final FirebaseUser user = mAuth.getCurrentUser();
+        FirebaseUser user = mAuth.getCurrentUser();
         userID = user.getUid();
 
         DeleteStoreUsers = mFirebaseDatabase.getReference().child("StoreUsers");
-
         mainMenuBtnListner();
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
@@ -91,16 +89,12 @@ public class ManageAccountActivity extends AppCompatActivity {
                 for (DataSnapshot data: dataSnapshot.getChildren()) {
                     if (data.getKey().equals("storeName")){
                         currentStoreName = data.getValue().toString();
-                        System.out.println(data.getValue());
                     }
                     if (data.getKey().equals("StoreInfo")){
-                       // System.out.println(data.getValue().toString());
                         String info = data.getValue().toString();
                         String[] infoArr = info.split(",");
                         getUserInfo.add(infoArr[0].substring(12,infoArr[0].length())); // Add email
                         getUserInfo.add(infoArr[1].substring(11,infoArr[1].length()-1)); //Add pass
-                        System.out.println(infoArr[0].substring(12,infoArr[0].length()));
-                        System.out.println(infoArr[1].substring(11,infoArr[1].length()-1));
 
                     }
                 }
@@ -218,7 +212,7 @@ public class ManageAccountActivity extends AppCompatActivity {
 
             }
         });
-
+        /*== Submit button listener for all 4 cases ==*/
         submit_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -238,70 +232,125 @@ public class ManageAccountActivity extends AppCompatActivity {
         });
 
     }
-
+    /*== Delete Store Method ==*/
     public void deleteStore(){
+
         String userEmail = enter_store.getText().toString();
         String userPass = new_password.getText().toString();
         if (mAuth.getCurrentUser().getEmail().equals(userEmail) && userPass.equals(getUserInfo.get(1))) {
-            myRef.child("BaySetup").removeValue();
-            myRef.child("BayType").removeValue();
-            myRef.child("ShelfSetup").removeValue();
-            myRef.child("aisles").removeValue();
-            myRef.child("deptNames").removeValue();
-            myRef.child("storeName").removeValue();
-            DeleteStoreUsers.child(userID).child("Users").removeValue();
-            //Update the storeName data to be sent through the intent
-            getStoreName = "?¿NA¿?";
-            Intent intent = new Intent(ManageAccountActivity.this,MainMenu.class);
-            sendIntentData(intent);
-            toastMessage("Store has been removed... Relocating to main page");
+            AlertDialog.Builder builder;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                builder = new AlertDialog.Builder(submit_btn.getContext(), android.R.style.Theme_Material_Dialog_Alert);
+            } else {
+                builder = new AlertDialog.Builder(submit_btn.getContext());
+            }
+            builder.setTitle("Deleting Store Can't Be Undone!")
+                    .setMessage("Deleting your store will delete everything assoicated with your store, do you wish to proceed?")
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            myRef.child("BaySetup").removeValue();
+                            myRef.child("BayType").removeValue();
+                            myRef.child("ShelfSetup").removeValue();
+                            myRef.child("aisles").removeValue();
+                            myRef.child("deptNames").removeValue();
+                            myRef.child("storeName").removeValue();
+                            DeleteStoreUsers.child(userID).child("Users").removeValue();
+                            //Update the storeName data to be sent through the intent
+                            getStoreName = "?¿NA¿?";
+                            Intent intent = new Intent(ManageAccountActivity.this,MainMenu.class);
+                            sendIntentData(intent);
+                            toastMessage("Store has been removed... Relocating to main page");
+
+                        }
+                    })
+                    /*==== dont delete data ===*/
+                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+
+                        }
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
+
+        } else {
+            toastMessage("Please double check your login information.");
         }
     }
 
+    /*== Delete Account Method ==*/
     public void deleteAccount(){
         String userEmailx = enter_store.getText().toString();
         String userPassx = new_password.getText().toString();
         if (mAuth.getCurrentUser().getEmail().equals(userEmailx) && userPassx.equals(getUserInfo.get(1))) {
-            DeleteStoreUsers = mFirebaseDatabase.getReference().child("StoreUsers").child(userID);
-            DeleteStoreUsers.removeValue();
-            myRef.removeValue();
-            toastMessage("Account has been deleted.. Relocating to Login Page");
-            mAuth.getCurrentUser().delete();
-            signOut();
+            AlertDialog.Builder builder;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                builder = new AlertDialog.Builder(submit_btn.getContext(), android.R.style.Theme_Material_Dialog_Alert);
+            } else {
+                builder = new AlertDialog.Builder(submit_btn.getContext());
+            }
+            builder.setTitle("Deleting Account Can't Be Undone!")
+                    .setMessage("Deleting your account will delete everything assoicated with your store, do you wish to proceed?")
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            DeleteStoreUsers = mFirebaseDatabase.getReference().child("StoreUsers").child(userID);
+                            DeleteStoreUsers.removeValue();
+                            myRef.removeValue();
+                            toastMessage("Account has been deleted.. Relocating to Login Page");
+                            mAuth.getCurrentUser().delete();
+                            signOut();
+                        }
+                    })
+                    /*==== dont delete data ===*/
+                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+
+                        }
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
+
+        } else {
+            toastMessage("Please double check your login information.");
         }
     }
 
 
+    /*== Change Store Name Method ==*/
     public void changeStoreName(){
          String newStoreName = enter_store.getText().toString().trim();
         if (newStoreName.trim().length() >= 1) {
             myRef.child("storeName").setValue(newStoreName);
+            DeleteStoreUsers.child(userID).child("StoreName").setValue(newStoreName);
             toastMessage("Store name updated: " + newStoreName);
             //Update storeName data to be sent with intent
             getStoreName = newStoreName;
+            Intent intent = new Intent(ManageAccountActivity.this, MainMenu.class);
+            sendIntentData(intent);
         } else {
             toastMessage("Store name must be a valid entry.");
         }
     }
 
-
+    /*== Change Store Owner Password Method==*/
     public void changePassword(){
         String currentPass = enter_store.getText().toString();
         String newPass = new_password.getText().toString();
         /*-- check if currentPass matches & if newPass >= 6 --*/
-        if (currentPass.equals(getUserInfo.get(1)) && newPass.trim().length() >= 6) {
-            if (newPass.contains(",")){ //Commas complicate stuff for me
-                toastMessage("Sorry, passwords can not contain commas.");
+        if (currentPass.equals(getUserInfo.get(1))) {
+            if (newPass.contains(",") && newPass.trim().length() <= 5){ //Commas complicate stuff for me
+                toastMessage("New cant contain commas and length must be >=6");
             } else { //success
                 mAuth.getCurrentUser().updatePassword(new_password.getText().toString());
                 toastMessage("Password has been updated, please sign in again.");
                 signOut();
             }
         } else { //Not long enough
-            toastMessage("Length must be >= 6");
+            toastMessage("Incorrect Password.");
         }
     }
-
+    /*== Generating account options spinner ==*/
     public void generateAccountOptionsSpinner(){
         ArrayList<String> optionsList = new ArrayList<>();
         optionsList.add("View Account Options");
@@ -314,6 +363,7 @@ public class ManageAccountActivity extends AppCompatActivity {
         account_options.setAdapter(arrayAdapter);
     }
 
+    /*== Main menu btn initializer & listener ==*/
     public void mainMenuBtnListner(){
         main_menu_btn = (Button)findViewById(R.id.main_menu_btn);
         main_menu_btn.setOnClickListener(new View.OnClickListener() {

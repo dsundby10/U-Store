@@ -1,6 +1,8 @@
 package accountlogin.registrationapp;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -133,7 +135,7 @@ public class MainMenu extends AppCompatActivity {
                     toastMessage("You don't have permission to access this content!");
                 } else {
                     Intent intent = new Intent(MainMenu.this, EditStoreAndDepartmentActivity.class);
-                    startActivity(intent);
+                    sendIntentData(intent);
                 }
             }
         });
@@ -173,9 +175,8 @@ public class MainMenu extends AppCompatActivity {
                 if (permissionArray[6].equals("0")){
                     toastMessage("You don't have permission to access this content!");
                 } else {
-                    toastMessage("Doesnt exist yet...");
-                   // Intent intent = new Intent(MainMenu.this, zTestStoreLogin.class);
-                   // sendIntentData(intent);
+                    toastMessage("Under Development...");
+
                 }
             }
         });
@@ -282,21 +283,29 @@ public class MainMenu extends AppCompatActivity {
         search_inv_btn = (Spinner) findViewById(R.id.search_inv_btn);
         String searchInventoryBy = "Search Inventory, Location, Department, Keyword";
         String[] fillSpinner = searchInventoryBy.split("\\s*,\\s*");
-        ArrayList<String> inventoryValues = new ArrayList<>();
+        final ArrayList<String> inventoryValues = new ArrayList<>();
         //create spinner values
         for (int i = 0; i < fillSpinner.length; i++) {
             inventoryValues.add(fillSpinner[i]);
         }
 
-        ArrayAdapter<String> dataAdapter = new ArrayAdapter<>
+         ArrayAdapter<String> dataAdapter = new ArrayAdapter<>
                 (this, android.R.layout.simple_spinner_item, inventoryValues);
-        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        dataAdapter.setDropDownViewResource(R.layout.custom_spinner_layout);
         search_inv_btn.setAdapter(dataAdapter);
+
         /*===Search Inventory Button/Spinner Selected Listener ===*/
         search_inv_btn.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String currentPosition = search_inv_btn.getSelectedItem().toString();
+                if (currentPosition.equals("Search Inventory")){
+                    ((TextView) parent.getChildAt(0)).setTextColor(Color.BLACK);
+                    ((TextView) parent.getChildAt(0)).setTextSize(14);
+                    ((TextView) parent.getChildAt(0)).setAllCaps(true);
+                    ((TextView) parent.getChildAt(0)).setTypeface(null,Typeface.BOLD);
+                    ((TextView) parent.getChildAt(0)).setTypeface(Typeface.SANS_SERIF);
+                }
                 //Search by Department
                 if (currentPosition.equals("Department")) {
                     if (permissionArray[3].equals("0")) {
@@ -334,13 +343,13 @@ public class MainMenu extends AppCompatActivity {
 
 
 
+
     public void activateDatabaseListeners(){
         AisleRef = mFirebaseDatabase.getReference().child(userID).child("BaySetup");
         AisleRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot data : dataSnapshot.getChildren()){
-                    System.out.println(data.getValue().toString());
                 }
             }
             @Override
@@ -353,7 +362,6 @@ public class MainMenu extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot data: dataSnapshot.getChildren()) {
-                    System.out.println(data.getValue().toString());
                 }
             }
 

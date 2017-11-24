@@ -29,7 +29,7 @@ public class ManageUserPermissionsEditUser extends AppCompatActivity {
     LinearLayout checkBoxLinearLayout, editUserLinearLayout;
     Spinner user_options, currentUserSpinner;
     CheckBox add_inv_cbox, edit_inv_cbox, search_inv_cbox, view_layout_cbox,
-            edit_layout_cbox, add_shelving_cbox, full_access_cbox, edit_dept_cbox, edit_ab_cbox, enable_perm_cbox;
+            edit_layout_cbox, add_shelving_cbox, full_access_cbox, edit_dept_cbox, edit_ab_cbox;
     Button main_menu_btn, back_btn, submit_btn;
     EditText userEmail, userPass;
 
@@ -57,8 +57,8 @@ public class ManageUserPermissionsEditUser extends AppCompatActivity {
     private FirebaseAuth.AuthStateListener mAuthListener;
     private DatabaseReference myRef;
     private DatabaseReference ManageStore;
-    private DatabaseReference PermListener;
     private String userID;
+
     //Intent Data Variables
     private String getStoreName = "";
     private String employeeID;
@@ -67,6 +67,7 @@ public class ManageUserPermissionsEditUser extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manage_user_permissions_edit_user);
+
         Intent intent = getIntent();
         getStoreName = intent.getStringExtra("STORE_NAME");
         getUserPermissions = intent.getStringExtra("USER_PERMISSIONS");
@@ -86,18 +87,15 @@ public class ManageUserPermissionsEditUser extends AppCompatActivity {
                 }
             }
         };
+        /*--Initialize layouts and Main Menu / Back Button Listeners --*/
         currentUserSpinner = (Spinner) findViewById(R.id.currentUserSpinner);
         userEmail = (EditText)findViewById(R.id.userEmail);
         userPass = (EditText)findViewById(R.id.userPass);
-
         bottomButtonListeners();
-        //Permission enabled listener
-        permissionCheckBoxListener();
         initializeCheckBoxesAndListeners();
 
-
-        generateUserOptions();
         /*==Generate User Options Spinner && Listener ==*/
+        generateUserOptions();
         user_options = (Spinner)findViewById(R.id.user_options);
         user_options.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -128,8 +126,7 @@ public class ManageUserPermissionsEditUser extends AppCompatActivity {
             }
         });
         ManageStore = mFirebaseDatabase.getReference().child("StoreUsers").child(userID).child("Users");
-        ManageStore.addValueEventListener(new ValueEventListener() {
-        //ManageStore.addListenerForSingleValueEvent(new ValueEventListener() {
+        ManageStore.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 storeUserEmail = new ArrayList<String>();
@@ -138,20 +135,19 @@ public class ManageUserPermissionsEditUser extends AppCompatActivity {
                 storeUserKey = new ArrayList<String>();
                 currentUserList = new ArrayList<String>();
                 for (DataSnapshot data: dataSnapshot.getChildren()){
-                    String PPE = data.getValue().toString();
-                    String[] xp = new String[3];
-                    xp = PPE.split(",");
-                    String perm = xp[0].trim();
-                    String pass = xp[1].trim();
-                    String email = xp[2].trim();
-                    System.out.println("ZONKPermissions: " + perm.substring(10,perm.length()));
-                    System.out.println("ZONKPassword: " + pass.substring(9, pass.length()));
-                    System.out.println("ZONKEmail: " + email.substring(10,email.length()-1));
+                        String PPE = data.getValue().toString();
+                        String[] xp = new String[3];
+                        xp = PPE.split(",");
+                        String perm = xp[0].trim();
+                        String pass = xp[1].trim();
+                        String email = xp[2].trim();
 
-                    storeUserKey.add(data.getKey());
-                    storeUserPerm.add(perm.substring(10, perm.length()));
-                    storeUserPass.add(pass.substring(9, pass.length()));
-                    storeUserEmail.add(email.substring(10, email.length() - 1));
+
+                        storeUserKey.add(data.getKey());
+                        storeUserPerm.add(perm.substring(10, perm.length()));
+                        storeUserPass.add(pass.substring(9, pass.length()));
+                        storeUserEmail.add(email.substring(10, email.length() - 1));
+
                 }
                 /*==Generate values for currrent user spinner==*/
                 for (int i = 0; i <storeUserEmail.size(); i++) {
@@ -186,11 +182,11 @@ public class ManageUserPermissionsEditUser extends AppCompatActivity {
                     } else {
                         String permissionValues = addInvCbox + "" + editInvCbox + "" + searchInvCbox + "" + addShelvingCbox + "" + editABcBox + "" +
                                 editLayoutCbox + "" + editDeptcBox + "" + viewLayoutCbox + "" + fullAccessCbox;
-
                         String idKey = storeUserKey.get(currentUserSpinner.getSelectedItemPosition());
                         myRef.child("StoreUsers").child(userID).child("Users").child(idKey).child("userPerm").setValue(permissionValues);
                         myRef.child("StoreUsers").child(userID).child("Users").child(idKey).child("userEmail").setValue(userEmail.getText().toString());
                         myRef.child("StoreUsers").child(userID).child("Users").child(idKey).child("userPass").setValue(userPass.getText().toString());
+                        updateCurrentDatabaseValuesOnClick();
                         toastMessage(userEmail.getText().toString() + " has been updated!");
                         Intent intent = new Intent(ManageUserPermissionsEditUser.this, ManageUserPermissionsEditUser.class);
                         sendIntentData(intent);
@@ -277,10 +273,7 @@ public class ManageUserPermissionsEditUser extends AppCompatActivity {
         }
     }
 
-    public void permissionCheckBoxListener(){
-        enable_perm_cbox = (CheckBox)findViewById(R.id.enable_perm_cBox);
-        enable_perm_cbox.setVisibility(View.INVISIBLE);
-    }
+
 
     /*=== Genereate Array List & Adapater for user_Options spinner ===*/
     public void generateUserOptions(){
@@ -415,8 +408,49 @@ public class ManageUserPermissionsEditUser extends AppCompatActivity {
                 }
             }
         });
+    }
+    public void updateCurrentDatabaseValuesOnClick(){
+        ManageStore = mFirebaseDatabase.getReference().child("StoreUsers").child(userID).child("Users");
+        ManageStore.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                storeUserEmail = new ArrayList<String>();
+                storeUserPass = new ArrayList<String>();
+                storeUserPerm = new ArrayList<String>();
+                storeUserKey = new ArrayList<String>();
+                currentUserList = new ArrayList<String>();
 
+                for (DataSnapshot data: dataSnapshot.getChildren()){
 
+                    String PPE = data.getValue().toString();
+
+                    //String[] xp = new String[3];
+                    String[] xp = PPE.split(",");
+                    if (xp.length==2) {
+                        String perm = xp[0].trim();
+                        String pass = xp[1].trim();
+                        String email = xp[2].trim();
+
+                        storeUserKey.add(data.getKey());
+                        storeUserPerm.add(perm.substring(10, perm.length()));
+                        storeUserPass.add(pass.substring(9, pass.length()));
+                        storeUserEmail.add(email.substring(10, email.length() - 1));
+                    }
+                }
+                /*==Generate values for currrent user spinner==*/
+                for (int i = 0; i <storeUserEmail.size(); i++) {
+                    currentUserList.add("USER " + i + ": " + storeUserEmail.get(i));
+                }
+                ArrayAdapter arrayAdapter1 = new ArrayAdapter(ManageUserPermissionsEditUser.this, android.R.layout.simple_spinner_dropdown_item, currentUserList);
+                currentUserSpinner.setAdapter(arrayAdapter1);
+                currentUserSpinner.setSelection(0);
+
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
     public void sendIntentData(Intent intent){
         intent.putExtra("STORE_USER", employeeID);

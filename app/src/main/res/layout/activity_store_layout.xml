@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal"
+    android:background="@drawable/background_image7"
     tools:context="accountlogin.registrationapp.StoreLayoutActivity"
     tools:layout_editor_absoluteY="81dp"
     tools:layout_editor_absoluteX="0dp">
@@ -19,13 +20,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
         </HorizontalScrollView>
-        <Button
-            android:id="@+id/btn"
-            android:text="BTN"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            tools:layout_editor_absoluteY="435dp"
-            tools:layout_editor_absoluteX="148dp" />
+
 
         <TextView
             android:id="@+id/shelfKey"
