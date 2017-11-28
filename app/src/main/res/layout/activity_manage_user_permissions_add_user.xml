@@ -13,6 +13,8 @@
         android:id="@+id/user_options"
         android:layout_width="350dp"
         android:layout_height="38dp"
+        android:background="@drawable/buttonshape1"
+        android:popupBackground="@drawable/spinner_background"
         tools:layout_constraintTop_creator="1"
         tools:layout_constraintRight_creator="1"
         tools:layout_constraintBottom_creator="1"

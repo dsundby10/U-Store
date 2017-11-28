@@ -34,7 +34,7 @@ public class StoreLayoutActivity extends AppCompatActivity {
     Draw drawView;
     HorizontalScrollView hsv;
     ConstraintLayout c_layout;
-    Button btn;
+    Button main_menu_btn, absetup_btn, shelf_btn;
     TextView shelfKey;
     //add firebase stuff
     private FirebaseDatabase mFirebaseDatabase;
@@ -84,6 +84,16 @@ public class StoreLayoutActivity extends AppCompatActivity {
     private String getStoreName = "";
     private String employeeID;
     private String getUserPermissions="";
+
+
+    String shelfColor1="\nShelf 1: Blue";
+    String shelfColor2="\nShelf 2: Red";
+    String shelfColor3="\nShelf 3: Green";
+    String shelfColor4="\nShelf 4: Cyan";
+    String shelfColor5="\nShelf 5: Magenta";
+    String shelfColor6="\nShelf 6: Yellow";
+    String shelfColor7="\nShelf 7: Gray";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -91,7 +101,7 @@ public class StoreLayoutActivity extends AppCompatActivity {
         getStoreName = intent.getStringExtra("STORE_NAME");
         getUserPermissions = intent.getStringExtra("USER_PERMISSIONS");
         employeeID = intent.getStringExtra("STORE_USER");
-
+        main_menu_btn = (Button)findViewById(R.id.main_menu_btn);
         mAuth = FirebaseAuth.getInstance();
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         myRef = mFirebaseDatabase.getReference();
@@ -210,19 +220,15 @@ public class StoreLayoutActivity extends AppCompatActivity {
             }
         });
 
-        //setContentView(R.layout.activity_store_layout);
-        //c_layout = (ConstraintLayout) findViewById(R.id.c_layout);
-        //HorizontalScrollView hsv = (HorizontalScrollView)findViewById(R.id.hsv);
-        //hsv = (HorizontalScrollView)findViewById(R.id.hsv);
-        //drawView = new Draw(this); //Create a new instance of your drawview class
-        //hsv.addView(drawView);
+
         updateLayout();
-       // btn = (Button)findViewById(R.id.btn);
         shelfKey = (TextView)findViewById(R.id.shelfKey);
 
-        placeButton();
+        placeLayoutComponents();
+        buttonListeners();
 
     }
+
     public void sendIntentData(Intent intent){
         intent.putExtra("STORE_USER", employeeID);
         intent.putExtra("STORE_NAME", getStoreName);
@@ -236,15 +242,37 @@ public class StoreLayoutActivity extends AppCompatActivity {
         drawView = new Draw(this); //Create a new instance of your drawview class
         hsv.addView(drawView);
     }
+    /*== Display TextView in Correct Location ==*/
     public void placeShelfKey(int xPosition, int yPosition){
-        int xPos = xPosition * 25;
-        int yPos = yPosition * 200;
-        shelfKey.setText("Shelf Color Key\nShelf 1: Blue\nShelf 2: Red\nShelf 3:Green");
+        int xPos = xPosition * 20;
+        int yPos = yPosition * 145 + 150;
         shelfKey.setX(xPos);
         shelfKey.setY(yPos);
     }
+    public void placeButtons(int xPosition, int yPosition){
+        //AisleBay btn placement
+        int absetupX = xPosition * 150;
+        int absetupY = yPosition * 145 + 150;
+        absetup_btn.setX(absetupX);
+        absetup_btn.setY(absetupY);
 
-    public void placeButton(){
+        //Shelf btn placement
+        int shelfX = xPosition * 150;
+        int shelfY = yPosition * 145 + 300;
+        shelf_btn.setX(shelfX);
+        shelf_btn.setY(shelfY);
+
+        //Main menu btn placement
+        int mainBtnX = xPosition * 150;
+        int mainBtnY = yPosition * 145 + 475;
+        main_menu_btn.setX(mainBtnX);
+        main_menu_btn.setY(mainBtnY);
+
+
+    }
+
+    /*== Place the Shelf key & button (if needed) ==*/
+    public void placeLayoutComponents(){
         AisleRef = mFirebaseDatabase.getReference().child(userID);
         AisleRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -258,12 +286,45 @@ public class StoreLayoutActivity extends AppCompatActivity {
                     }
                 }
                 placeShelfKey(amaxAisles,amaxBays);
+                placeButtons(amaxAisles,amaxBays);
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
 
             }
         });
+
+
+
+
+    }
+    /*== Button listeners for Mainmenu / ABsetup / Shelf assign ==*/
+    public void buttonListeners(){
+        main_menu_btn = (Button)findViewById(R.id.main_menu_btn);
+        main_menu_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(StoreLayoutActivity.this, MainMenu.class);
+                sendIntentData(intent);
+            }
+        });
+        absetup_btn = (Button)findViewById(R.id.absetup_btn);
+        absetup_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(StoreLayoutActivity.this, AisleBaySetup.class);
+                sendIntentData(intent);
+            }
+        });
+        shelf_btn = (Button)findViewById(R.id.shelf_btn);
+        shelf_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(StoreLayoutActivity.this, ShelvingAddEditActivity.class);
+                sendIntentData(intent);
+            }
+        });
+
 
     }
 
@@ -288,6 +349,7 @@ public class StoreLayoutActivity extends AppCompatActivity {
 
             int spaceAisle = 30;
             int aisleSpacer = (bayRight - bayLeft) + spaceAisle;
+            int maxShelf = 0;
 
             nextAisle = 1;
             String[] splitABS = new String[3];
@@ -298,6 +360,10 @@ public class StoreLayoutActivity extends AppCompatActivity {
                 currentBay = Integer.parseInt(splitABS[1]);
                 currentShelf = Integer.parseInt(splitABS[2]);
 
+                if (currentShelf > maxShelf) {
+                    maxShelf = currentShelf;
+                    System.out.println("Max" + maxShelf);
+                }
                 //Drawing aisle/bay/shelves on to the layout
                 if (currentAisle == mySortedMaxAisles.get(nextAisle-1)) {
                     //Calculating each bays top/bottom & left/right dimensions with bay/aisle spacing
@@ -315,6 +381,7 @@ public class StoreLayoutActivity extends AppCompatActivity {
                     if (currentBay==1) {
                         paint.setColor(Color.BLACK);
                         paint.setTextSize(40);
+                        //place current aisle number on top of bay 1
                         canvas.drawText("A: " + aisleCounter, l + ((r-l)/4), 150, paint);
                         aisleCounter++;
                     }
@@ -343,6 +410,31 @@ public class StoreLayoutActivity extends AppCompatActivity {
                     }
                 }
             }
+            /*== Assign Shelf Color Key its text values ==*/
+            if (maxShelf==7){
+                shelfKey.setText("Shelf Color Key" + shelfColor1 + "" + shelfColor2 + "" + shelfColor3 + ""
+                        + shelfColor4 + "" + shelfColor5 + "" + shelfColor6 + "" + shelfColor7);
+            }
+            if (maxShelf==6){
+                shelfKey.setText("Shelf Color Key" + shelfColor1 + "" + shelfColor2 + "" + shelfColor3 + ""
+                        + shelfColor4 + "" + shelfColor5 + "" + shelfColor6 );
+            }
+            if (maxShelf==5){
+                shelfKey.setText("Shelf Color Key" + shelfColor1 + "" + shelfColor2 + "" + shelfColor3 + ""
+                        + shelfColor4 + "" + shelfColor5  );
+            }
+            if (maxShelf==4){
+                shelfKey.setText("Shelf Color Key" + shelfColor1 + "" + shelfColor2 + "" + shelfColor3 + "" + shelfColor4 );
+            }
+            if (maxShelf==3){
+                shelfKey.setText("Shelf Color Key" + shelfColor1 + "" + shelfColor2 + "" + shelfColor3 + "");
+            }
+            if (maxShelf==2){
+                shelfKey.setText("Shelf Color Key" + shelfColor1 + "" + shelfColor2 );
+            }
+            if (maxShelf==1){
+                shelfKey.setText("Shelf Color Key" + shelfColor1);
+            }
         }
 
         @Override
@@ -354,12 +446,16 @@ public class StoreLayoutActivity extends AppCompatActivity {
             display.getSize(size);
             int width = size.x;
             int height = size.y;
+            if (amaxBays > 7 || amaxAisles > 8) {
+                setMeasuredDimension((amaxAisles * 150) + 350, (amaxBays * 190) + 350);
+            }
+            else{
+                setMeasuredDimension(width,height);
+            }
 
-            setMeasuredDimension(2000,2000);
-           //setMeasuredDimension((amaxAisles*200)+50, (amaxBays*205) + 300);
-        }
+            }
     }
-
+    /*== Draw Shelves on each indivdual bay within the canvas ==*/
     public void drawShelves(Canvas canvas, int currentShelf, int l, int t, int r, int b){
         Paint shelf1 = new Paint();
         Paint shelf2 = new Paint();
@@ -368,6 +464,7 @@ public class StoreLayoutActivity extends AppCompatActivity {
         Paint shelf5 = new Paint();
         Paint shelf6 = new Paint();
         Paint shelf7 = new Paint();
+        Paint shelf8 = new Paint();
         shelf1.setColor(Color.BLUE);
         shelf2.setColor(Color.RED);
         shelf3.setColor(Color.GREEN);
@@ -375,29 +472,40 @@ public class StoreLayoutActivity extends AppCompatActivity {
         shelf5.setColor(Color.MAGENTA);
         shelf6.setColor(Color.YELLOW);
         shelf7.setColor(Color.DKGRAY);
+        shelf8.setColor(Color.WHITE);
         int drawLine=0;
         int drawLineEnd = 0;
         int shelfDraw = 0;
         int shelfCount = 1;
 
+
         for (int i = 0; i < this.currentShelf ; i++) {
             shelfDraw = ((this.r - this.l) / (this.currentShelf + 1));
             drawLine = this.l + (shelfDraw * shelfCount) - 2;
             drawLineEnd = this.l + (shelfDraw * shelfCount) + 2;
+
+            /*== 7 Shelves == max ==*/
             if (i == 0){
                 canvas.drawRect(drawLine, this.t, drawLineEnd, this.b, shelf1);
+
             }
             if (i==1){
                 canvas.drawRect(drawLine, this.t, drawLineEnd, this.b, shelf2);
+
+
             }
             if (i==2){
                 canvas.drawRect(drawLine, this.t, drawLineEnd, this.b, shelf3);
+
+
             }
             if (i==3) {
                 canvas.drawRect(drawLine, this.t, drawLineEnd, this.b, shelf4);
+
             }
             if (i==4){
                 canvas.drawRect(drawLine, this.t, drawLineEnd, this.b, shelf5);
+
             }
             if (i==5){
                 canvas.drawRect(drawLine, this.t, drawLineEnd, this.b, shelf6);
@@ -405,12 +513,12 @@ public class StoreLayoutActivity extends AppCompatActivity {
             if (i==6){
                 canvas.drawRect(drawLine, this.t, drawLineEnd, this.b, shelf7);
             }
+            if (i >=7) {
+                canvas.drawRect(drawLine, this.t, drawLineEnd, this.b, shelf7);
+            }
             shelfCount++;
         }
-
     }
-
-
 
     @Override
     public void onStart() {
@@ -425,4 +533,7 @@ public class StoreLayoutActivity extends AppCompatActivity {
             mAuth.removeAuthStateListener(mAuthListener);
         }
     }
+
+
+
 }

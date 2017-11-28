@@ -8,46 +8,45 @@
     tools:context="accountlogin.registrationapp.SearchInventoryByKeyword"
     tools:layout_editor_absoluteY="81dp"
     tools:layout_editor_absoluteX="0dp">
+
+
+
     <!-- Search Inventory top header Linear layout -->
     <LinearLayout
         android:id="@+id/linearLayout10"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:orientation="vertical"
-        tools:layout_constraintTop_creator="1"
+        android:background="@drawable/rounded_textfield"
+        android:layout_width="wrap_content"
+        android:layout_height="42dp"
+        android:orientation="horizontal"
         tools:layout_constraintRight_creator="1"
-        android:layout_marginEnd="16dp"
         app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginTop="9dp"
         tools:layout_constraintLeft_creator="1"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginLeft="31dp"
-        android:layout_marginRight="31dp">
-
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        tools:layout_constraintBottom_creator="1"
+        app:layout_constraintBottom_toTopOf="@+id/modify_btn"
+        android:layout_marginBottom="5dp"
+        app:layout_constraintHorizontal_bias="0.515">
 
         <EditText
             android:id="@+id/keywordText"
-            android:layout_width="320dp"
+            android:layout_width="290dp"
             android:layout_height="40dp"
             android:ems="10"
             android:hint="Enter keyword"
             android:inputType="textPersonName"
             tools:layout_editor_absoluteX="0dp"
             tools:layout_editor_absoluteY="22dp" />
-
-        <Button
+        <ImageButton
             android:id="@+id/search_btn"
-            android:layout_width="150dp"
-            android:layout_height="39dp"
-            android:text="Search"
-            android:background="@drawable/buttonshape1"
-            android:textColor="@color/textBackgroundColor"
-            android:layout_marginStart="85dp"
-            tools:layout_editor_absoluteX="35dp"
-            tools:layout_editor_absoluteY="62dp" />
+            android:layout_width="45dp"
+            android:layout_height="42dp"
+            android:src="@drawable/searchlogo2"/>
     </LinearLayout>
+
+
+
 
 
     <Button
@@ -62,7 +61,8 @@
         tools:layout_constraintLeft_creator="1"
         tools:layout_constraintBottom_creator="1"
         app:layout_constraintBottom_toTopOf="@+id/linearLayout15"
-        android:layout_marginBottom="10dp" />
+        android:layout_marginBottom="5dp"
+        app:layout_constraintHorizontal_bias="0.431" />
     <!--CheckBoxes LinearLayout -->
     <LinearLayout
         android:id="@+id/checkbox_linearLayout"
@@ -184,23 +184,20 @@
     <!-- Listview LinearLayout-->
     <LinearLayout
         android:id="@+id/linearLayout15"
-        android:layout_width="350dp"
-        android:layout_height="350dp"
+        android:layout_width="0dp"
+        android:layout_height="360dp"
         android:layout_marginBottom="54dp"
         android:layout_marginEnd="17dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginStart="17dp"
-        android:layout_marginTop="53dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="@+id/main_menu_btn"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dept_spinner"
         tools:layout_constraintBottom_creator="1"
         tools:layout_constraintLeft_creator="1"
-        tools:layout_constraintRight_creator="1"
-        tools:layout_constraintTop_creator="1">
+        tools:layout_constraintRight_creator="1">
 
         <TextView
             android:id="@+id/tvDisplayInfo"
@@ -217,7 +214,8 @@
         <ListView
             android:id="@+id/listViewX"
             android:layout_width="match_parent"
-            android:layout_height="345dp" />
+            android:layout_height="335dp"
+            android:layout_marginBottom="2dp" />
     </LinearLayout>
 
     <Button
@@ -226,11 +224,33 @@
         android:layout_height="40dp"
         android:layout_marginBottom="8dp"
         android:background="@drawable/buttonshape1"
-        android:textColor="@color/textBackgroundColor"
         android:text="Main Menu"
+        android:textColor="@color/textBackgroundColor"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         tools:layout_constraintLeft_creator="1"
         tools:layout_constraintRight_creator="1" />
+
+    <TextView
+        android:id="@+id/textView15"
+        android:layout_width="0dp"
+        android:layout_height="24dp"
+        android:text="Search Inventory by Keyword"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        tools:layout_constraintTop_creator="1"
+        tools:layout_constraintRight_creator="1"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginTop="7dp"
+        tools:layout_constraintLeft_creator="1"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        app:layout_constraintHorizontal_bias="0.0" />
 </android.support.constraint.ConstraintLayout>

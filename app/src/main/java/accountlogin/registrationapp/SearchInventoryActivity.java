@@ -98,6 +98,7 @@ public class SearchInventoryActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setTitle("Search Inventory: Location");
         setContentView(R.layout.activity_search_inventory);
+        //setContentView(R.layout.zzsearch);
 
         Intent intent = getIntent();
         getStoreName = intent.getStringExtra("STORE_NAME");

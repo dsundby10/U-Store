@@ -24,11 +24,38 @@
 
         <TextView
             android:id="@+id/shelfKey"
-            android:layout_width="163dp"
-            android:layout_height="117dp"
-            android:text="TextView"
-            tools:layout_editor_absoluteX="16dp"
-            tools:layout_editor_absoluteY="122dp" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textAllCaps="true"
+            android:textSize="16sp"
+            android:textStyle="bold"
+             />
+
+        <Button
+            android:id="@+id/main_menu_btn"
+            android:layout_width="100dp"
+            android:layout_height="40dp"
+            android:background="@drawable/buttonshape1"
+            android:textColor="@color/textBackgroundColor"
+            android:text="Main Menu"
+            />
+        <Button
+            android:id="@+id/shelf_btn"
+            android:layout_width="100dp"
+            android:layout_height="40dp"
+            android:background="@drawable/buttonshape1"
+            android:textColor="@color/textBackgroundColor"
+            android:text="Add/Edit Shelving"
+            />
+        <Button
+            android:id="@+id/absetup_btn"
+            android:layout_width="100dp"
+            android:layout_height="40dp"
+            android:background="@drawable/buttonshape1"
+            android:textColor="@color/textBackgroundColor"
+            android:text="Aisle/Bay Setup"
+            />
 
     </android.support.constraint.ConstraintLayout>
 </ScrollView>

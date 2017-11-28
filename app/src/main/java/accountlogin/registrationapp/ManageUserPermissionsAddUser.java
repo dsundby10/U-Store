@@ -200,7 +200,7 @@ public class ManageUserPermissionsAddUser extends AppCompatActivity {
         userOptionList.add("Edit Current User");
         userOptionList.add("Remove User");
 
-        ArrayAdapter arrayAdapter = new ArrayAdapter(ManageUserPermissionsAddUser.this,android.R.layout.simple_spinner_dropdown_item,userOptionList);
+        ArrayAdapter arrayAdapter = new ArrayAdapter(ManageUserPermissionsAddUser.this,R.layout.custom_spinner_layout,userOptionList);
         user_options.setAdapter(arrayAdapter);
         user_options.setSelection(1);
     }

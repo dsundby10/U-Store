@@ -229,7 +229,7 @@ public class AisleBaySetup extends AppCompatActivity {
                 if (genBayText.trim().matches(regexStr) && genBayText.trim().length() >= 1) {
 
                     //If Adv bays have been assigned remove the ShelfSetup Values to avoid data issues
-                    if (bayType.equals("Adv")) {
+                    if (bayType.equals("Adv") || bayType.equals("Gen")) {
                         myRef.child(userID).child("ShelfSetup").removeValue();
                     }
 
@@ -370,7 +370,7 @@ public class AisleBaySetup extends AppCompatActivity {
                         ABarrayList.add("Nothing");
                     }
                 }
-                ArrayAdapter arrayAdapter = new ArrayAdapter(AisleBaySetup.this,android.R.layout.simple_list_item_1,ABarrayList);
+                ArrayAdapter arrayAdapter = new ArrayAdapter(AisleBaySetup.this,R.layout.custom_listview_layout,ABarrayList);
                 listView.setAdapter(arrayAdapter);
             }
 

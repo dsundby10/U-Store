@@ -359,7 +359,7 @@ public class ManageAccountActivity extends AppCompatActivity {
         optionsList.add("Delete Store");
         optionsList.add("Delete Account");
         optionsList.add("Manage Employee Permissions");
-        ArrayAdapter arrayAdapter = new ArrayAdapter(ManageAccountActivity.this,android.R.layout.simple_spinner_dropdown_item,optionsList);
+        ArrayAdapter arrayAdapter = new ArrayAdapter(ManageAccountActivity.this,R.layout.custom_spinner_layout,optionsList);
         account_options.setAdapter(arrayAdapter);
     }
 

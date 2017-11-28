@@ -102,11 +102,10 @@
             android:layout_width="350dp"
             android:layout_height="wrap_content"
             android:background="@null"
-            android:text="@string/btn_link_to_login"
+            android:text="Already Have An Account?"
             android:textAllCaps="false"
             android:textColor="@color/editTextHintColor"
-            android:textSize="15sp"
-           />
+            android:textSize="15sp" />
     </LinearLayout>
 
 

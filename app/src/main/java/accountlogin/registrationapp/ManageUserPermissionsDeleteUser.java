@@ -111,34 +111,34 @@ public class ManageUserPermissionsDeleteUser extends AppCompatActivity {
 
         ManageStore = mFirebaseDatabase.getReference().child("StoreUsers").child(userID).child("Users");
         ManageStore.addListenerForSingleValueEvent(new ValueEventListener() {
-            //ManageStore.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 storeUserEmail = new ArrayList<String>();
                 storeUserPass = new ArrayList<String>();
                 storeUserPerm = new ArrayList<String>();
                 storeUserKey = new ArrayList<String>();
+                currentUserList=new ArrayList<String>();
                 for (DataSnapshot data: dataSnapshot.getChildren()){
+                    String PPE = data.getValue().toString();
+                    String[] xp = new String[3];
+                    xp = PPE.split(",");
 
-                        String PPE = data.getValue().toString();
-                        String[] xp = PPE.split(",");
-                        if (xp.length==2){
-                            String perm = xp[0].trim();
-                            String pass = xp[1].trim();
-                            String email = xp[2].trim();
+                    String perm = xp[0].trim();
+                    String pass = xp[1].trim();
+                    String email = xp[2].trim();
 
-                            storeUserKey.add(data.getKey());
-                            storeUserPerm.add(perm.substring(10, perm.length()));
-                            storeUserPass.add(pass.substring(9, pass.length()));
-                            storeUserEmail.add(email.substring(10, email.length() - 1));
-                        }
+                    storeUserKey.add(data.getKey());
+                    storeUserPerm.add(perm.substring(10, perm.length()));
+                    storeUserPass.add(pass.substring(9, pass.length()));
+                    storeUserEmail.add(email.substring(10, email.length() - 1));
 
                 }
+
                   /*==Generate values for currrent user spinner==*/
                 for (int i = 0; i <storeUserEmail.size(); i++) {
                     currentUserList.add("USER " + i + ": " + storeUserEmail.get(i));
                 }
-                ArrayAdapter arrayAdapter1 = new ArrayAdapter(ManageUserPermissionsDeleteUser.this, android.R.layout.simple_spinner_dropdown_item, currentUserList);
+                ArrayAdapter arrayAdapter1 = new ArrayAdapter(ManageUserPermissionsDeleteUser.this,R.layout.custom_spinner_layout, currentUserList);
                 currentUserSpinner.setAdapter(arrayAdapter1);
                 currentUserSpinner.setSelection(0);
 
@@ -148,31 +148,24 @@ public class ManageUserPermissionsDeleteUser extends AppCompatActivity {
 
             }
         });
-        currentUserSpinnerListener();
         deleteUserButtonListener();
     }
-
+/*== Delete user button listener==*/
     public void deleteUserButtonListener(){
         submit_btn = (Button)findViewById(R.id.submit_btn);
         submit_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int deleteCount=0;
                 for (int i = 0; i < storeUserEmail.size() ; i++) {
-                    if (storeUserEmail.get(i).equals(userEmail.getText().toString())){
+                    if (i == user_options.getSelectedItemPosition()) {
+                        String user = storeUserEmail.get(i);
                         myRef.child("StoreUsers").child(userID).child("Users").child(storeUserKey.get(i)).removeValue();
-                        toastMessage(userEmail.getText().toString() + " has been removed!");
-                        deleteCount=1;
-                        Intent intent=new Intent(ManageUserPermissionsDeleteUser.this,ManageUserPermissionsDeleteUser.class);
+                        toastMessage(user + " has been removed!");
+                        Intent intent = new Intent(ManageUserPermissionsDeleteUser.this, ManageUserPermissionsDeleteUser.class);
                         sendIntentData(intent);
-                        break;
-                    } else {
-
                     }
                 }
-                if (deleteCount==0){
-                    toastMessage("That user doesn't exist, please select from the spinner");
-                }
+
             }
         });
     }
@@ -182,7 +175,7 @@ public class ManageUserPermissionsDeleteUser extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 for (int i = 0; i < storeUserEmail.size(); i++) {
                     if (currentUserSpinner.getSelectedItemPosition()==i){
-                        userEmail.setText(storeUserEmail.get(i));
+                        //userEmail.setText(storeUserEmail.get(i));
                         break;
                     } else {
 

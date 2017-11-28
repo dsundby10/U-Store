@@ -16,6 +16,8 @@
         tools:layout_constraintTop_creator="1"
         tools:layout_constraintRight_creator="1"
         tools:layout_constraintBottom_creator="1"
+        android:background="@drawable/buttonshape1"
+        android:popupBackground="@drawable/spinner_background"
         app:layout_constraintBottom_toTopOf="@+id/addUserLinearLayout"
         app:layout_constraintRight_toRightOf="parent"
         android:layout_marginTop="16dp"

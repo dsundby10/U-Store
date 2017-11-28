@@ -411,7 +411,7 @@ public class ManageUserPermissionsEditUser extends AppCompatActivity {
     }
     public void updateCurrentDatabaseValuesOnClick(){
         ManageStore = mFirebaseDatabase.getReference().child("StoreUsers").child(userID).child("Users");
-        ManageStore.addValueEventListener(new ValueEventListener() {
+        ManageStore.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 storeUserEmail = new ArrayList<String>();
@@ -441,7 +441,7 @@ public class ManageUserPermissionsEditUser extends AppCompatActivity {
                 for (int i = 0; i <storeUserEmail.size(); i++) {
                     currentUserList.add("USER " + i + ": " + storeUserEmail.get(i));
                 }
-                ArrayAdapter arrayAdapter1 = new ArrayAdapter(ManageUserPermissionsEditUser.this, android.R.layout.simple_spinner_dropdown_item, currentUserList);
+                ArrayAdapter arrayAdapter1 = new ArrayAdapter(ManageUserPermissionsEditUser.this, R.layout.custom_spinner_layout, currentUserList);
                 currentUserSpinner.setAdapter(arrayAdapter1);
                 currentUserSpinner.setSelection(0);
 

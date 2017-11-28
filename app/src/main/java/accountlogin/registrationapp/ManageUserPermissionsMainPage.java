@@ -153,7 +153,6 @@ public class ManageUserPermissionsMainPage extends AppCompatActivity {
             }
         });
         ManageStore = mFirebaseDatabase.getReference().child("StoreUsers").child(userID).child("Users");
-       // ManageStore.addValueEventListener(new ValueEventListener() {
         ManageStore.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -221,9 +220,9 @@ public class ManageUserPermissionsMainPage extends AppCompatActivity {
         listViewX = (ListView)findViewById(R.id.listViewX);
         currentUserList = new ArrayList<>();
         for (int i = 0; i < storeUserEmail.size() ; i++) {
-            currentUserList.add((i+1) + ") Username: " + storeUserEmail.get(i) + "\n\tPassword: " + storeUserPass.get(i));
+            currentUserList.add("\tUsername: " + storeUserEmail.get(i) + "\nPassword: " + storeUserPass.get(i));
         }
-        ArrayAdapter arrayAdapter = new ArrayAdapter(ManageUserPermissionsMainPage.this,android.R.layout.simple_list_item_1, currentUserList);
+        ArrayAdapter arrayAdapter = new ArrayAdapter(ManageUserPermissionsMainPage.this, R.layout.custom_listview_layout, currentUserList);
         listViewX.setAdapter(arrayAdapter);
     }
 
@@ -259,7 +258,7 @@ public class ManageUserPermissionsMainPage extends AppCompatActivity {
         userOptionList.add("Edit Current User");
         userOptionList.add("Remove User");
 
-        ArrayAdapter arrayAdapter = new ArrayAdapter(ManageUserPermissionsMainPage.this,android.R.layout.simple_spinner_dropdown_item,userOptionList);
+        ArrayAdapter arrayAdapter = new ArrayAdapter(ManageUserPermissionsMainPage.this, R.layout.custom_spinner_layout,userOptionList);
         user_options.setAdapter(arrayAdapter);
         user_options.setSelection(0);
     }

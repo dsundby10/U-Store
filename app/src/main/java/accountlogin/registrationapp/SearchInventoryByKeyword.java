@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -37,7 +38,8 @@ import java.util.ArrayList;
 public class SearchInventoryByKeyword extends AppCompatActivity {
     //Layout Variables
     LinearLayout checkbox_linearLayout;
-    Button search_btn, main_menu_btn;
+    Button  main_menu_btn; //,search_btn
+    ImageButton search_btn;
     EditText keywordSearch;
     CheckBox product_cbox, pid_cbox, stock_cbox, desc_cbox, image_cbox, department_cbox, location_cbox;
     TextView tvDisplayInfo;
@@ -81,16 +83,16 @@ public class SearchInventoryByKeyword extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_inventory_by_keyword);
-        setTitle("Search Keyword");
 
         Intent intent = getIntent();
         getStoreName = intent.getStringExtra("STORE_NAME");
         getUserPermissions = intent.getStringExtra("USER_PERMISSIONS");
         employeeID = intent.getStringExtra("STORE_USER");
 
-        search_btn = (Button)findViewById(R.id.search_btn);
+        search_btn = (ImageButton)findViewById(R.id.search_btn);
         keywordSearch = (EditText)findViewById(R.id.keywordText);
         listView = (ListView)findViewById(R.id.listViewX);
+
         //Setup the modify search functionality
         initializeModifyVariables();
         modifyCheckBoxListeners();

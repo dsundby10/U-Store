@@ -22,6 +22,8 @@
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginTop="33dp"
         android:layout_marginBottom="33dp"
+        android:background="@drawable/buttonshape1"
+        android:popupBackground="@drawable/spinner_background"
         app:layout_constraintBottom_toTopOf="@+id/deleteUserLinearLayout"
         tools:layout_constraintTop_creator="1"
         tools:layout_constraintRight_creator="1"
@@ -71,7 +73,7 @@
             android:layout_height="40dp"
             android:layout_marginLeft="65dp"
             android:background="@drawable/buttonshape1"
-            android:text="Remove User"
+            android:text="Remove"
             android:textColor="@color/textBackgroundColor"
             tools:layout_editor_absoluteX="96dp"
             tools:layout_editor_absoluteY="176dp" />

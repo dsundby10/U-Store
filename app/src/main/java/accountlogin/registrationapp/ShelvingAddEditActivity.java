@@ -153,7 +153,7 @@ public class ShelvingAddEditActivity extends AppCompatActivity {
                     String aisleNum = (String) childSnapShot.child("aisle_num").getValue();
                     String bayNum = (String) childSnapShot.child("bay_num").getValue();
                     String shelfNum = (String) childSnapShot.child("num_of_shelves").getValue();
-                    String strx = "\t\t\tAisle: " + aisleNum + "\t\t\tBay: " + bayNum + "\t\t\tShelves: " + shelfNum;
+                    String strx = "\t\tAisle: " + aisleNum + "\t\tBay: " + bayNum + "\t\tShelves: " + shelfNum;
                     String strz = aisleNum + "," + bayNum + "," + shelfNum;
                     if (aisleNum != null && bayNum != null && shelfNum != null) {
                         my_arr_list.add(strz);
@@ -163,19 +163,19 @@ public class ShelvingAddEditActivity extends AppCompatActivity {
 
                 if (updateAll.equals("selected")){
                     mListView = (ListView) findViewById(R.id.listViewX);
-                    ArrayAdapter arrayAdapter = new ArrayAdapter(ShelvingAddEditActivity.this, R.layout.custom_spinner_layout, updateAllShelves);
+                    ArrayAdapter arrayAdapter = new ArrayAdapter(ShelvingAddEditActivity.this, R.layout.custom_listview_layout, updateAllShelves);
                     mListView.setAdapter(arrayAdapter);
                     updateAll = "notSelected";
                 } else {
                     if (findMaxBayNum >= 10){ //Then use the sorting method to display listview
                         ABSarr = sortedABSlist();
                         mListView = (ListView) findViewById(R.id.listViewX);
-                        ArrayAdapter arrayAdapter = new ArrayAdapter(ShelvingAddEditActivity.this, R.layout.custom_spinner_layout, ABSarr);
+                        ArrayAdapter arrayAdapter = new ArrayAdapter(ShelvingAddEditActivity.this, R.layout.custom_listview_layout, ABSarr);
                         mListView.setAdapter(arrayAdapter);
                     } else { //Display listview normally no sorting needed
                         ABSarr = my_arr_list1;
                         mListView = (ListView) findViewById(R.id.listViewX);
-                        ArrayAdapter arrayAdapter = new ArrayAdapter(ShelvingAddEditActivity.this, R.layout.custom_spinner_layout, my_arr_list1);
+                        ArrayAdapter arrayAdapter = new ArrayAdapter(ShelvingAddEditActivity.this, R.layout.custom_listview_layout, my_arr_list1);
                         mListView.setAdapter(arrayAdapter);
                     }
                 }
@@ -201,7 +201,7 @@ public class ShelvingAddEditActivity extends AppCompatActivity {
                     String aisleNum = (String) childSnapShot.child("aisle_num").getValue();
                     String bayNum = (String) childSnapShot.child("bay_num").getValue();
                     String shelfNum = (String) childSnapShot.child("num_of_shelves").getValue();
-                    String strx = "\t\t\tAisle: " + aisleNum + "\t\t\tBay: " + bayNum + "\t\t\tShelves: " + shelfNum;
+                    String strx = "\t\tAisle: " + aisleNum + "\t\tBay: " + bayNum + "\t\tShelves: " + shelfNum;
                     String strz = aisleNum + "," + bayNum + "," + shelfNum;
                     if (aisleNum != null && bayNum != null && shelfNum != null) {
                         my_arr_list.add(strz);
@@ -211,12 +211,12 @@ public class ShelvingAddEditActivity extends AppCompatActivity {
                 if (findMaxBayNum >= 10){ //Then use the sorting method to display listview
                     ABSarr = sortedABSlist();
                     mListView = (ListView) findViewById(R.id.listViewX);
-                    ArrayAdapter arrayAdapter = new ArrayAdapter(ShelvingAddEditActivity.this, R.layout.custom_spinner_layout, ABSarr);
+                    ArrayAdapter arrayAdapter = new ArrayAdapter(ShelvingAddEditActivity.this, R.layout.custom_listview_layout, ABSarr);
                     mListView.setAdapter(arrayAdapter);
                 } else { //Display listview normally no sorting needed
                     ABSarr = my_arr_list1;
                     mListView = (ListView) findViewById(R.id.listViewX);
-                    ArrayAdapter arrayAdapter = new ArrayAdapter(ShelvingAddEditActivity.this, R.layout.custom_spinner_layout, my_arr_list1);
+                    ArrayAdapter arrayAdapter = new ArrayAdapter(ShelvingAddEditActivity.this, R.layout.custom_listview_layout, my_arr_list1);
                     mListView.setAdapter(arrayAdapter);
                 }
             }
